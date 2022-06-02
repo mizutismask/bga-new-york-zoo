@@ -1,8 +1,9 @@
 <?php
+
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * NewYorkZoo implementation : © <Your name here> <Your email address here>
+ * NewYorkZoo implementation : © Séverine Kamycki severinek@gmail.com
  *
  * This code has been produced on the BGA studio platform for use on https://boardgamearena.com.
  * See http://en.doc.boardgamearena.com/Studio for more information.
@@ -20,29 +21,26 @@
  * this.ajaxcall( "/newyorkzoo/newyorkzoo/myAction.html", ...)
  *
  */
-  
-  
-  class action_newyorkzoo extends APP_GameAction
-  { 
-    // Constructor: please do not modify
-   	public function __default()
-  	{
-  	    if( self::isArg( 'notifwindow') )
-  	    {
-            $this->view = "common_notifwindow";
-  	        $this->viewArgs['table'] = self::getArg( "table", AT_posint, true );
-  	    }
-  	    else
-  	    {
-            $this->view = "newyorkzoo_newyorkzoo";
-            self::trace( "Complete reinitialization of board game" );
-      }
-  	} 
-  	
-  	// TODO: defines your action entry points there
 
 
-    /*
+class action_newyorkzoo extends APP_GameAction
+{
+  // Constructor: please do not modify
+  public function __default()
+  {
+    if (self::isArg('notifwindow')) {
+      $this->view = "common_notifwindow";
+      $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
+    } else {
+      $this->view = "newyorkzoo_newyorkzoo";
+      self::trace("Complete reinitialization of board game");
+    }
+  }
+
+  // TODO: defines your action entry points there
+
+
+  /*
     
     Example:
   	
@@ -62,7 +60,4 @@
     }
     
     */
-
-  }
-  
-
+}

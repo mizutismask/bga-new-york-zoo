@@ -3,7 +3,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * NewYorkZoo implementation : © <Your name here> <Your email address here>
+ * NewYorkZoo implementation : © Séverine Kamycki severinek@gmail.com
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -52,11 +52,13 @@ $stats_type = array(
     // Statistics global to table
     "table" => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
+        "turns_number" => array(
+            "id" => 10,
+            "name" => totranslate("Number of turns"),
+            "type" => "int"
+        ),
 
-/*
+        /*
         Examples:
 
 
@@ -67,17 +69,19 @@ $stats_type = array(
         "table_teststat2" => array(   "id"=> 11,
                                 "name" => totranslate("table test stat 2"), 
                                 "type" => "float" )
-*/  
+*/
     ),
-    
+
     // Statistics existing for each player
     "player" => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-    
-/*
+        "turns_number" => array(
+            "id" => 10,
+            "name" => totranslate("Number of turns"),
+            "type" => "int"
+        ),
+
+        /*
         Examples:    
         
         
@@ -89,7 +93,7 @@ $stats_type = array(
                                 "name" => totranslate("player test stat 2"), 
                                 "type" => "float" )
 
-*/    
+*/
     )
 
 );
