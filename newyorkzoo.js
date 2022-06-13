@@ -14,7 +14,7 @@
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *
  */
-const CELL_WIDTH = 44;
+const CELL_WIDTH = 43;
 
 define([
     "dojo","dojo/_base/declare",
@@ -47,11 +47,12 @@ function (dojo, declare) {
         
         setup: function( gamedatas )
         {
-            console.log( "Starting game setup" );
+            console.log( "Starting game setup", gamedatas );
             
             // Setting up player boards
             document.documentElement.style.setProperty('--colsNb', gamedatas.gridSize[0]);
             document.documentElement.style.setProperty('--rowsNb', gamedatas.gridSize[1]);
+            document.documentElement.style.setProperty('--playerCount', Object.keys(gamedatas.players).length);
             
             for( var player_id in gamedatas.players )
             {

@@ -26,7 +26,7 @@
  */
 
 require_once(APP_BASE_PATH . "view/common/game.view.php");
-define("CELL_WIDTH", 44);
+define("CELL_WIDTH",43);
 
 class view_newyorkzoo_newyorkzoo extends game_view
 {
@@ -40,7 +40,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
     return self::getGameName() . "_" . self::getGameName();
   }
 
-  
+
 
   function processPlayerBlock($player_id, $player, $player_count)
   {
