@@ -32,3 +32,16 @@ $this->card_types = array(
 );
 
 */
+$this->token_types = [
+  'patch_7' => [
+    'num' => 7,
+    'type' => 'patch patch_7',
+    'spaces' => 4,
+    'income' => 1,
+    'cost' => 4,
+    'time' => 2,
+    'mask' => ':118:001',
+    'h' => 2,
+    'w' => 3,
+  ],
+];

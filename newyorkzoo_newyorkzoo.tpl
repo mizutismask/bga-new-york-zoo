@@ -27,7 +27,47 @@
 
 
 This is your game interface. You can edit this HTML in your ".tpl" file.
+<div id="thething" class="thething">
 
+<div id="central" class="central">
+
+		<!-- BEGIN player_board -->
+		
+		<div id="tableau_{COLOR}" data-title="{PLAYER_NAME}" class="tableau tableau_{COLOR} {OWN} player_count_{PLAYER_COUNT} player_order_{PLAYER_NO}">
+		
+			<div id="pboard_{COLOR}" class="pboard pboard_{COLOR}">
+				<div id="squares_{COLOR}" class="squares squares_{COLOR}">
+    <!-- BEGIN square -->
+    				<div id="square_{COLOR}_{Y}_{X}" class="square {CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+    <!-- END square -->
+				</div>
+				<div id="pieces_{COLOR}" class="pieces pieces_{COLOR}"></div>
+			</div>
+		</div>
+
+		<!-- END player_board -->
+        </div>
+
+<div id="limbo" class="limbo">
+		<div id="rotate_control_template" class="rotate-image control-image"></div>
+		<div id="flip_control_template" class="mirror-image control-image"></div>
+		<div id="done_control_template" class="done-image control-image"></div>
+		<div id="cancel_control_template" class="cancel-image control-image"></div>
+
+	</div>
+</div>
+
+
+<style>
+		<!-- BEGIN patchcss -->
+		.shape-patch-{NUM} {
+			-webkit-clip-path: polygon({CLIP_POINTS});
+			clip-path: polygon({CLIP_POINTS});
+			width: {W}px;
+			height: {H}px;
+		}
+		<!-- END patchcss -->
+</style>
 
 <script type="text/javascript">
 

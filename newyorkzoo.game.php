@@ -19,9 +19,12 @@
 
 
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
+require_once ('modules/tokens.php');
+require_once ('modules/EuroGame.php');
+require_once ('modules/PwMatrix.php');
 
 
-class NewYorkZoo extends Table
+class NewYorkZoo extends EuroGame
 {
     function __construct()
     {
@@ -41,6 +44,9 @@ class NewYorkZoo extends Table
             //    "my_second_game_variant" => 101,
             //      ...
         ));
+
+        $this->tokens = new Tokens();
+        $this->matrix = new PwMatrix($this);
     }
 
     protected function getGameName()
@@ -117,7 +123,7 @@ class NewYorkZoo extends Table
         $result['players'] = self::getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-
+        $result['gridSize'] = self::getGridSize();
         return $result;
     }
 
@@ -146,7 +152,20 @@ class NewYorkZoo extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
-
+    function getGridSize()
+    {
+      $players = $this->loadPlayersBasicInfos();
+      $players_nbr = count($players);
+      if ($players_nbr == 2) {
+        return array(14, 9); //x,y
+      } else if ($players_nbr == 3) {
+        return array(11, 9); //x,y
+      } else if ($players_nbr == 4) {
+        return array(9, 9); //x,y
+      } else if ($players_nbr == 5) {
+        return array(8, 9); //x,y
+      }
+    }
 
 
     //////////////////////////////////////////////////////////////////////////////

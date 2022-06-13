@@ -26,6 +26,7 @@
  */
 
 require_once(APP_BASE_PATH . "view/common/game.view.php");
+define("CELL_WIDTH", 44);
 
 class view_newyorkzoo_newyorkzoo extends game_view
 {
@@ -33,52 +34,107 @@ class view_newyorkzoo_newyorkzoo extends game_view
   {
     return "newyorkzoo";
   }
+
+  function getTemplateName()
+  {
+    return self::getGameName() . "_" . self::getGameName();
+  }
+
+  
+
+  function processPlayerBlock($player_id, $player, $player_count)
+  {
+    $color = $player['player_color'];
+    $name = $player['player_name'];
+    $no = $player['player_no'];
+    global $g_user;
+    $current_player = $g_user->get_id();
+    // Create squares
+    $this->page->reset_subblocks('square');
+    $hor_scale = CELL_WIDTH;
+    $ver_scale = CELL_WIDTH;
+    $gridSize = $this->game->getGridSize();
+    for ($x = 0; $x < $gridSize[0]; $x++) {
+      for ($y = 0; $y < $gridSize[1]; $y++) {
+        $classes = '';
+        $this->page->insert_block("square", array(
+          'X' => $x, 'Y' => $y, 'LEFT' => round(($x) * $hor_scale),
+          'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "COLOR" => $color
+        ));
+      }
+    }
+    $own = $player_id == $current_player;
+    $this->page->insert_block("player_board", array(
+      "COLOR" => $color, "PLAYER_NAME" => $name, "PLAYER_NO" => $no,
+      "PLAYER_ID" => $player_id, "OWN" => $own ? "own" : "",
+      "PLAYER_COUNT" => $player_count,
+    ));
+  }
+
   function build_page($viewArgs)
   {
     // Get players & players number
     $players = $this->game->loadPlayersBasicInfos();
     $players_nbr = count($players);
+    /**
+     * ********* Place your code below: ***********
+     */
+    $template = self::getTemplateName();
+    $num = $players_nbr;
+    $this->tpl['PLS'] = $num;
+    global $g_user;
+    $this->tpl['PCOLOR'] = 'ffffff'; // spectator
+    $current_player = $g_user->get_id();
+    //$this->page->begin_block($template, "patch");
+    //$this->page->begin_block($template, "patchcss");
+    $CARDS_W = 1000;
+    $CARDS_H = 1500;
+    $COLS = 5;
+    $CELL = CELL_WIDTH;
 
-    /*********** Place your code below:  ************/
+    for ($num = 1; $num <= 33; $num++) {
+      $mask = $this->game->getRulesFor("patch_$num", 'mask');
+      $matrix = [];
+      $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
+      $h = count($matrix);
+      $w = count($matrix[0]);
+      $points = '';
+      $clippoints = '';
+      foreach ($coords as list($x, $y)) {
+        $points .= "$x,$y ";
+        $px = (int)(100 * $x / CELL_WIDTH / $w);
+        $py = (int)(100 * $y / CELL_WIDTH / $h);
+        $clippoints .= "$px% $py%,";
+      }
+      $clippoints = substr($clippoints, 0, strlen($clippoints) - 1);
+      $this->page->insert_block("patch", ['NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
 
+      $fw = $w * CELL_WIDTH;
+      $fh = $h * CELL_WIDTH;
+      $i = ($num - 1) % $COLS;
+      $j = floor(($num - 1) / $COLS);
 
-    /*
-        
-        // Examples: set the value of some element defined in your tpl file like this: {MY_VARIABLE_ELEMENT}
+      $this->page->insert_block("patchcss", [
+        'NUM' => $num, 'CLIP_POINTS' => $clippoints,
+        'W' => $fw, 'H' => $fh,
+      ]);
+    }
 
-        // Display a specific number / string
-        $this->tpl['MY_VARIABLE_ELEMENT'] = $number_to_display;
-
-        // Display a string to be translated in all languages: 
-        $this->tpl['MY_VARIABLE_ELEMENT'] = self::_("A string to be translated");
-
-        // Display some HTML content of your own:
-        $this->tpl['MY_VARIABLE_ELEMENT'] = self::raw( $some_html_code );
-        
-        */
-
-    /*
-        
-        // Example: display a specific HTML block for each player in this game.
-        // (note: the block is defined in your .tpl file like this:
-        //      <!-- BEGIN myblock --> 
-        //          ... my HTML code ...
-        //      <!-- END myblock --> 
-        
-
-        $this->page->begin_block( "newyorkzoo_newyorkzoo", "myblock" );
-        foreach( $players as $player )
-        {
-            $this->page->insert_block( "myblock", array( 
-                                                    "PLAYER_NAME" => $player['player_name'],
-                                                    "SOME_VARIABLE" => $some_value
-                                                    ...
-                                                     ) );
-        }
-        
-        */
-
-
+    $this->page->begin_block($template, "square");
+    $this->page->begin_block($template, "player_board");
+    // inner blocks in player blocks
+    // ...
+    // player blocks
+    if (isset($players[$current_player])) { // may be not set if spectator
+      $curplayer_info = $players[$current_player];
+      $this->tpl['PCOLOR'] = $curplayer_info['player_color'];
+      $this->processPlayerBlock($current_player, $curplayer_info, $players_nbr);
+    }
+    // remaining boards in players order
+    foreach ($players as $player_info) {
+      if ($player_info['player_id'] != $current_player)
+        $this->processPlayerBlock($player_info['player_id'], $player_info, $players_nbr);
+    }
 
     /*********** Do not change anything below this line  ************/
   }
