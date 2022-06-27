@@ -19,9 +19,9 @@
 
 
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
-require_once ('modules/tokens.php');
-require_once ('modules/EuroGame.php');
-require_once ('modules/PwMatrix.php');
+require_once('modules/tokens.php');
+require_once('modules/EuroGame.php');
+require_once('modules/PwMatrix.php');
 
 
 class NewYorkZoo extends EuroGame
@@ -64,44 +64,72 @@ class NewYorkZoo extends EuroGame
     */
     protected function setupNewGame($players, $options = array())
     {
-        // Set the colors of the players with HTML color code
-        // The default below is red/green/blue/orange/brown
-        // The number of colors defined here must correspond to the maximum number of players allowed for the gams
-        $gameinfos = self::getGameinfos();
-        $default_colors = $gameinfos['player_colors'];
+        try {
+            // Set the colors of the players with HTML color code
+            // The default below is red/green/blue/orange/brown
+            // The number of colors defined here must correspond to the maximum number of players allowed for the gams
+            $gameinfos = self::getGameinfos();
+            $default_colors = $gameinfos['player_colors'];
 
-        // Create players
-        // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
-        $values = array();
-        foreach ($players as $player_id => $player) {
-            $color = array_shift($default_colors);
-            $values[] = "('" . $player_id . "','$color','" . $player['player_canal'] . "','" . addslashes($player['player_name']) . "','" . addslashes($player['player_avatar']) . "')";
+            // Create players
+            // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
+            $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
+            $values = array();
+            foreach ($players as $player_id => $player) {
+                $color = array_shift($default_colors);
+                $values[] = "('" . $player_id . "','$color','" . $player['player_canal'] . "','" . addslashes($player['player_name']) . "','" . addslashes($player['player_avatar']) . "')";
+            }
+            $sql .= implode($values, ',');
+            self::DbQuery($sql);
+            self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
+            self::reloadPlayersBasicInfos();
+
+            $this->initTables();
+
+            /************ Start the game initialization *****/
+
+            // Init global values with their initial values
+            //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+
+            // Init game statistics
+            // (note: statistics used in this file must be defined in your stats.inc.php file)
+            //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
+            //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+
+            // TODO: setup the initial game situation here
+
+
+            // Activate first player (which is in general a good idea :) )
+            $this->activeNextPlayer();
+        } catch (Exception $e) {
+            // logging does not actually work in game init :(
+            $this->error("Fatal error while creating game");
+            $this->dump('err', $e);
         }
-        $sql .= implode($values, ',');
-        self::DbQuery($sql);
-        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
-        self::reloadPlayersBasicInfos();
-
-        /************ Start the game initialization *****/
-
-        // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
-
-        // Init game statistics
-        // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-        // TODO: setup the initial game situation here
-
-
-        // Activate first player (which is in general a good idea :) )
-        $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
     }
 
+    function initTables()
+    {
+        // neutral token
+        $this->tokens->createToken("token_neutral", "limbo", 0);
+
+        // patches 
+        $patches = $this->tokens->createTokensPack("patch_{INDEX}", "limbo", 77, 1);
+        shuffle($patches);
+        $i = 0;
+        $this->tokens->moveToken('patch_1', "market", $i);
+        $i++;
+        $this->tokens->moveToken('token_neutral', "market", $i);
+        $i++;
+        foreach ($patches as $patch) {
+            if ($patch !== "patch_1") {
+                $this->tokens->moveToken($patch, "market", $i);
+                $i++;
+            }
+        }
+    }
     /*
         getAllDatas: 
         
@@ -122,6 +150,34 @@ class NewYorkZoo extends EuroGame
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
 
+
+        foreach ($this->token_types as $id => &$info) {
+            if (startsWith($id, 'patch')) {
+                $mask = $info['mask'];
+                $mask = preg_replace('/11/', '21', $mask, 1);
+                if (strpos($mask, '2') === false) {
+                    $mask = preg_replace('/1:/', '3:', $mask, 1);
+                }
+                if (strpos($mask, '3') === false) {
+                    $mask = preg_replace('/1$/', '3', $mask, 1);
+                }
+                if (strpos($mask, '3') === false) {
+                    $mask = preg_replace('/1/', '3', $mask, 1);
+                }
+                $matrix = $this->matrix->pieceMatrix($mask);
+
+                // first value of coords of 2 or 3 if 2 not found
+                $info['lcoords'] = ($this->matrix->valueCoords($matrix, 2) + $this->matrix->valueCoords($matrix, 3))[0];
+            }
+        }
+        $result = parent::getAllDatas();
+        $players_basic = $this->loadPlayersBasicInfos();
+        foreach ($players_basic as $player_info) {
+            $color = $player_info['player_color'];
+            $occupancy = $this->getOccupancyMatrix($color);
+            $unoccup_count = $this->getOccupancyEmpty($occupancy);
+            $this->setCounter($result['counters'], "empties_${color}_counter", $unoccup_count);
+        }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
         return $result;
@@ -154,19 +210,63 @@ class NewYorkZoo extends EuroGame
     */
     function getGridSize()
     {
-      $players = $this->loadPlayersBasicInfos();
-      $players_nbr = count($players);
-      if ($players_nbr == 2) {
-        return array(14, 9); //x,y
-      } else if ($players_nbr == 3) {
-        return array(11, 9); //x,y
-      } else if ($players_nbr == 4) {
-        return array(9, 9); //x,y
-      } else if ($players_nbr == 5) {
-        return array(8, 9); //x,y
-      }
+        $players = $this->loadPlayersBasicInfos();
+        $players_nbr = count($players);
+        if ($players_nbr == 2) {
+            return array(14, 9); //x,y
+        } else if ($players_nbr == 3) {
+            return array(11, 9); //x,y
+        } else if ($players_nbr == 4) {
+            return array(9, 9); //x,y
+        } else if ($players_nbr == 5) {
+            return array(8, 9); //x,y
+        }
     }
 
+    function getPolyominoesCount($color)
+    {
+        $players = $this->loadPlayersBasicInfos();
+        $players_nbr = count($players);
+        if ($players_nbr >= 2) {
+            switch ($color) {
+                case LIGHTEST_GREEN:
+                    return 8;
+                case LIGHT_GREEN:
+                    return 15;
+                case DARK_GREEN:
+                    return 15;
+                case DARKEST_GREEN:
+                    return 7;
+            }
+        }
+    }
+
+    function getPolyominoesLocation($color)
+    {
+        $players = $this->loadPlayersBasicInfos();
+        $players_nbr = count($players);
+        //if ($players_nbr >= 2) {
+        switch ($color) {
+            case LIGHTEST_GREEN:
+                return [4, 6, 8, 9, 18, 19, 21, 23];
+            case LIGHT_GREEN:
+            case DARK_GREEN:
+                return [1, 3, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24];
+            case DARKEST_GREEN:
+                return [1, 2, 11, 13, 14, 16, 24];
+        }
+        // }
+    }
+
+    function stateToRotor($state)
+    {
+        $ydir = (int) ($state / 4);
+        $zdir = $state % 4;
+        $rotateY = $ydir * 180;
+        $rotateZ = $zdir * 90;
+        $rotor = "${rotateZ}_$rotateY";
+        return $rotor;
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
@@ -208,28 +308,55 @@ class NewYorkZoo extends EuroGame
     //////////// Game state arguments
     ////////////
 
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-
-    /*
-    
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
+    function arg_occupancyData($color)
     {
-        // Get some values from the current game situation in database...
-    
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }    
-    */
+        $tokens = $this->tokens->getTokensOfTypeInLocation("patch", "square_${color}%");
+        //$this->warn(toJson($tokens));
+        $occupdata = [];
+        foreach ($tokens as $key => $info) {
+            $loc = $info['location'];
+            $state = $info['state'];
+            $y = getPart($loc, 2);
+            $x = getPart($loc, 3);
+            $rotor2 = $this->stateToRotor($state);
+            $mask2 = $this->getRulesFor($key, 'mask');
+            $occupdata[] = [$x, $y, $mask2, $rotor2];
+        }
+        return $occupdata;
+    }
+
+    function getOccupancyMatrix($color)
+    {
+        $occupdata = null;
+        if ($color !== null) {
+            $occupdata = $this->arg_occupancyData($color);
+        }
+        $occupancy = $this->matrix->occupancyMatrix($occupdata);
+
+        return $occupancy;
+    }
+
+    function getOccupancyEmpty($occupancy)
+    {
+        $unoccup = $this->matrix->remap($occupancy, '', 0);
+        $unoccup_count = count($unoccup);
+        $empty = $unoccup_count;
+        return $empty;
+    }
+
+    function arg_possibleMoves($patch, $color = null, $rotor = null, $occupancy = null)
+    {
+        if ($color !== null) {
+            $prefix = "square_${color}_";
+        } else
+            $prefix = '';
+
+        if ($occupancy == null) {
+            $occupancy = $this->getOccupancyMatrix($color);
+        }
+        $mask = $this->getRulesFor($patch, 'mask');
+        return $this->matrix->possibleMoves($mask, $prefix, $rotor, $occupancy);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state actions

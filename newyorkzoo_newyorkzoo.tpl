@@ -29,8 +29,36 @@
 This is your game interface. You can edit this HTML in your ".tpl" file.
 <div id="thething" class="thething">
 
+<div id="map_container" class="map_container">
+	<div id="map_scrollable" class="map_scrollable map_layer">
+		<div class="actionStripWrapper">
+			<div class="actionStrip">
+				<!-- BEGIN actionStripZone -->
+				<div id="{ID}" class="nyz_action_zone" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
+				<!-- END actionStripZone -->
+				<!-- BEGIN patch -->
+				<div id="patch_{NUM}" class="patch flipper patch_{NUM}">
+					<div class="target-image target-spot"></div>
+					<div class="patch-face patch-face-{NUM} shape-patch-{NUM}"></div>
+					<svg class="patch-outline" draggable="false" >
+						<polygon class="patch-//outline-poligon"
+							points="{POL_POINTS}"></polygon>
+					</svg>
+				</div>
+				<!-- END patch -->
+				<div id="token_neutral" class="token_neutral"></div>
+			</div>
+		</div>
+	</div>
+	<div id="map_surface" class="map_surface map_layer"></div>
+	<div id="market" class="market map_scrollable_oversurface map_layer"></div>
+	<div class="moveleft"></div>
+	<div class="moveright"></div>
+</div>
+
 <div id="central" class="central">
 
+		
 		<!-- BEGIN player_board -->
 		
 		<div id="tableau_{COLOR}" data-title="{PLAYER_NAME}" class="tableau tableau_{COLOR} {OWN} player_count_{PLAYER_COUNT} player_order_{PLAYER_NO}">
@@ -48,15 +76,15 @@ This is your game interface. You can edit this HTML in your ".tpl" file.
 		<!-- END player_board -->
         </div>
 
-<div id="limbo" class="limbo">
-		<div id="rotate_control_template" class="rotate-image control-image"></div>
-		<div id="flip_control_template" class="mirror-image control-image"></div>
-		<div id="done_control_template" class="done-image control-image"></div>
-		<div id="cancel_control_template" class="cancel-image control-image"></div>
-
-	</div>
+	
 </div>
-
+<div id="circle_market" class="circle_market"></div>
+<div id="limbo" class="limbo">
+	<div id="rotate_control_template" class="rotate-image control-image"></div>
+	<div id="flip_control_template" class="mirror-image control-image"></div>
+	<div id="done_control_template" class="done-image control-image"></div>
+	<div id="cancel_control_template" class="cancel-image control-image"></div>
+</div>
 
 <style>
 		<!-- BEGIN patchcss -->

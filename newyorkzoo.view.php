@@ -85,8 +85,15 @@ class view_newyorkzoo_newyorkzoo extends game_view
     global $g_user;
     $this->tpl['PCOLOR'] = 'ffffff'; // spectator
     $current_player = $g_user->get_id();
-    //$this->page->begin_block($template, "patch");
-    //$this->page->begin_block($template, "patchcss");
+
+    /*$this->page->insert_block("actionStrip", [
+      'NUM' => $num, 'CLIP_POINTS' => $clippoints,
+      'W' => $fw, 'H' => $fh,
+    ]);*/
+
+
+    $this->page->begin_block($template, "patch");
+    $this->page->begin_block($template, "patchcss");
     $CARDS_W = 1000;
     $CARDS_H = 1500;
     $COLS = 5;
@@ -118,6 +125,10 @@ class view_newyorkzoo_newyorkzoo extends game_view
         'NUM' => $num, 'CLIP_POINTS' => $clippoints,
         'W' => $fw, 'H' => $fh,
       ]);
+    }
+    $this->page->begin_block($template, "actionStripZone");
+    foreach ($this->game->actionStripZones as $id => &$zone){
+      $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'],'HEIGHT' => $zone['height']]);
     }
 
     $this->page->begin_block($template, "square");
