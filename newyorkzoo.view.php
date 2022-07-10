@@ -90,7 +90,29 @@ class view_newyorkzoo_newyorkzoo extends game_view
       'NUM' => $num, 'CLIP_POINTS' => $clippoints,
       'W' => $fw, 'H' => $fh,
     ]);*/
+/**/ 
+$this->page->begin_block($template, "patchTest");
+    for ($num = 1; $num <= 61; $num++) {
+      $mask = $this->game->getRulesFor("patch_$num", 'mask');
+      $matrix = [];
+      $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
+      $h = count($matrix);
+      $w = count($matrix[0]);
+      $points = '';
+      $clippoints = '';
+      foreach ($coords as list($x, $y)) {
+        $points .= "$x,$y ";
+        $px = (int)(100 * $x / CELL_WIDTH / $w);
+        $py = (int)(100 * $y / CELL_WIDTH / $h);
+        $clippoints .= "$px% $py%,";
+      }
+      $clippoints = substr($clippoints, 0, strlen($clippoints) - 1);
+      $this->page->insert_block("patchTest", ['NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
 
+      
+    }
+
+/**/ 
 
     $this->page->begin_block($template, "patch");
     $this->page->begin_block($template, "patchcss");

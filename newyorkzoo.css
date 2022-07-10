@@ -283,6 +283,7 @@
 .patch-face {
 	top: 0;
 	left: 0;
+	
 }
 
 .patch .patch {
@@ -468,8 +469,8 @@
 }
 
 .patch-face {
-	background-image: url("img/cards.jpg");
-	background-size: 500% auto;
+	background-image: url('img/css_sprites.png');
+	/*background-size: 200% auto;*/
 }
 
 .pworiginal .patch-face {
@@ -757,310 +758,246 @@
 
 
 .patch-face-1 {
-    width: 231px; height: 328px;
-    background: url('css_sprites.png') -1847px -991px;
+    width: 328px; height: 231px;
+    background-position:  -1375px -1082px;
 }
 .patch-face-2 {
-    width: 231px; height: 328px;
-    background: url('css_sprites.png') -1847px -1321px;
+    width: 328px; height: 231px;
+    background-position:  -426px -1969px;
 }
 .patch-face-3 {
-    width: 162px; height: 230px;
-    background: url('css_sprites.png') -1322px -331px;
+    width: 231px; height: 328px;
+    background-position:  -2067px -1278px;
 }
 .patch-face-4 {
-    width: 162px; height: 230px;
-    background: url('css_sprites.png') -1322px -563px;
-}
-.patch-face-5 {
-    width: 231px; height: 328px;
-    background: url('css_sprites.png') -2177px -1px;
-}
-.patch-face-6 {
-    width: 231px; height: 328px;
-    background: url('css_sprites.png') -2177px -331px;
-}
-.patch-face-7 {
-    width: 231px; height: 231px;
-    background: url('css_sprites.png') -2177px -991px;
-}
-.patch-face-8 {
-    width: 42px; height: 132px;
-    background: url('css_sprites.png') -2102px -466px;
-}
-.patch-face-19 {
-    width: 125px; height: 230px;
-    background: url('css_sprites.png') -1382px -857px;
-}
-.patch-face-20 {
-    width: 162px; height: 230px;
-    background: url('css_sprites.png') -1321px -1090px;
-}
-.patch-face-21 {
-    width: 231px; height: 231px;
-    background: url('css_sprites.png') -2177px -1224px;
-}
-.patch-face-22 {
-    width: 42px; height: 132px;
-    background: url('css_sprites.png') -2102px -661px;
-}
-.patch-face-23 {
-    width: 328px; height: 133px;
-    background: url('css_sprites.png') -992px -1750px;
-}
-.patch-face-24 {
-    width: 328px; height: 133px;
-    background: url('css_sprites.png') -1322px -1750px;
-}
-.patch-face-25 {
-    width: 54px; height: 133px;
-    background: url('css_sprites.png') -2102px -331px;
-}
-.patch-face-27 {
-    width: 231px; height: 231px;
-    background: url('css_sprites.png') -2177px -1457px;
-}
-.patch-face-2 {
-    width: 230px; height: 125px;
-    background: url('css_sprites.png') -933px -1983px;
-}
-.patch-face-26 {
-    width: 231px; height: 231px;
-    background: url('css_sprites.png') -2177px -1690px;
-}
-.patch-face-1 {
-    width: 231px; height: 328px;
-    background: url('css_sprites.png') -2177px -661px;
-}
-.patch-face-3 {
-    width: 230px; height: 125px;
-    background: url('css_sprites.png') -1165px -1983px;
-}
-.patch-face-4 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -759px -429px;
-}
-.patch-face-6 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1px -1090px;
-}
-.patch-face-5 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -331px -1090px;
-}
-.patch-face-7 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -661px -1090px;
-}
-.patch-face-10 {
     width: 426px; height: 231px;
-    background: url('css_sprites.png') -526px -857px;
+    background-position:  -523px -1082px;
 }
-.patch-face-8 {
-    width: 230px; height: 125px;
-    background: url('css_sprites.png') -1397px -1983px;
+.patch-face-5 {
+    width: 231px; height: 328px;
+    background-position:  -2067px -1606px;
+}
+.patch-face-6 {
+    width: 231px; height: 231px;
+    background-position:  -2298px -984px;
+}
+.patch-face-7 {
+    width: 426px; height: 133px;
+    background-position:  -0 -2200px;
 }
 .patch-face-9 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -991px -1090px;
+    width: 328px; height: 133px;
+    background-position:  -1933px -1969px;
+}
+.patch-face-8 {
+    width: 328px; height: 133px;
+    background-position:  -852px -2200px;
+}
+.patch-face-10 {
+    width: 328px; height: 133px;
+    background-position:  -1180px -2200px;
 }
 .patch-face-11 {
-    width: 34px; height: 133px;
-    background: url('css_sprites.png') -2102px -795px;
+    width: 231px; height: 231px;
+    background-position:  -2298px -1215px;
+}
+.patch-face-12 {
+    width: 231px; height: 231px;
+    background-position:  -2298px -1446px;
 }
 .patch-face-13 {
     width: 328px; height: 231px;
-    background: url('css_sprites.png') -429px -1750px;
-}
-.patch-face-12 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1517px -1px;
+    background-position:  -754px -1969px;
 }
 .patch-face-14 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1517px -331px;
+    width: 231px; height: 328px;
+    background-position:  -2298px -0;
 }
 .patch-face-15 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1517px -661px;
+    width: 426px; height: 231px;
+    background-position:  -949px -1082px;
 }
 .patch-face-16 {
-    width: 231px; height: 133px;
-    background: url('css_sprites.png') -1652px -1750px;
+    width: 231px; height: 328px;
+    background-position:  -2298px -328px;
 }
 .patch-face-17 {
-    width: 231px; height: 133px;
-    background: url('css_sprites.png') -1885px -1750px;
+    width: 231px; height: 231px;
+    background-position:  -2298px -1677px;
 }
 .patch-face-18 {
-    width: 231px; height: 133px;
-    background: url('css_sprites.png') -1px -1983px;
+    width: 426px; height: 133px;
+    background-position:  -426px -2200px;
 }
 .patch-face-19 {
-    width: 231px; height: 133px;
-    background: url('css_sprites.png') -234px -1983px;
-}
-.patch-face-20 {
-    width: 231px; height: 133px;
-    background: url('css_sprites.png') -467px -1983px;
+    width: 328px; height: 328px;
+    background-position:  -1082px -656px;
 }
 .patch-face-21 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -128px -2118px;
+    width: 328px; height: 328px;
+    background-position:  -754px -426px;
+}
+.patch-face-20 {
+    width: 231px; height: 426px;
+    background-position:  -1508px -523px;
 }
 .patch-face-22 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -263px -2118px;
+    width: 328px; height: 328px;
+    background-position:  -426px -426px;
 }
 .patch-face-23 {
+    width: 328px; height: 328px;
+    background-position:  -0 -1313px;
+}
+.patch-face-24 {
+    width: 328px; height: 328px;
+    background-position:  -328px -1313px;
+}
+.patch-face-25 {
     width: 133px; height: 133px;
-    background: url('css_sprites.png') -398px -2118px;
+    background-position:  -852px -754px;
 }
-.patch-face-2 {
-    width: 328px; height: 426px;
-    background: url('css_sprites.png') -1px -1px;
+.patch-face-26 {
+    width: 231px; height: 426px;
+    background-position:  -2067px -0;
 }
-.patch-face-1 {
-    width: 426px; height: 231px;
-    background: url('css_sprites.png') -954px -857px;
-}
-.patch-face-3 {
-    width: 125px; height: 230px;
-    background: url('css_sprites.png') -1651px -1420px;
-}
-.patch-face-4 {
-    width: 426px; height: 231px;
-    background: url('css_sprites.png') -1px -1750px;
-}
-.patch-face-5 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1517px -991px;
-}
-.patch-face-7 {
-    width: 230px; height: 125px;
-    background: url('css_sprites.png') -1629px -1983px;
-}
-.patch-face-6 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1px -1420px;
-}
-.patch-face-8 {
-    width: 426px; height: 328px;
-    background: url('css_sprites.png') -331px -1px;
-}
-.patch-face-9 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -331px -1420px;
-}
-.patch-face-10 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -661px -1420px;
-}
-.patch-face-11 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -991px -1420px;
-}
-.patch-face-12 {
-    width: 231px; height: 523px;
-    background: url('css_sprites.png') -1089px -331px;
-}
-.patch-face-13 {
-    width: 328px; height: 426px;
-    background: url('css_sprites.png') -759px -1px;
-}
-.patch-face-14 {
-    width: 125px; height: 230px;
-    background: url('css_sprites.png') -1px -2118px;
-}
-.patch-face-15 {
-    width: 328px; height: 426px;
-    background: url('css_sprites.png') -1px -429px;
-}
-.patch-face-16 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -533px -2118px;
-}
-.patch-face-17 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -668px -2118px;
-}
-.patch-face-1 {
-    width: 253px; height: 328px;
-    background: url('css_sprites.png') -1847px -331px;
-}
-.patch-face-2 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1321px -1420px;
-}
-.patch-face-3 {
-    width: 426px; height: 328px;
-    background: url('css_sprites.png') -331px -429px;
-}
-.patch-face-4 {
-    width: 253px; height: 328px;
-    background: url('css_sprites.png') -1847px -661px;
-}
-.patch-face-5 {
-    width: 328px; height: 328px;
-    background: url('css_sprites.png') -1847px -1px;
-}
-.patch-face-6 {
-    width: 523px; height: 231px;
-    background: url('css_sprites.png') -1px -857px;
-}
-.patch-face-7 {
-    width: 426px; height: 328px;
-    background: url('css_sprites.png') -1089px -1px;
-}
-.patch-face-9 {
-    width: 231px; height: 231px;
-    background: url('css_sprites.png') -759px -1750px;
-}
-.patch-face-10 {
+.patch-face-27 {
     width: 231px; height: 133px;
-    background: url('css_sprites.png') -700px -1983px;
+    background-position:  -1508px -949px;
 }
-.patch-face-11 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -803px -2118px;
+.patch-face-28 {
+    width: 231px; height: 133px;
+    background-position:  -1508px -2200px;
 }
-.patch-face-12 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -938px -2118px;
+.patch-face-30 {
+    width: 328px; height: 328px;
+    background-position:  -656px -1313px;
 }
-.patch-face-13 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -1073px -2118px;
+.patch-face-29 {
+    width: 231px; height: 133px;
+    background-position:  -1739px -2200px;
 }
-.patch-face-14 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -1208px -2118px;
+.patch-face-31 {
+    width: 328px; height: 328px;
+    background-position:  -984px -1313px;
 }
-.patch-face-15 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -1343px -2118px;
+.patch-face-34 {
+    width: 523px; height: 133px;
+    background-position:  -1410px -1969px;
 }
-.patch-face-17 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -1478px -2118px;
+.patch-face-33 {
+    width: 328px; height: 328px;
+    background-position:  -1312px -1313px;
 }
-.patch-face-19 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -1613px -2118px;
+.patch-face-32 {
+    width: 328px; height: 231px;
+    background-position:  -1082px -1969px;
 }
-.patch-face-21 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -1748px -2118px;
+.patch-face-35 {
+    width: 231px; height: 426px;
+    background-position:  -2067px -426px;
 }
-.patch-face-18 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -1883px -2118px;
+.patch-face-36 {
+    width: 231px; height: 328px;
+    background-position:  -2298px -656px;
 }
-.patch-face-16 {
-    width: 133px; height: 133px;
-    background: url('css_sprites.png') -2018px -2118px;
+.patch-face-39 {
+    width: 426px; height: 328px;
+    background-position:  -0 -0;
 }
-.patch-face-20 {
+.patch-face-38 {
+    width: 328px; height: 328px;
+    background-position:  -1739px -0;
+}
+.patch-face-37 {
+    width: 328px; height: 328px;
+    background-position:  -1739px -328px;
+}
+.patch-face-41 {
+    width: 328px; height: 328px;
+    background-position:  -1739px -656px;
+}
+.patch-face-42 {
+    width: 328px; height: 328px;
+    background-position:  -1739px -984px;
+}
+.patch-face-40 {
+    width: 231px; height: 426px;
+    background-position:  -2067px -852px;
+}
+.patch-face-43 {
+    width: 426px; height: 231px;
+    background-position:  -656px -1641px;
+}
+.patch-face-44 {
+    width: 426px; height: 231px;
+    background-position:  -1082px -1641px;
+}
+.patch-face-45 {
     width: 133px; height: 133px;
-    background: url('css_sprites.png') -2153px -2118px;
+    background-position:  -852px -887px;
+}
+.patch-face-46 {
+    width: 328px; height: 426px;
+    background-position:  -0 -328px;
+}
+.patch-face-48 {
+    width: 328px; height: 426px;
+    background-position:  -426px -0;
+}
+.patch-face-49 {
+    width: 231px; height: 523px;
+    background-position:  -1508px -0;
+}
+.patch-face-50 {
+    width: 328px; height: 328px;
+    background-position:  -1739px -1312px;
+}
+.patch-face-51 {
+    width: 328px; height: 426px;
+    background-position:  -754px -0;
+}
+.patch-face-53 {
+    width: 426px; height: 328px;
+    background-position:  -0 -754px;
+}
+.patch-face-52 {
+    width: 426px; height: 231px;
+    background-position:  -1508px -1641px;
+}
+.patch-face-54 {
+    width: 133px; height: 133px;
+    background-position:  -1934px -1641px;
+}
+.patch-face-47 {
+    width: 426px; height: 231px;
+    background-position:  -0 -1969px;
+}
+.patch-face-55 {
+    width: 328px; height: 328px;
+    background-position:  -0 -1641px;
+}
+.patch-face-56 {
+    width: 426px; height: 328px;
+    background-position:  -426px -754px;
+}
+.patch-face-57 {
+    width: 231px; height: 231px;
+    background-position:  -2298px -1908px;
+}
+.patch-face-58 {
+    width: 426px; height: 328px;
+    background-position:  -1082px -0;
+}
+.patch-face-60 {
+    width: 328px; height: 328px;
+    background-position:  -328px -1641px;
+}
+.patch-face-61 {
+    width: 426px; height: 328px;
+    background-position:  -1082px -328px;
+}
+.patch-face-59 {
+    width: 523px; height: 231px;
+    background-position:  -0 -1082px;
 }
