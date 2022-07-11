@@ -121,7 +121,7 @@ $this->page->begin_block($template, "patchTest");
     $COLS = 5;
     $CELL = CELL_WIDTH;
 
-    for ($num = 1; $num <= 33; $num++) {
+    for ($num = 1; $num <= 61; $num++) {
       $mask = $this->game->getRulesFor("patch_$num", 'mask');
       $matrix = [];
       $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
