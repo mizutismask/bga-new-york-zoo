@@ -228,7 +228,7 @@ $this->token_types = [
     'spaces' => 4,
     'mask' => '010:111',
     'w' => 3,
-    'h' => 1,
+    'h' => 2,
     'color' => 'lightest',
   ],
   'patch_2' => [
@@ -237,7 +237,7 @@ $this->token_types = [
     'spaces' => 6,
     'mask' => '111:111',
     'w' => 3,
-    'h' => 1,
+    'h' => 2,
     'color' => '',
   ],
   'patch_3' => [
@@ -246,7 +246,7 @@ $this->token_types = [
     'spaces' => 4,
     'mask' => '01:11:10',
     'w' => 2,
-    'h' => 2,
+    'h' => 3,
     'color' => 'lightest',
   ],
   'patch_4' => [
@@ -255,7 +255,7 @@ $this->token_types = [
     'spaces' => 8,
     'mask' => '1111:1111',
     'w' => 4,
-    'h' => 1,
+    'h' => 2,
     'color' => 'darkest',
   ],
   'patch_5' => [
