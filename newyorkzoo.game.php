@@ -23,6 +23,9 @@ require_once('modules/tokens.php');
 require_once('modules/EuroGame.php');
 require_once('modules/PwMatrix.php');
 
+if (!defined('OFFSET')) {
+    define("OFFSET", 5);
+}
 
 class NewYorkZoo extends EuroGame
 {
@@ -112,11 +115,12 @@ class NewYorkZoo extends EuroGame
 
     function initTables()
     {
+
         // neutral token
         $this->tokens->createToken("token_neutral", "limbo", 0);
 
         // patches 
-        $patches = $this->tokens->createTokensPack("patch_{INDEX}", "limbo", 77, 1);
+        $patches = $this->tokens->createTokensPack("patch_{INDEX}", "limbo", 61, 1);
         shuffle($patches);
         $i = 0;
         $this->tokens->moveToken('patch_1', "market", $i);
@@ -221,6 +225,32 @@ class NewYorkZoo extends EuroGame
         } else if ($players_nbr == 5) {
             return array(8, 9); //x,y
         }
+    }
+
+    function getGridWidth()
+    {
+        $boardSize = $this->getGridSize();
+        return $boardSize[0];
+    }
+
+    function getGridHeight()
+    {
+        $boardSize = $this->getGridSize();
+        return $boardSize[1];
+    }
+
+    function getMatrixStart()
+    {
+        return 0 - OFFSET;
+    }
+
+    function getMatrixWidthEnd()
+    {
+        return $this->getGridWidth() +  OFFSET;
+    }
+    function getMatrixHeightEnd()
+    {
+        return $this->getGridHeight(); +  OFFSET;
     }
 
     function getPolyominoesCount($color)
