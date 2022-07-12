@@ -26,7 +26,7 @@
  */
 
 require_once(APP_BASE_PATH . "view/common/game.view.php");
-define("CELL_WIDTH",43);
+define("CELL_WIDTH", 43);
 
 class view_newyorkzoo_newyorkzoo extends game_view
 {
@@ -90,29 +90,32 @@ class view_newyorkzoo_newyorkzoo extends game_view
       'NUM' => $num, 'CLIP_POINTS' => $clippoints,
       'W' => $fw, 'H' => $fh,
     ]);*/
-/**/ 
-$this->page->begin_block($template, "patchTest");
-    for ($num = 1; $num <= 61; $num++) {
-      $mask = $this->game->getRulesFor("patch_$num", 'mask');
-      $matrix = [];
-      $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
-      $h = count($matrix);
-      $w = count($matrix[0]);
-      $points = '';
-      $clippoints = '';
-      foreach ($coords as list($x, $y)) {
-        $points .= "$x,$y ";
-        $px = (int)(100 * $x / CELL_WIDTH / $w);
-        $py = (int)(100 * $y / CELL_WIDTH / $h);
-        $clippoints .= "$px% $py%,";
+    /**/
+    $this->page->begin_block($template, "patchTest");
+    foreach ($this->game->token_types as $id => &$info) {
+      if (startsWith($id, 'patch')) {
+        $num = $this->game->getRulesFor($id, 'num');
+        $mask = $this->game->getRulesFor("patch_$num", 'mask');
+        $occ = $this->game->getRulesFor($id, 'occurrences');
+        $matrix = [];
+        $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
+        $h = count($matrix);
+        $w = count($matrix[0]);
+        $points = '';
+        $clippoints = '';
+        foreach ($coords as list($x, $y)) {
+          $points .= "$x,$y ";
+          $px = (int)(100 * $x / CELL_WIDTH / $w);
+          $py = (int)(100 * $y / CELL_WIDTH / $h);
+          $clippoints .= "$px% $py%,";
+        }
+        $clippoints = substr($clippoints, 0, strlen($clippoints) - 1);
+        for ($i = 0; $i < $occ; $i++) {
+          $this->page->insert_block("patchTest", ['NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
+        }
       }
-      $clippoints = substr($clippoints, 0, strlen($clippoints) - 1);
-      $this->page->insert_block("patchTest", ['NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
-
-      
     }
-
-/**/ 
+    /**/
 
     $this->page->begin_block($template, "patch");
     $this->page->begin_block($template, "patchcss");
@@ -121,36 +124,42 @@ $this->page->begin_block($template, "patchTest");
     $COLS = 5;
     $CELL = CELL_WIDTH;
 
-    for ($num = 1; $num <= 61; $num++) {
-      $mask = $this->game->getRulesFor("patch_$num", 'mask');
-      $matrix = [];
-      $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
-      $h = count($matrix);
-      $w = count($matrix[0]);
-      $points = '';
-      $clippoints = '';
-      foreach ($coords as list($x, $y)) {
-        $points .= "$x,$y ";
-        $px = (int)(100 * $x / CELL_WIDTH / $w);
-        $py = (int)(100 * $y / CELL_WIDTH / $h);
-        $clippoints .= "$px% $py%,";
+    foreach ($this->game->token_types as $id => &$info) {
+      if (startsWith($id, 'patch')) {
+        $num = $this->game->getRulesFor($id, 'num');
+        $mask = $this->game->getRulesFor("patch_$num", 'mask');
+        $occ = $this->game->getRulesFor($id, 'occurrences');
+        $matrix = [];
+        $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
+        $h = count($matrix);
+        $w = count($matrix[0]);
+        $points = '';
+        $clippoints = '';
+        foreach ($coords as list($x, $y)) {
+          $points .= "$x,$y ";
+          $px = (int)(100 * $x / CELL_WIDTH / $w);
+          $py = (int)(100 * $y / CELL_WIDTH / $h);
+          $clippoints .= "$px% $py%,";
+        }
+        $clippoints = substr($clippoints, 0, strlen($clippoints) - 1);
+        for ($i = 0; $i < $occ; $i++) {
+          $this->page->insert_block("patch", ['PATCH_ID' => $id,'NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
+        }
+
+          $fw = $w * CELL_WIDTH;
+          $fh = $h * CELL_WIDTH;
+          $i = ($num - 1) % $COLS;
+          $j = floor(($num - 1) / $COLS);
+
+          $this->page->insert_block("patchcss", [
+            'NUM' => $num, 'CLIP_POINTS' => $clippoints,
+            'W' => $fw, 'H' => $fh,
+          ]);
       }
-      $clippoints = substr($clippoints, 0, strlen($clippoints) - 1);
-      $this->page->insert_block("patch", ['NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
-
-      $fw = $w * CELL_WIDTH;
-      $fh = $h * CELL_WIDTH;
-      $i = ($num - 1) % $COLS;
-      $j = floor(($num - 1) / $COLS);
-
-      $this->page->insert_block("patchcss", [
-        'NUM' => $num, 'CLIP_POINTS' => $clippoints,
-        'W' => $fw, 'H' => $fh,
-      ]);
     }
     $this->page->begin_block($template, "actionStripZone");
-    foreach ($this->game->actionStripZones as $id => &$zone){
-      $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'],'HEIGHT' => $zone['height']]);
+    foreach ($this->game->actionStripZones as $id => &$zone) {
+      $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height']]);
     }
 
     $this->page->begin_block($template, "square");

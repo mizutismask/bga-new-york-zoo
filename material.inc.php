@@ -221,7 +221,6 @@ $this->token_types = [
     'name' => clienttranslate("Empties Counter"),
     'tooltip' => clienttranslate("Counter for remaining empty spaces. You will get 2 point penalty at the end of game per empty space."),
   ],
-
   'patch_1' => [
     'num' => 1,
     'type' => 'patch patch_1',
@@ -230,6 +229,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 2,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_2' => [
     'num' => 2,
@@ -238,7 +238,8 @@ $this->token_types = [
     'mask' => ':111:111',
     'w' => 3,
     'h' => 2,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_3' => [
     'num' => 3,
@@ -248,6 +249,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 3,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_4' => [
     'num' => 4,
@@ -257,6 +259,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 2,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
   'patch_5' => [
     'num' => 5,
@@ -266,6 +269,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 3,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_6' => [
     'num' => 6,
@@ -274,7 +278,8 @@ $this->token_types = [
     'mask' => ':11:11',
     'w' => 2,
     'h' => 2,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_7' => [
     'num' => 7,
@@ -283,7 +288,8 @@ $this->token_types = [
     'mask' => ':1111',
     'w' => 4,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_8' => [
     'num' => 8,
@@ -292,7 +298,8 @@ $this->token_types = [
     'mask' => ':111',
     'w' => 3,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_9' => [
     'num' => 9,
@@ -301,7 +308,8 @@ $this->token_types = [
     'mask' => ':111',
     'w' => 3,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_10' => [
     'num' => 10,
@@ -310,7 +318,8 @@ $this->token_types = [
     'mask' => ':111',
     'w' => 3,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_11' => [
     'num' => 11,
@@ -319,7 +328,8 @@ $this->token_types = [
     'mask' => ':11:10',
     'w' => 2,
     'h' => 2,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_12' => [
     'num' => 12,
@@ -328,7 +338,8 @@ $this->token_types = [
     'mask' => ':11:10',
     'w' => 2,
     'h' => 2,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_13' => [
     'num' => 13,
@@ -338,6 +349,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 2,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_14' => [
     'num' => 14,
@@ -347,6 +359,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 3,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_15' => [
     'num' => 15,
@@ -356,6 +369,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 2,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_16' => [
     'num' => 16,
@@ -365,6 +379,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 3,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_17' => [
     'num' => 17,
@@ -374,6 +389,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 2,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_18' => [
     'num' => 18,
@@ -383,6 +399,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 1,
     'color' => 'lightest',
+    'occurrences' => 1,
   ],
   'patch_19' => [
     'num' => 19,
@@ -392,6 +409,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_20' => [
     'num' => 20,
@@ -401,6 +419,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 4,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_21' => [
     'num' => 21,
@@ -410,6 +429,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_22' => [
     'num' => 22,
@@ -419,6 +439,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_23' => [
     'num' => 23,
@@ -428,6 +449,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_24' => [
     'num' => 24,
@@ -437,6 +459,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_25' => [
     'num' => 25,
@@ -445,7 +468,8 @@ $this->token_types = [
     'mask' => ':1',
     'w' => 1,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 6,
   ],
   'patch_26' => [
     'num' => 26,
@@ -455,6 +479,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 4,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_27' => [
     'num' => 27,
@@ -463,7 +488,8 @@ $this->token_types = [
     'mask' => ':11',
     'w' => 2,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 2,
   ],
   'patch_28' => [
     'num' => 28,
@@ -472,7 +498,8 @@ $this->token_types = [
     'mask' => ':11',
     'w' => 2,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 2,
   ],
   'patch_29' => [
     'num' => 29,
@@ -481,7 +508,8 @@ $this->token_types = [
     'mask' => ':11',
     'w' => 2,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 2,
   ],
   'patch_30' => [
     'num' => 30,
@@ -491,6 +519,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_31' => [
     'num' => 31,
@@ -500,6 +529,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_32' => [
     'num' => 32,
@@ -509,6 +539,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 2,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_33' => [
     'num' => 33,
@@ -518,6 +549,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_34' => [
     'num' => 34,
@@ -527,6 +559,7 @@ $this->token_types = [
     'w' => 5,
     'h' => 1,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_35' => [
     'num' => 35,
@@ -536,6 +569,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 4,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_36' => [
     'num' => 36,
@@ -545,6 +579,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 3,
     'color' => 'light',
+    'occurrences' => 1,
   ],
   'patch_37' => [
     'num' => 37,
@@ -554,6 +589,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_38' => [
     'num' => 38,
@@ -563,6 +599,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_39' => [
     'num' => 39,
@@ -572,6 +609,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 3,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_40' => [
     'num' => 40,
@@ -581,6 +619,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 4,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_41' => [
     'num' => 41,
@@ -590,6 +629,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_42' => [
     'num' => 42,
@@ -599,6 +639,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_43' => [
     'num' => 43,
@@ -608,6 +649,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 2,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_44' => [
     'num' => 44,
@@ -617,6 +659,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 2,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_45' => [
     'num' => 45,
@@ -625,7 +668,8 @@ $this->token_types = [
     'mask' => ':1',
     'w' => 1,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 5,
   ],
   'patch_46' => [
     'num' => 46,
@@ -635,6 +679,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 4,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_47' => [
     'num' => 47,
@@ -644,6 +689,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 2,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_48' => [
     'num' => 48,
@@ -653,6 +699,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 4,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_49' => [
     'num' => 49,
@@ -662,6 +709,7 @@ $this->token_types = [
     'w' => 2,
     'h' => 5,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_50' => [
     'num' => 50,
@@ -671,6 +719,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_51' => [
     'num' => 51,
@@ -680,6 +729,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 4,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_52' => [
     'num' => 52,
@@ -689,6 +739,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 2,
     'color' => 'dark',
+    'occurrences' => 1,
   ],
   'patch_53' => [
     'num' => 53,
@@ -698,6 +749,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 3,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
   'patch_54' => [
     'num' => 54,
@@ -706,7 +758,8 @@ $this->token_types = [
     'mask' => ':1',
     'w' => 1,
     'h' => 1,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 5,
   ],
   'patch_55' => [
     'num' => 55,
@@ -716,6 +769,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
   'patch_56' => [
     'num' => 56,
@@ -725,6 +779,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 3,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
   'patch_57' => [
     'num' => 57,
@@ -733,7 +788,8 @@ $this->token_types = [
     'mask' => ':11:10',
     'w' => 2,
     'h' => 2,
-    'color' => '',
+    'color' => 'bonus',
+    'occurrences' => 1,
   ],
   'patch_58' => [
     'num' => 58,
@@ -743,6 +799,7 @@ $this->token_types = [
     'w' => 4,
     'h' => 3,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
   'patch_59' => [
     'num' => 59,
@@ -752,6 +809,7 @@ $this->token_types = [
     'w' => 5,
     'h' => 2,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
   'patch_60' => [
     'num' => 60,
@@ -761,6 +819,7 @@ $this->token_types = [
     'w' => 3,
     'h' => 3,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
   'patch_61' => [
     'num' => 61,
@@ -770,5 +829,6 @@ $this->token_types = [
     'w' => 4,
     'h' => 3,
     'color' => 'darkest',
+    'occurrences' => 1,
   ],
 ];

@@ -643,7 +643,11 @@ define([
 
             setupToken: function (token, tokenRec) {
                 if (token.startsWith('patch')) {
-                    var mat = this.gamedatas.token_types[token];
+                    var tokenId = token;//tokens with several occurrences should be found by their type id
+                    if (token.split("_").length == 3) {
+                        tokenId = token.substring(0, token.lastIndexOf("_"));
+                    }
+                    var mat = this.gamedatas.token_types[tokenId];
 
                     //					var tokenInfo = this.getTokenDisplayInfo(token);
                     //					$(token).title = this.format_string_recursive(

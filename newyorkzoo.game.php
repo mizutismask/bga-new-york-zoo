@@ -118,9 +118,18 @@ class NewYorkZoo extends EuroGame
 
         // neutral token
         $this->tokens->createToken("token_neutral", "limbo", 0);
-
         // patches 
-        $patches = $this->tokens->createTokensPack("patch_{INDEX}", "limbo", 61, 1);
+        foreach ($this->token_types as $id => &$info) {
+            if (startsWith($id, 'patch')) {
+                $occ = $this->getRulesFor($id, "occurrences");
+                if ($occ > 1) {
+                    $this->tokens->createTokensPack($id . "_{INDEX}", "limbo", $occ, 1);
+                } else {
+                    $this->tokens->createToken($id, "limbo", 1);
+                }
+            }
+        }
+        /*
         shuffle($patches);
         $i = 0;
         $this->tokens->moveToken('patch_1', "market", $i);
@@ -132,7 +141,7 @@ class NewYorkZoo extends EuroGame
                 $this->tokens->moveToken($patch, "market", $i);
                 $i++;
             }
-        }
+        }*/
     }
     /*
         getAllDatas: 
@@ -250,7 +259,8 @@ class NewYorkZoo extends EuroGame
     }
     function getMatrixHeightEnd()
     {
-        return $this->getGridHeight(); +  OFFSET;
+        return $this->getGridHeight();
+        +OFFSET;
     }
 
     function getPolyominoesCount($color)
