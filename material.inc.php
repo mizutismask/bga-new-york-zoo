@@ -261,9 +261,9 @@ $this->token_types = [
   'patch_5' => [
     'num' => 5,
     'type' => 'patch patch_5',
-    'spaces' => 5,
-    'mask' => ':011:010:110',
-    'w' => 3,
+    'spaces' => 4,
+    'mask' => ':01:11:10',
+    'w' => 2,
     'h' => 3,
     'color' => 'lightest',
   ],
@@ -333,10 +333,10 @@ $this->token_types = [
   'patch_13' => [
     'num' => 13,
     'type' => 'patch patch_13',
-    'spaces' => 5,
-    'mask' => ':010:111:010',
+    'spaces' => 4,
+    'mask' => ':010:111',
     'w' => 3,
-    'h' => 3,
+    'h' => 2,
     'color' => 'lightest',
   ],
   'patch_14' => [
