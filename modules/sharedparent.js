@@ -81,7 +81,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				this.curstate = null;
 				this.pendingUpdate = false;
 			} catch (e) {
-				this.showError("Error while loading");
+				this.showError("Front error while loading");
 				console.trace(e);
 			} finally {
 				this.inSetup = false;
