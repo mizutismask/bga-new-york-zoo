@@ -604,11 +604,18 @@ define([
 
             setup: function (gamedatas) {
                 console.log("Starting game setup", gamedatas);
+                var playerCount=Object.keys(gamedatas.players).length;
 
                 // Setting up player boards
                 document.documentElement.style.setProperty('--colsNb', gamedatas.gridSize[0]);
                 document.documentElement.style.setProperty('--rowsNb', gamedatas.gridSize[1]);
-                document.documentElement.style.setProperty('--playerCount', Object.keys(gamedatas.players).length);
+                document.documentElement.style.setProperty('--playerCount', playerCount);
+
+                for (let index = 1; index <= 5; index++) {
+                    if (i != playerCount) {
+                        this.dontPreloadImage('board'+playerCount+'P.png');
+                    }
+                }
 
                 for (var player_id in gamedatas.players) {
                     var player = gamedatas.players[player_id];
