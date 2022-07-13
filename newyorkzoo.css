@@ -789,11 +789,11 @@
 {display:inline-block; overflow:hidden; background-repeat: no-repeat;
 background-image:url(img/animals.png);}
 
-.flamingo {width: 129px; height: 188px; background-position: 71.5405% 0.617284%; background-size: 396.899%; }
-.fox {width: 133px; height: 163px; background-position: 0.527704% 66.7622%; background-size: 384.962%; }
-.kangaroo {width: 143px; height: 229px; background-position: 0.542005% 0.706714%; background-size: 358.042%; }
-.merkat {width: 115px; height: 157px; background-position: 34.5088% 65.6338%; background-size: 445.217%; }
-.penguin {width: 125px; height: 202px; background-position: 37.9845% 0.645161%; background-size: 409.600%; }
+.flamingo { background-position: 71.5405% 0.617284%; background-size: 396.899%; }
+.fox { background-position: 0.527704% 66.7622%; background-size: 384.962%; }
+.kangaroo {background-position: 0.542005% 0.706714%; background-size: 358.042%; }
+.merkat {background-position: 34.5088% 65.6338%; background-size: 445.217%; }
+.penguin { background-position: 37.9845% 0.645161%; background-size: 409.600%; }
 
 
 /*
