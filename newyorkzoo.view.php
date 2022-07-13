@@ -51,8 +51,18 @@ class view_newyorkzoo_newyorkzoo extends game_view
     $current_player = $g_user->get_id();
     // Create squares
     $this->page->reset_subblocks('square');
+    $this->page->reset_subblocks('house');
     $hor_scale = CELL_WIDTH;
     $ver_scale = CELL_WIDTH;
+
+    for ($x = 1; $x <= 3; $x++) {
+        $classes = '';
+        $this->page->insert_block("house", array(
+          'X' => $x, 'Y' => 0, 'LEFT' => round(($x) * $hor_scale),
+          'TOP' => round((0) * $ver_scale), 'CLASSES' => $classes, "PLAYER_ID" => $player_id, "HOUSE_INDEX" => $x
+        ));
+    }
+
     $gridSize = $this->game->getGridSize();
     for ($x = 0; $x < $gridSize[0]; $x++) {
       for ($y = 0; $y < $gridSize[1]; $y++) {
@@ -163,6 +173,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
     }
 
     $this->page->begin_block($template, "square");
+    $this->page->begin_block($template, "house");
     $this->page->begin_block($template, "player_board");
     // inner blocks in player blocks
     // ...

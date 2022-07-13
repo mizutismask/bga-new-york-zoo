@@ -750,6 +750,12 @@
 	border: #436aab solid 1px;
 }
 
+.house{
+	border: orange solid 1px;
+	width: var(--cellWidth);
+	height: var(--cellWidth);
+}
+
 /*
 Responsive CSS Sprite created using: https://responsive-css.us/
 */

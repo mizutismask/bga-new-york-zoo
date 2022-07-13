@@ -68,7 +68,9 @@ This is your game interface. You can edit this HTML in your ".tpl" file.
 		<!-- BEGIN player_board -->
 		
 		<div id="tableau_{COLOR}" data-title="{PLAYER_NAME}" class="tableau tableau_{COLOR} {OWN} player_count_{PLAYER_COUNT} player_order_{PLAYER_NO}">
-		
+			<!-- BEGIN house -->
+    			<div id="house_{PLAYER_ID}_{HOUSE_INDEX}" class="house {CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+    		<!-- END house -->
 			<div id="pboard_{COLOR}" class="pboard pboard_{COLOR}">
 				<div id="squares_{COLOR}" class="squares squares_{COLOR}">
     <!-- BEGIN square -->

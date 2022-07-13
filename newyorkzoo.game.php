@@ -115,9 +115,6 @@ class NewYorkZoo extends EuroGame
 
     function initTables()
     {
-
-       
-
         // patches 
         foreach ($this->token_types as $id => &$info) {
             if (startsWith($id, 'patch')) {
@@ -136,7 +133,24 @@ class NewYorkZoo extends EuroGame
         $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", 24);
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", 24);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", 24);
-        $this->tokens->createToken("token_neutral", "limbo", 0);//elephant
+        $this->tokens->createToken("token_neutral", "limbo", 0); //elephant
+
+
+        //creates houses and gets animals from the board
+        $players = $this->loadPlayersBasicInfos();
+        //self::dump("**********************",$players);
+        $i = 1;
+        foreach ($players as $player_id => $player) {
+            $this->tokens->createTokensPack($player_id . "_house_{INDEX}",  "house_" . $player_id, 3);
+            $playerOrder = $player["player_no"];
+            $boardConf = $this->boards[count($players)][$playerOrder];
+            $h = 1;
+            foreach ($boardConf["animals"] as $animal) {
+                $this->tokens->moveToken($animal . '_' . $i, "house_" . $player_id ."_". $h, 0);
+                $i++;
+                $h++;
+            }
+        }
 
         /*
         shuffle($patches);

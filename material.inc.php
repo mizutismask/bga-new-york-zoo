@@ -33,19 +33,36 @@ $this->card_types = array(
 
 */
 if (!defined("LIGHTEST_GREEN")) {
-  define("LIGHTEST_GREEN","lightest");
-  define("LIGHT_GREEN","light");
-  define("DARK_GREEN","dark");
-  define("DARKEST_GREEN","darkest");
+  define("LIGHTEST_GREEN", "lightest");
+  define("LIGHT_GREEN", "light");
+  define("DARK_GREEN", "dark");
+  define("DARKEST_GREEN", "darkest");
+
+  define("MEERKAT", "meerkat");
+  define("FLAMINGO", "flamingo");
+  define("KANGAROO", "kangaroo");
+  define("PENGUIN", "penguin");
+  define("FOX", "fox");
 }
 
+$this->boards = [
+  '2' => [
+    '1' => [
+      'animals' => [MEERKAT, FLAMINGO],
+    ],
+    '2' => [
+      'animals' => [MEERKAT, KANGAROO],
+    ],
+  ],
+];
+
+/* Action board */
 $topY = 2.42;
 $topYLine2 = 70.56;
 $smallWidth = 7.10;
 $mediumWidth = 7.75;
 $bigWidth = 11.33;
 $height = 27;
-
 $this->actionStripZones = [
   'action_zone_1' => [
     'topX' =>  0.52,
@@ -197,7 +214,7 @@ $this->token_types = [
 
   'token_neutral' => [
     'name' => clienttranslate("Neutral Token"),
-    'w'=>1,'h'=>1,
+    'w' => 1, 'h' => 1,
   ],
   'rotate_control' => [
     'type' => 'rotate-image control-image control-node drop-zone',
