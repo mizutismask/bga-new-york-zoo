@@ -156,8 +156,8 @@ class PwMatrix extends APP_Object
             }
             $str .= $row . "\n";
         }
-        if (!$retstr)
-            print $str;
+        //if (!$retstr)
+            //print $str;
         return $str;
     }
     function availability($occupancy, $mask, $deg_z, $deg_y)
