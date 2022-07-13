@@ -146,7 +146,7 @@ class NewYorkZoo extends EuroGame
             $boardConf = $this->boards[count($players)][$playerOrder];
             $h = 1;
             foreach ($boardConf["animals"] as $animal) {
-                $this->tokens->moveToken($animal . '_' . $i, "house_" . $player_id ."_". $h, 0);
+                $this->tokens->moveToken($animal . '_' . $i, "house_" . $player_id . "_" . $h, 0);
                 $i++;
                 $h++;
             }
@@ -165,6 +165,27 @@ class NewYorkZoo extends EuroGame
                 $i++;
             }
         }*/
+        $this->setupPatchesOnBoard();
+    }
+
+    function setupPatchesOnBoard()
+    {
+        $colors = [LIGHTEST_GREEN, LIGHT_GREEN, DARK_GREEN, DARKEST_GREEN];
+        $layers = array();
+        foreach ($colors as $color) {
+            $locations = $this->getPolyominoesLocationOnBoard($color);
+            $patches = $this->mtCollectWithFieldValue("color", $color);
+            shuffle($patches);
+            foreach ($patches as $i => $patchId) {
+                $loc = $locations[$i];
+                if (!isset($layers[$loc])) {
+                    $layers[$loc] = 1;
+                } else {
+                    $layers[$loc]++;
+                }
+                $this->tokens->moveToken($patchId, "action_zone_" . $loc, $layers[$loc]);
+            }
+        }
     }
     /*
         getAllDatas: 
@@ -303,8 +324,8 @@ class NewYorkZoo extends EuroGame
             }
         }
     }
-
-    function getPolyominoesLocation($color)
+    //todo ajouter les autres nb de joueurs
+    function getPolyominoesLocationOnBoard($color)
     {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
@@ -316,9 +337,39 @@ class NewYorkZoo extends EuroGame
             case DARK_GREEN:
                 return [1, 3, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24];
             case DARKEST_GREEN:
-                return [1, 2, 11, 13, 14, 16, 24];
+                return [1, 3, 11, 13, 14, 16, 24];
         }
         // }
+    }
+
+    function mtCollectWithField($field, $callback = null)
+    {
+        $res = [];
+        foreach ($this->token_types as $id => $info) {
+            if (array_key_exists($field, $info)) {
+                $trig = $info[$field];
+                if ((!$callback) || $callback($trig, $id)) {
+                    $res[] = $id;
+                }
+            }
+        }
+        return $res;
+    }
+
+    function mtCollectWithFieldValue($field, $expectedValue, $callback = null)
+    {
+        $res = [];
+        foreach ($this->token_types as $id => $info) {
+            if (array_key_exists($field, $info)) {
+                $trig = $info[$field];
+                if ($trig === $expectedValue) {
+                    if ((!$callback) || $callback($trig, $id)) {
+                        $res[] = $id;
+                    }
+                }
+            }
+        }
+        return $res;
     }
 
     function stateToRotor($state)
@@ -365,7 +416,8 @@ class NewYorkZoo extends EuroGame
     }
     
     */
-    function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
+    function action_place($token_id, $dropTarget, $rotateZ, $rotateY)
+    {
         $this->checkAction('place');
 
         $player_id = $this->getActivePlayerId();
@@ -379,27 +431,33 @@ class NewYorkZoo extends EuroGame
         $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
         $pos = $this->tokens->getTokenState($token_id);
         $this->saction_PlacePatch($color, $token_id, $dropTarget, $rotateZ, $rotateY);
-        
+
         $this->gamestate->nextState('next');
     }
 
-    function saction_PlacePatch($color, $token_id, $dropTarget, $rotateZ, $rotateY) {
+    function saction_PlacePatch($color, $token_id, $dropTarget, $rotateZ, $rotateY)
+    {
         $rotateZ = $rotateZ % 360;
         $rotateY = $rotateY % 360;
         $rotor = "${rotateZ}_$rotateY";
         $occupancy = $this->getOccupancyMatrix($color);
-        $moves = $this->arg_possibleMoves($token_id, $color, $rotor, $occupancy) [$rotor];
+        $moves = $this->arg_possibleMoves($token_id, $color, $rotor, $occupancy)[$rotor];
         $valid = array_search($dropTarget, $moves) !== false;
         $this->userAssertTrue(self::_("Not possible to place patch: illegal move"), $valid);
         $state = $rotateZ / 90 + $rotateY / 180 * 4;
         $buts = $this->getRulesFor($token_id, 'cost');
         $time = $this->getRulesFor($token_id, 'time');
         $message = clienttranslate('${player_name} places patch paying ${but} buttons and ${time} time ${token_div}');
-        $this->dbSetTokenLocation($token_id, $dropTarget, $state, $message,
-                ['but'=>$buts,'time'=>$time]);
+        $this->dbSetTokenLocation(
+            $token_id,
+            $dropTarget,
+            $state,
+            $message,
+            ['but' => $buts, 'time' => $time]
+        );
         $occupancy = $this->getOccupancyMatrix($color);
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
-        $this->notifyCounterDirect("empties_${color}_counter",$unoccup_count,'');
+        $this->notifyCounterDirect("empties_${color}_counter", $unoccup_count, '');
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -455,8 +513,9 @@ class NewYorkZoo extends EuroGame
         $mask = $this->getRulesFor($patch, 'mask');
         return $this->matrix->possibleMoves($mask, $prefix, $rotor, $occupancy);
     }
-    
-    function arg_canBuyPatches($color) {
+
+    function arg_canBuyPatches($color)
+    {
         //$patches = [ 'patch_16','patch_1','patch_18' ];
 
         $patchesall = $this->tokens->getTokensInLocation('market', null, 'token_state');
@@ -466,9 +525,9 @@ class NewYorkZoo extends EuroGame
         $size = count($keys);
         if ($size <= 3)
             return $keys;
-        $patches = [ ];
+        $patches = [];
         for ($i = 0; $i < 3; $i++) {
-            $patches [] = $keys [($index + $i) % $size];
+            $patches[] = $keys[($index + $i) % $size];
         }
         return $patches;
     }

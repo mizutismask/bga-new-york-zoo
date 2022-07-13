@@ -996,12 +996,9 @@ define([
 					//this.removeClass('active_slot');
 					controls = true;
 				} else if (sel) {
-					if (sel.id.startsWith('patch_0'))
-						this.setDescriptionOnMyTurn(_('Place the BONUS single patch on a quilt board'));
-					else {
+					
 						this.setDescriptionOnMyTurn(_('Place the patch on a quilt board. You can drag and drop'));
 						controls = true;
-					}
 					this.pm.updateActiveSquares();
 
 				} else {
