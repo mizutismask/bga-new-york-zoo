@@ -275,7 +275,7 @@ $this->token_types = [
     'mask' => ':1111:1111',
     'w' => 4,
     'h' => 2,
-    'color' => 'darkest',
+    'color' => 'bonus',
     'occurrences' => 1,
   ],
   'patch_5' => [
