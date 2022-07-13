@@ -36,9 +36,17 @@ class action_newyorkzoo extends APP_GameAction
       self::trace("Complete reinitialization of board game");
     }
   }
-
-  // TODO: defines your action entry points there
-
+  
+  public function place()
+  {
+    self::setAjaxMode();
+    $token = self::getArg('token', AT_alphanum, true);
+    $rotateY = self::getArg('rotateY', AT_int, true);
+    $rotateZ = self::getArg('rotateZ', AT_int, true);
+    $dropTarget = self::getArg('dropTarget', AT_alphanum, true);
+    $this->game->action_place($token, $dropTarget, $rotateZ, $rotateY);
+    self::ajaxResponse();
+  }
 
   /*
     

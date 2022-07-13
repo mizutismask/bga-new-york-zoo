@@ -365,7 +365,42 @@ class NewYorkZoo extends EuroGame
     }
     
     */
+    function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
+        $this->checkAction('place');
 
+        $player_id = $this->getActivePlayerId();
+        //$this->notifyWithName('message', clienttranslate('${player_name} plays pick and place action'));
+
+        $buts = $this->getRulesFor($token_id, 'cost');
+        $time = $this->getRulesFor($token_id, 'time');
+
+        $color = $this->getPlayerColor($player_id);
+        $canBuy  = $this->arg_canBuyPatches($color);
+        $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
+        $pos = $this->tokens->getTokenState($token_id);
+        $this->saction_PlacePatch($color, $token_id, $dropTarget, $rotateZ, $rotateY);
+        
+        $this->gamestate->nextState('next');
+    }
+
+    function saction_PlacePatch($color, $token_id, $dropTarget, $rotateZ, $rotateY) {
+        $rotateZ = $rotateZ % 360;
+        $rotateY = $rotateY % 360;
+        $rotor = "${rotateZ}_$rotateY";
+        $occupancy = $this->getOccupancyMatrix($color);
+        $moves = $this->arg_possibleMoves($token_id, $color, $rotor, $occupancy) [$rotor];
+        $valid = array_search($dropTarget, $moves) !== false;
+        $this->userAssertTrue(self::_("Not possible to place patch: illegal move"), $valid);
+        $state = $rotateZ / 90 + $rotateY / 180 * 4;
+        $buts = $this->getRulesFor($token_id, 'cost');
+        $time = $this->getRulesFor($token_id, 'time');
+        $message = clienttranslate('${player_name} places patch paying ${but} buttons and ${time} time ${token_div}');
+        $this->dbSetTokenLocation($token_id, $dropTarget, $state, $message,
+                ['but'=>$buts,'time'=>$time]);
+        $occupancy = $this->getOccupancyMatrix($color);
+        $unoccup_count = $this->getOccupancyEmpty($occupancy);
+        $this->notifyCounterDirect("empties_${color}_counter",$unoccup_count,'');
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
@@ -419,6 +454,23 @@ class NewYorkZoo extends EuroGame
         }
         $mask = $this->getRulesFor($patch, 'mask');
         return $this->matrix->possibleMoves($mask, $prefix, $rotor, $occupancy);
+    }
+    
+    function arg_canBuyPatches($color) {
+        //$patches = [ 'patch_16','patch_1','patch_18' ];
+
+        $patchesall = $this->tokens->getTokensInLocation('market', null, 'token_state');
+        $keys = $this->tokens->toTokenKeyList($patchesall);
+        $index = array_search('token_neutral', $keys);
+        array_splice($keys, $index, 1);
+        $size = count($keys);
+        if ($size <= 3)
+            return $keys;
+        $patches = [ ];
+        for ($i = 0; $i < 3; $i++) {
+            $patches [] = $keys [($index + $i) % $size];
+        }
+        return $patches;
     }
 
     //////////////////////////////////////////////////////////////////////////////
