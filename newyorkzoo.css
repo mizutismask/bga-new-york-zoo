@@ -175,7 +175,7 @@
 	height: calc(var(--cellWidth) * var(--rowsNb));
 	position: relative;
 	background-size: calc(var(--colsNb) * var(--cellWidth));
-	padding: 136px 0px 0px 48px;
+	padding: 48px 0px 0px 48px;
 	background-repeat: no-repeat;
 	z-index: 20;
 }
@@ -750,12 +750,39 @@
 	border: #436aab solid 1px;
 }
 
-.house{
+.board_houses {
+	position: absolute;
+}
+.house {
 	border: orange solid 1px;
 	width: var(--cellWidth);
 	height: var(--cellWidth);
 }
 
+.player_count_2.player_order_1 .house_1 {
+	top: 32.5%;
+	left: 9%;
+}
+.player_count_2.player_order_1 .house_2 {
+	top: 29.8%;
+	left: -27.5%;
+}
+.player_count_2.player_order_1 .house_3 {
+	top: 45.9%;
+	left: -82%;
+}
+.player_count_2.player_order_2 .house_1 {
+	top: 33.5%;
+	left: 9%;
+}
+.player_count_2.player_order_2 .house_2 {
+	top: 29.6%;
+	left: -26.9%;
+}
+.player_count_2.player_order_2 .house_3 {
+	top: 44.5%;
+	left: -76.5%;
+}
 /*
 Responsive CSS Sprite created using: https://responsive-css.us/
 */
