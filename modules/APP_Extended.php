@@ -292,6 +292,16 @@ abstract class APP_Extended extends Table {
         $this->gamestate->changeActivePlayer($next_player_id);
     }
 
+    /**
+     * Activates next player, also giving him extra time.
+     */
+    function activateNextPlayerCustom() {
+            $player_id = $this->activeNextPlayer();
+        $this->giveExtraTime($player_id);
+        //$this->incStat(1, 'turns_number', $next_player_id);
+        //$this->incStat(1, 'turns_number');
+    }
+
     // ------ DB ----------
     function dbGetScore($player_id) {
         return $this->getUniqueValueFromDB("SELECT player_score FROM player WHERE player_id='$player_id'");
