@@ -794,7 +794,15 @@ background-image:url(img/animals.png);}
 .kangaroo {background-position: 0.542005% 0.706714%; background-size: 358.042%; }
 .merkat {background-position: 34.5088% 65.6338%; background-size: 445.217%; }
 .penguin { background-position: 37.9845% 0.645161%; background-size: 409.600%; }
-
+.token_neutral {
+	width: 40px;
+	height: 80px;
+	background-image: url(img/tokens.png);
+	background-size: calc(600px / 50 * 40) auto;	
+	background-position: 0 37%;
+	z-index: 20;
+	filter: drop-shadow(0px 2px 4px black);
+}
 
 /*
 Responsive CSS Sprite created using: https://responsive-css.us/

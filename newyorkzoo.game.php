@@ -133,7 +133,7 @@ class NewYorkZoo extends EuroGame
         $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", 24);
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", 24);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", 24);
-        $this->tokens->createToken("token_neutral", "limbo", 0); //elephant
+        $this->tokens->createToken("token_neutral", "action_zone_10", 0); //elephant
 
 
         //creates houses and gets animals from the board
