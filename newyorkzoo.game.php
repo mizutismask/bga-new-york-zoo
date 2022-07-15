@@ -460,9 +460,62 @@ class NewYorkZoo extends EuroGame
         $this->notifyCounterDirect("empties_${color}_counter", $unoccup_count, '');
     }
 
+    function saction_FinalScoring()
+    {
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $info) {
+            $this->dbSetScore($player_id, 0);
+            $color = $info['player_color'];
+
+            // empty spaces
+            $occupancy = $this->getOccupancyMatrix($color);
+            $unoccup_count = $this->getOccupancyEmpty($occupancy);
+            $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count * 2, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_slot');
+        }
+        $firstOnSpot = $this->dbGetFirstPlayerId();
+        $this->dbSetAuxScore($firstOnSpot, 1);
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
     ////////////
+    function arg_playerTurn()
+    {
+        $player_id = $this->getActivePlayerId();
+        $color = $this->getPlayerColor($player_id);
+        $res = [];
+        $patches = $this->arg_canBuyPatches($color);
+        $curbuttons = $this->tokens->getTokensInLocation("buttons_$color");
+        $buttons = count($curbuttons);
+        $canUseAny = false;
+        $occupancy = $this->getOccupancyMatrix($color);
+        foreach ($patches as $patch) {
+            $moves = $this->arg_possibleMoves($patch, $color, null, $occupancy);
+            $canPlace = false;
+            foreach ($moves as $arr) {
+                if (count($arr) > 0) {
+                    $canPlace = true;
+                    break;
+                }
+            }
+            $res['patches'][$patch]['moves'] = $moves;
+            $res['patches'][$patch]['canPlace'] = $canPlace;
+            $cost = $this->getRulesFor($patch, 'cost');
+            $canPay = $cost <= $buttons;
+            $res['patches'][$patch]['canPay'] = $canPay;
+            $canUse = $canPay && $canPlace;
+            $res['patches'][$patch]['canUse'] = $canPay && $canUse;
+            $canUseAny = $canUseAny || $canUse;
+        }
+        // $advance = $this->dbGetAdvance($player_id);
+        $advance = 0; //todo
+        $res += ['advance' => $advance];
+        $res += ['buttons' => $buttons];
+        $res['canPatch'] = $canUseAny;
+
+        return $res;
+    }
 
     function arg_occupancyData($color)
     {
@@ -516,8 +569,7 @@ class NewYorkZoo extends EuroGame
 
     function arg_canBuyPatches($color)
     {
-        //$patches = [ 'patch_16','patch_1','patch_18' ];
-
+        //$patches = ['patch_16', 'patch_1', 'patch_18'];
         $patchesall = $this->tokens->getTokensInLocation('market', null, 'token_state');
         $keys = $this->tokens->toTokenKeyList($patchesall);
         $index = array_search('token_neutral', $keys);
@@ -540,19 +592,29 @@ class NewYorkZoo extends EuroGame
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
-
-    /*
-    
-    Example for game state "MyGameState":
-
-    function stMyGameState()
+    function st_gameTurnNextPlayer()
     {
-        // Do some stuff ...
-        
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
-    */
+        $endOfGame = false;
+        if ($endOfGame) {
+            $this->saction_FinalScoring();
+            $this->gamestate->nextState('last');
+            return;
+        }
+        $this->activateNextPlayerCustom();
+        $this->gamestate->nextState('next');
+    }
+
+    function st_playerTurn()
+    {
+        $args = $this->arg_playerTurn();
+        $canPatch = $args['canPatch'];
+        //$this->warn("st_playerTurn canPatch='".$canPatch."' pl=$player_id ".toJson($args)."|");
+        if (false &&  !$canPatch) {
+            $this->notifyWithName('message', clienttranslate('${player_name} cannot buy any patches'));
+            $this->sendNotifications(); // have to do it so it does not bundle too much
+        }
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Zombie

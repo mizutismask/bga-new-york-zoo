@@ -49,7 +49,12 @@
 */
 
 //    !! It is not a good idea to modify this file when a game is running !!
-
+if (!defined('STATE_END_GAME')) { // guard since this included multiple times
+    define("STATE_PLAYER_TURN", 2);
+    define("STATE_GAME_TURN_NEXT_PLAYER", 3);
+    define("STATE_PLAYER_GAME_END", 4);
+    define("STATE_END_GAME", 99);
+}
 
 $machinestates = array(
 
@@ -62,48 +67,47 @@ $machinestates = array(
         "transitions" => array("" => 2)
     ),
 
-    // Note: ID=2 => your first state
-
-    2 => array(
+    STATE_PLAYER_TURN => [ // main active player state 
         "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
+        "description" => clienttranslate('${actplayer} must take an action'),
+        "descriptionmyturn" => clienttranslate('${you} must take an action'),
         "type" => "activeplayer",
-        "possibleactions" => array("playCard", "pass"),
-        "transitions" => array("playCard" => 2, "pass" => 2)
-    ),
+        "args" => "arg_playerTurn",
+        "action" => "st_playerTurn",
+        "possibleactions" => ["place", "advance"],
+        "transitions" => [
+            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            "last" => STATE_PLAYER_GAME_END
+        ] // 
+    ],
+    STATE_GAME_TURN_NEXT_PLAYER => [ // next player state
+        "name" => "gameTurnNextPlayer", "description" => clienttranslate('Upkeep...'),
+        "type" => "game", //
+        "action" => "st_gameTurnNextPlayer", //
+        "updateGameProgression" => true,
+        "transitions" => [
+            "next" => STATE_PLAYER_TURN, "loopback" => STATE_GAME_TURN_NEXT_PLAYER,
+            "last" => STATE_END_GAME
+        ], // STATE_PLAYER_GAME_END TODO remove after, its there to use undo during dev
+    ],
 
-    /*
-    Examples:
-    
-    2 => array(
-        "name" => "nextPlayer",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
-    ),
-    
-    10 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
+    STATE_PLAYER_GAME_END => [ // active player state for debugging end of game
+        "name" => "playerGameEnd",
+        "description" => clienttranslate('${actplayer} Game is Over'),
+        "descriptionmyturn" => clienttranslate('${you} Game is Over'),
         "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
-
-*/
-
+        "args" => "arg_playerTurn",
+        "possibleactions" => ["endGame"],
+        "transitions" => ["next" => STATE_END_GAME, "loopback" => STATE_PLAYER_GAME_END] // 
+    ],
+    // End of Game states 
     // Final state.
     // Please do not modify (and do not overload action/args methods).
-    99 => array(
+    STATE_END_GAME => [
         "name" => "gameEnd",
-        "description" => clienttranslate("End of game"),
-        "type" => "manager",
+        "description" => clienttranslate("End of game"), "type" => "manager",
         "action" => "stGameEnd",
         "args" => "argGameEnd"
-    )
+    ]
 
 );
