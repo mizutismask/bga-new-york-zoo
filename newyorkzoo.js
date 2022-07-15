@@ -604,7 +604,7 @@ define([
 
             setup: function (gamedatas) {
                 console.log("Starting game setup", gamedatas);
-                var playerCount=Object.keys(gamedatas.players).length;
+                var playerCount = Object.keys(gamedatas.players).length;
 
                 // Setting up player boards
                 document.documentElement.style.setProperty('--colsNb', gamedatas.gridSize[0]);
@@ -613,7 +613,7 @@ define([
 
                 for (let index = 1; index <= 5; index++) {
                     if (i != playerCount) {
-                        this.dontPreloadImage('board'+playerCount+'P.png');
+                        this.dontPreloadImage('board' + playerCount + 'P.png');
                     }
                 }
 
@@ -632,6 +632,15 @@ define([
                 this.setupNotifications();
 
                 console.log("Ending game setup");
+            },
+
+            setupPlayer: function (playerId, playerInfo, gamedatas) {
+                // does nothing here, override
+                console.log("player info " + playerId, playerInfo);
+                // move miniboards to the right
+                var playerBoardDiv = dojo.byId('player_board_' + playerId);
+                var color = gamedatas.players[playerId].color;
+                dojo.place('miniboard_' + color, playerBoardDiv);
             },
 
             setupScrollableMap: function () {
@@ -810,365 +819,365 @@ define([
             //                  You can use this method to perform some user interface changes at this moment.
             //
             /** @Override */
-			addMoveToLog: function(log_id, move_id) {
-				this.inherited(arguments);
-				var lognode = $('log_' + log_id);
-				//lognode.setAttribute('data-move-id', move_id);
+            addMoveToLog: function (log_id, move_id) {
+                this.inherited(arguments);
+                var lognode = $('log_' + log_id);
+                //lognode.setAttribute('data-move-id', move_id);
 
-				var prevmove = document.querySelector('[data-move-id="' + move_id + '"]');
-				if (!prevmove) {
+                var prevmove = document.querySelector('[data-move-id="' + move_id + '"]');
+                if (!prevmove) {
 
-					tsnode = document.createElement('div')
-					tsnode.classList.add('movestamp');
-					tsnode.innerHTML = _('Move #') + move_id;
-					lognode.appendChild(tsnode);
+                    tsnode = document.createElement('div')
+                    tsnode.classList.add('movestamp');
+                    tsnode.innerHTML = _('Move #') + move_id;
+                    lognode.appendChild(tsnode);
 
-					tsnode.setAttribute('data-move-id', move_id);
-				}
-			},
+                    tsnode.setAttribute('data-move-id', move_id);
+                }
+            },
 
-			/** @Override */
-			format_string_recursive: function(log, args) {
-				try {
-					//console.trace("format_string_recursive(" + log + ")", args);
-					if (args.log_others !== undefined && this.player_id != args.player_id) {
-						log = args.log_others;
-					}
+            /** @Override */
+            format_string_recursive: function (log, args) {
+                try {
+                    //console.trace("format_string_recursive(" + log + ")", args);
+                    if (args.log_others !== undefined && this.player_id != args.player_id) {
+                        log = args.log_others;
+                    }
 
-					if (log && args && !args.processed) {
-						args.processed = true;
+                    if (log && args && !args.processed) {
+                        args.processed = true;
 
-						if (args.you)
-							args.you = this.divYou(); // will replace ${you} with colored version
-						args.You = this.divYou(); // will replace ${You} with colored version
+                        if (args.you)
+                            args.you = this.divYou(); // will replace ${you} with colored version
+                        args.You = this.divYou(); // will replace ${You} with colored version
 
-						var keys = ['token_name', 'token_divs', 'token_names', 'token_div', 'token_div_count'];
-						for (var i in keys) {
-							var key = keys[i];
-							// console.log("checking " + key + " for " + log);
-							if (args[key] === undefined) continue;
+                        var keys = ['token_name', 'token_divs', 'token_names', 'token_div', 'token_div_count'];
+                        for (var i in keys) {
+                            var key = keys[i];
+                            // console.log("checking " + key + " for " + log);
+                            if (args[key] === undefined) continue;
 
-							if (key == 'token_divs') {
-								var list = args[key].split(",");
-								var res = '';
-								for (var l = 0; l < list.length; l++) {
-									res += this.getTokenDivForLogValue('token_div', list[l]);
-								}
-								res = res.trim();
-								if (res) args[key] = res;
-								continue;
-							}
-							if (key == 'token_names') {
-								var list = args[key].split(",");
-								var res = "";
-								for (var l = 0; l < list.length; l++) {
-									var name = this.getTokenDivForLogValue('token_name', list[l]);
-									res += name + " ";
-								}
-								res = res.trim();
-								if (res)
-									args[key] = res;
-								continue;
-							}
-							if (typeof args[key] == 'string') {
-								if (this.getTranslatable(key, args) != -1) {
-									continue;
-								}
-							}
-							var res = this.getTokenDivForLogValue(key, args[key]);
-							if (res) args[key] = res;
-						}
+                            if (key == 'token_divs') {
+                                var list = args[key].split(",");
+                                var res = '';
+                                for (var l = 0; l < list.length; l++) {
+                                    res += this.getTokenDivForLogValue('token_div', list[l]);
+                                }
+                                res = res.trim();
+                                if (res) args[key] = res;
+                                continue;
+                            }
+                            if (key == 'token_names') {
+                                var list = args[key].split(",");
+                                var res = "";
+                                for (var l = 0; l < list.length; l++) {
+                                    var name = this.getTokenDivForLogValue('token_name', list[l]);
+                                    res += name + " ";
+                                }
+                                res = res.trim();
+                                if (res)
+                                    args[key] = res;
+                                continue;
+                            }
+                            if (typeof args[key] == 'string') {
+                                if (this.getTranslatable(key, args) != -1) {
+                                    continue;
+                                }
+                            }
+                            var res = this.getTokenDivForLogValue(key, args[key]);
+                            if (res) args[key] = res;
+                        }
 
-					}
-				} catch (e) {
-					console.error(log, args, "Exception thrown", e.stack);
-				}
-				return this.inherited(arguments);
-			},
+                    }
+                } catch (e) {
+                    console.error(log, args, "Exception thrown", e.stack);
+                }
+                return this.inherited(arguments);
+            },
 
-			getTokenDivForLogValue: function(key, value) {
-				// ... implement whatever html you want here
-				//debugger;
-				var token_id = value;
-				if (token_id == null) { return "? " + key; }
-				if (key == 'token_div_count') {
-					var node = this.divInlineTokenNode(value.args.token_div);
-					node.innerHTML = value.args.mod;
-					return node.outerHTML;
-				}
-				if (key == 'token_div') {
-					var node = this.divInlineTokenNode(value, true);
-					return node.outerHTML;
-				}
-				if (key.endsWith('name')) {
-					var name = this.getTokenName(token_id);
-					var div = "<span>'" + name + "'</span>";
-					return div;
-				}
-				return this.divInlineToken(token_id);
-			},
-			isPracticeMode: function() {
-				return (dojo.hasClass('ebd-body', 'practice_mode'));
-			},
+            getTokenDivForLogValue: function (key, value) {
+                // ... implement whatever html you want here
+                //debugger;
+                var token_id = value;
+                if (token_id == null) { return "? " + key; }
+                if (key == 'token_div_count') {
+                    var node = this.divInlineTokenNode(value.args.token_div);
+                    node.innerHTML = value.args.mod;
+                    return node.outerHTML;
+                }
+                if (key == 'token_div') {
+                    var node = this.divInlineTokenNode(value, true);
+                    return node.outerHTML;
+                }
+                if (key.endsWith('name')) {
+                    var name = this.getTokenName(token_id);
+                    var div = "<span>'" + name + "'</span>";
+                    return div;
+                }
+                return this.divInlineToken(token_id);
+            },
+            isPracticeMode: function () {
+                return (dojo.hasClass('ebd-body', 'practice_mode'));
+            },
 
-			// state hooks
-			onEnteringState: function(stateName, args) {
-				this.inherited(arguments);
-			},
+            // state hooks
+            onEnteringState: function (stateName, args) {
+                this.inherited(arguments);
+            },
 
-			onLeavingState: function(stateName) {
-				this.inherited(arguments);
-				if (!this.on_client_state) {
-					dojo.query(".original").forEach((node)=>{
-						if (node.id.endsWith("_temp")) {
-							dojo.destroy(node);
-						}
-					});
-				}
-				
-				this.removeClass('cannot_use');
-				this.removeClass('active_slot');
-				this.removeClass('practice_mode');
-			},
+            onLeavingState: function (stateName) {
+                this.inherited(arguments);
+                if (!this.on_client_state) {
+                    dojo.query(".original").forEach((node) => {
+                        if (node.id.endsWith("_temp")) {
+                            dojo.destroy(node);
+                        }
+                    });
+                }
 
-			onUpdateActionButtons: function(stateName, args) {
-				this.inherited(arguments);
-			},
-			onUpdateActionButtons_common: function(stateName, args, ret) {
-				if (stateName == 'playerTurn') {
-					gameui.addImageActionButton('practice', _('Practice Mode'), () => {
-						$('ebd-body').classList.add("practice_mode");
-						this.onUpdateActionButtons_client_PickPatch(args);
-					}, undefined, _('In this mode you can place any patches to practice fitting'));
-				}
-			},
+                this.removeClass('cannot_use');
+                this.removeClass('active_slot');
+                this.removeClass('practice_mode');
+            },
 
-			onUpdateActionButtons_playerTurn: function(args) {
-				this.clientStateArgs.action = 'place';
-				var canBuy = Object.keys(args.patches);
-				canBuy.forEach((id) => {
-					var canUse = args.patches[id].canUse;
-					dojo.addClass(id, 'active_slot');
-					if (canUse == false)
-						dojo.addClass(id, 'cannot_use');
-					
-					
-				});
+            onUpdateActionButtons: function (stateName, args) {
+                this.inherited(arguments);
+            },
+            onUpdateActionButtons_common: function (stateName, args, ret) {
+                if (stateName == 'playerTurn') {
+                    gameui.addImageActionButton('practice', _('Practice Mode'), () => {
+                        $('ebd-body').classList.add("practice_mode");
+                        this.onUpdateActionButtons_client_PickPatch(args);
+                    }, undefined, _('In this mode you can place any patches to practice fitting'));
+                }
+            },
+
+            onUpdateActionButtons_playerTurn: function (args) {
+                this.clientStateArgs.action = 'place';
+                var canBuy = Object.keys(args.patches);
+                canBuy.forEach((id) => {
+                    var canUse = args.patches[id].canUse;
+                    dojo.addClass(id, 'active_slot');
+                    if (canUse == false)
+                        dojo.addClass(id, 'cannot_use');
+
+
+                });
 
                 var pickcolor = 'blue';
                 if (!args.canPatch)
-					pickcolor = 'red';
-				gameui.addImageActionButton('b', _('Pick Patch'), () => {
-					if (args.canPatch)
-						this.setClientStateAction('client_PickPatch')
-					else
-						this.showError(_('No legal moves'));
-				}, pickcolor);
-				gameui.addImageActionButton('a', _('Advance') + " " + this.createDiv('pbutton') + " x " + args.advance, () => {
-					gameui.ajaxClientStateAction('advance')
-				}, 'blue', _('Pay time to receive buttons'));
-			},
+                    pickcolor = 'red';
+                gameui.addImageActionButton('b', _('Pick Patch'), () => {
+                    if (args.canPatch)
+                        this.setClientStateAction('client_PickPatch')
+                    else
+                        this.showError(_('No legal moves'));
+                }, pickcolor);
+                gameui.addImageActionButton('a', _('Advance') + " " + this.createDiv('pbutton') + " x " + args.advance, () => {
+                    gameui.ajaxClientStateAction('advance')
+                }, 'blue', _('Pay time to receive buttons'));
+            },
 
-            onUpdateActionButtons_client_PickPatch: function(args) {
-				//console.log('Calling  onUpdateActionButtons_client_PickPatch', args);
-				dojo.empty('generalactions');
-				dojo.query(".done_control,.control-node").removeClass('active_slot');
-				
-
-
-				var canBuy = Object.keys(args.patches);
-				canBuy.forEach((id) => {
-					var canUse = args.patches[id].canUse;
-					if (canUse == false)
-						dojo.addClass(id, 'cannot_use');
-					else
-						dojo.addClass(id, 'active_slot');
-				});
-
-				var sel = document.querySelector('.selected');
-				var pick = document.querySelector('.pickTarget');
-				var controls = false;
-				if (pick) {
-					if (this.isPracticeMode())
-						this.setDescriptionOnMyTurn(_('Press Cancel to exit practice mode'));
-					else
-						this.setDescriptionOnMyTurn(_('Press Confirm when ready or Cancel to start over'));
-					//this.removeClass('active_slot');
-					controls = true;
-				} else if (sel) {
-					
-						this.setDescriptionOnMyTurn(_('Place the patch on a quilt board. You can drag and drop'));
-						controls = true;
-					this.pm.updateActiveSquares();
-
-				} else {
-					this.setDescriptionOnMyTurn(_('Select a patch, then place it. You can drag and drop'));
-
-				}
-				if (this.isPracticeMode()) {
-					this.setMainTitle(_('PRACTICE MODE:'), 'before');
-					dojo.query(".market .patch").addClass('active_slot');
-				}
-
-
-				if (controls) {
-					gameui.addImageActionButton('rotate_control_b', this.createDiv('rotate-image control-image'),
-						(event) => this.pm.onClickPatchControl(event));
-					gameui.addImageActionButton('rotateR_control_b', this.createDiv('rotate-image control-image flip-v'),
-						(event) => this.pm.onClickPatchControl(event));
-					gameui.addImageActionButton('flip_control_b', this.createDiv('mirror-image control-image'),
-						(event) => this.pm.onClickPatchControl(event));
-					//gameui.addImageActionButton('flipH_control_b', this.createDiv('mirror-image control-image rotate-right'), 
-					//     (event) => this.pm.onClickPatchControl(event));
-					//drop-zone
-					document.querySelectorAll(".bgaimagebutton .control-image").forEach(item => {
-						item.classList.add('drop-zone', 'control-node');
-						this.pm.addDropListeners(item, false);
-					});
-				}
-
-
-				if (pick && !this.isPracticeMode()) {
-					dojo.query(".done_control,.cancel_control,.control-node").addClass('active_slot');
-					this.addDoneButton(_('Confirm'), 'onDone');
-				}
-				this.addCancelButton();
-			},
+            onUpdateActionButtons_client_PickPatch: function (args) {
+                //console.log('Calling  onUpdateActionButtons_client_PickPatch', args);
+                dojo.empty('generalactions');
+                dojo.query(".done_control,.control-node").removeClass('active_slot');
 
 
 
-			// debug state
-			onUpdateActionButtons_playerGameEnd: function(args) {
-				gameui.addActionButton('b', _('End'), () => gameui.ajaxClientStateAction('endGame'));
-			},
+                var canBuy = Object.keys(args.patches);
+                canBuy.forEach((id) => {
+                    var canUse = args.patches[id].canUse;
+                    if (canUse == false)
+                        dojo.addClass(id, 'cannot_use');
+                    else
+                        dojo.addClass(id, 'active_slot');
+                });
 
-			// UTILS
+                var sel = document.querySelector('.selected');
+                var pick = document.querySelector('.pickTarget');
+                var controls = false;
+                if (pick) {
+                    if (this.isPracticeMode())
+                        this.setDescriptionOnMyTurn(_('Press Cancel to exit practice mode'));
+                    else
+                        this.setDescriptionOnMyTurn(_('Press Confirm when ready or Cancel to start over'));
+                    //this.removeClass('active_slot');
+                    controls = true;
+                } else if (sel) {
 
-			cancelLocalStateEffects: function() {
-				this.pm.cancelPickPatch();
-				this.pm.endPickPatch();
-				this.inherited(arguments);
-			},
-			ajaxActionResultCallback: function(action, args, result) {
-				this.inherited(arguments);
-				if (action == 'place')
-					this.pm.cancelPickPatch();
-			},
-			onPlaceToken: function(tokenId) {
-				// updating counters
-				var token = $(tokenId);
-				if (!token) return; // destroyed
-				var parent = token.parentNode;
-				if (tokenId.startsWith('timemarker_')) {
-					var newPos = 53 - getIntPart(parent.id, 1);
-					var counter = $('time_' + getPart(tokenId, 1) + "_counter");
-					counter.innerHTML = newPos;
-				}
-				if (tokenId.startsWith('pbutton')) {
-					for (var player_id in this.gamedatas.players) {
-						var playerInfo = this.gamedatas.players[player_id];
-						var c = playerInfo.color;
-						var size = $('buttons_' + c).children.length;
-						var counter = $('buttons_' + c + "_counter");
-						counter.innerHTML = size;
-					}
-				}
-				
-			},
-			onDone: function() {
-				var token = gameui.clientStateArgs.token;
-				var id= gameui.clientStateArgs.dropTarget;
-				if (!gameui.isActiveSlot(id)) {
-					if (!this.practiceMode)
-						gameui.showError(_('Illegal patch location'));
-						return;
-				}
-				dojo.destroy(token + "_temp");
-				gameui.removeClass('original');
-				gameui.removeClass('active_slot');
-				this.pm.selectedNode = null;
-				
-		
-	
-				gameui.clientStateArgs.rotateZ = this.pm.normalizedRotateAngle(gameui.clientStateArgs.rotateZ);
-				gameui.clientStateArgs.rotateY = this.pm.normalizedRotateAngle(gameui.clientStateArgs.rotateY);
-				var state = this.pm.getRotateState();
-				gameui.placeTokenLocal(gameui.clientStateArgs.token, gameui.clientStateArgs.dropTarget, state, { noa: true });
+                    this.setDescriptionOnMyTurn(_('Place the patch on a quilt board. You can drag and drop'));
+                    controls = true;
+                    this.pm.updateActiveSquares();
 
-				this.ajaxClientStateAction();
-			},
+                } else {
+                    this.setDescriptionOnMyTurn(_('Select a patch, then place it. You can drag and drop'));
+
+                }
+                if (this.isPracticeMode()) {
+                    this.setMainTitle(_('PRACTICE MODE:'), 'before');
+                    dojo.query(".market .patch").addClass('active_slot');
+                }
 
 
-			getPlaceRedirect: function(token, tokenInfo) {
-				var location = tokenInfo.location;
-				var result = {
-					location: location,
-					inlinecoords: false
-				};
+                if (controls) {
+                    gameui.addImageActionButton('rotate_control_b', this.createDiv('rotate-image control-image'),
+                        (event) => this.pm.onClickPatchControl(event));
+                    gameui.addImageActionButton('rotateR_control_b', this.createDiv('rotate-image control-image flip-v'),
+                        (event) => this.pm.onClickPatchControl(event));
+                    gameui.addImageActionButton('flip_control_b', this.createDiv('mirror-image control-image'),
+                        (event) => this.pm.onClickPatchControl(event));
+                    //gameui.addImageActionButton('flipH_control_b', this.createDiv('mirror-image control-image rotate-right'), 
+                    //     (event) => this.pm.onClickPatchControl(event));
+                    //drop-zone
+                    document.querySelectorAll(".bgaimagebutton .control-image").forEach(item => {
+                        item.classList.add('drop-zone', 'control-node');
+                        this.pm.addDropListeners(item, false);
+                    });
+                }
 
-				if (location.startsWith('market')) {
-					var state = parseInt(tokenInfo.state);
-					result.position = 'absolute';
-					var tokenNode = $(token);
-					if (!tokenNode) return result;// ???
-					dojo.setAttr(tokenNode, "data-order", state);
-					
-					var dx = parseInt(dojo.getAttr(tokenNode, "data-dx"));
-					var dy = parseInt(dojo.getAttr(tokenNode, "data-dy"));
-					var rotateZ = parseInt(dojo.getAttr(tokenNode, "data-rz"));
-					if (rotateZ) {
-						var rule = "rotateY(0deg) rotateZ(" + rotateZ + "deg)";
-						tokenNode.style.transform = rule;
-					}
-					
-					var x = dojo.getAttr(tokenNode, "data-x");
-					var y = dojo.getAttr(tokenNode, "data-y");
-					var mwidth = 0;
-					var mheight = 0;
-					if (x !== undefined) {
-						result.x = x;
-					} else {
-						result.x = dx + mwidth;
-					}
-					if (y !== undefined) {
-						result.y = y;
-					} else {
-						result.y = dy + mheight;
-					}
 
-					return result;
-				}
-				if (location.startsWith('supply_buttons')|| location.startsWith('buttons')) {
-					//	debugger;
-					result.inlinecoords = true;
-					var cbox = dojo.contentBox(location);
-					var width = cbox.w - 40;
-					var height = cbox.h - 40;
-					result.x = Math.floor((Math.random() * width));
-					result.y = Math.floor((Math.random() * height));
-					if (!$(token))
-						this.createToken(token, tokenInfo, location);
-					//dojo.attr(token, 'data-pos', getIntPart(token, 1));
-					return result;
-				}
-				if (location.startsWith('square')) {
-					result.inlinecoords = true;
+                if (pick && !this.isPracticeMode()) {
+                    dojo.query(".done_control,.cancel_control,.control-node").addClass('active_slot');
+                    this.addDoneButton(_('Confirm'), 'onDone');
+                }
+                this.addCancelButton();
+            },
 
-					var top = getIntPart(location, 2) * CELL_WIDTH;
-					var left = getIntPart(location, 3) * CELL_WIDTH;
 
-					result.x = left;
-					result.y = top;
-					result.location = 'pieces_' + getPart(location, 1);
-					if ($(token))
-						$(token).style.removeProperty("transform");
-				}
-				if (location.startsWith('buttons')) {
-					//debugger;
-				}
-				
-				return result;
-			},
+
+            // debug state
+            onUpdateActionButtons_playerGameEnd: function (args) {
+                gameui.addActionButton('b', _('End'), () => gameui.ajaxClientStateAction('endGame'));
+            },
+
+            // UTILS
+
+            cancelLocalStateEffects: function () {
+                this.pm.cancelPickPatch();
+                this.pm.endPickPatch();
+                this.inherited(arguments);
+            },
+            ajaxActionResultCallback: function (action, args, result) {
+                this.inherited(arguments);
+                if (action == 'place')
+                    this.pm.cancelPickPatch();
+            },
+            onPlaceToken: function (tokenId) {
+                // updating counters
+                var token = $(tokenId);
+                if (!token) return; // destroyed
+                var parent = token.parentNode;
+                if (tokenId.startsWith('timemarker_')) {
+                    var newPos = 53 - getIntPart(parent.id, 1);
+                    var counter = $('time_' + getPart(tokenId, 1) + "_counter");
+                    counter.innerHTML = newPos;
+                }
+                if (tokenId.startsWith('pbutton')) {
+                    for (var player_id in this.gamedatas.players) {
+                        var playerInfo = this.gamedatas.players[player_id];
+                        var c = playerInfo.color;
+                        var size = $('buttons_' + c).children.length;
+                        var counter = $('buttons_' + c + "_counter");
+                        counter.innerHTML = size;
+                    }
+                }
+
+            },
+            onDone: function () {
+                var token = gameui.clientStateArgs.token;
+                var id = gameui.clientStateArgs.dropTarget;
+                if (!gameui.isActiveSlot(id)) {
+                    if (!this.practiceMode)
+                        gameui.showError(_('Illegal patch location'));
+                    return;
+                }
+                dojo.destroy(token + "_temp");
+                gameui.removeClass('original');
+                gameui.removeClass('active_slot');
+                this.pm.selectedNode = null;
+
+
+
+                gameui.clientStateArgs.rotateZ = this.pm.normalizedRotateAngle(gameui.clientStateArgs.rotateZ);
+                gameui.clientStateArgs.rotateY = this.pm.normalizedRotateAngle(gameui.clientStateArgs.rotateY);
+                var state = this.pm.getRotateState();
+                gameui.placeTokenLocal(gameui.clientStateArgs.token, gameui.clientStateArgs.dropTarget, state, { noa: true });
+
+                this.ajaxClientStateAction();
+            },
+
+
+            getPlaceRedirect: function (token, tokenInfo) {
+                var location = tokenInfo.location;
+                var result = {
+                    location: location,
+                    inlinecoords: false
+                };
+
+                if (location.startsWith('market')) {
+                    var state = parseInt(tokenInfo.state);
+                    result.position = 'absolute';
+                    var tokenNode = $(token);
+                    if (!tokenNode) return result;// ???
+                    dojo.setAttr(tokenNode, "data-order", state);
+
+                    var dx = parseInt(dojo.getAttr(tokenNode, "data-dx"));
+                    var dy = parseInt(dojo.getAttr(tokenNode, "data-dy"));
+                    var rotateZ = parseInt(dojo.getAttr(tokenNode, "data-rz"));
+                    if (rotateZ) {
+                        var rule = "rotateY(0deg) rotateZ(" + rotateZ + "deg)";
+                        tokenNode.style.transform = rule;
+                    }
+
+                    var x = dojo.getAttr(tokenNode, "data-x");
+                    var y = dojo.getAttr(tokenNode, "data-y");
+                    var mwidth = 0;
+                    var mheight = 0;
+                    if (x !== undefined) {
+                        result.x = x;
+                    } else {
+                        result.x = dx + mwidth;
+                    }
+                    if (y !== undefined) {
+                        result.y = y;
+                    } else {
+                        result.y = dy + mheight;
+                    }
+
+                    return result;
+                }
+                if (location.startsWith('supply_buttons') || location.startsWith('buttons')) {
+                    //	debugger;
+                    result.inlinecoords = true;
+                    var cbox = dojo.contentBox(location);
+                    var width = cbox.w - 40;
+                    var height = cbox.h - 40;
+                    result.x = Math.floor((Math.random() * width));
+                    result.y = Math.floor((Math.random() * height));
+                    if (!$(token))
+                        this.createToken(token, tokenInfo, location);
+                    //dojo.attr(token, 'data-pos', getIntPart(token, 1));
+                    return result;
+                }
+                if (location.startsWith('square')) {
+                    result.inlinecoords = true;
+
+                    var top = getIntPart(location, 2) * CELL_WIDTH;
+                    var left = getIntPart(location, 3) * CELL_WIDTH;
+
+                    result.x = left;
+                    result.y = top;
+                    result.location = 'pieces_' + getPart(location, 1);
+                    if ($(token))
+                        $(token).style.removeProperty("transform");
+                }
+                if (location.startsWith('buttons')) {
+                    //debugger;
+                }
+
+                return result;
+            },
             ///////////////////////////////////////////////////
             //// Utility methods
 

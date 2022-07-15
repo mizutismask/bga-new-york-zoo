@@ -66,7 +66,15 @@ This is your game interface. You can edit this HTML in your ".tpl" file.
 
 		
 		<!-- BEGIN player_board -->
-		
+		<div id="miniboard_{COLOR}" class="miniboard">
+		    <div class="mini_icons">
+		        <div id="empties_{COLOR}_div" class="mini_board_item">
+		             <div id="empties_{COLOR}_counter" class="empties_counter mini_counter">0</div>
+		             <div id="empties_{COLOR}_icon" class="empty_icon micon"></div>
+		        </div>
+		    </div>
+		</div>
+
 		<div id="tableau_{COLOR}" data-title="{PLAYER_NAME}" class="tableau tableau_{COLOR} {OWN} player_count_{PLAYER_COUNT} player_order_{PLAYER_NO}">
 				<!--<div class="board_houses"> -->
 				<!-- BEGIN house -->

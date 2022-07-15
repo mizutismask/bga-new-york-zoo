@@ -710,6 +710,42 @@
 	background-color: transparent;
 }
 
+/* MINI PANEL */
+.micon {
+	background-image: url(img/tokens.png);
+	background-size: 18em auto;
+	width: 3em;
+	height: 3em;
+}
+
+.empty_icon {
+	background-image: none;
+	width: 2.2em;
+	height: 2.2em;
+	border-width: thin;
+	border-style: dashed;
+	margin-left: 5px;
+	border-color: black;
+	background-color: #b19466;
+}
+
+.mini_icons {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.mini_board_item > * {
+	display: inline-block;
+	vertical-align: middle;
+}
+.mini_counter {
+	font-size: x-large;
+	font-weight: bold;
+}
+
+
 /* TOOLTIP */
 
 .midSizeDialog {
@@ -784,21 +820,42 @@
 	left: -76.5%;
 }
 
+.flamingo,
+.fox,
+.kangaroo,
+.merkat,
+.penguin {
+	display: inline-block;
+	overflow: hidden;
+	background-repeat: no-repeat;
+	background-image: url(img/animals.png);
+}
 
-.flamingo, .fox, .kangaroo, .merkat, .penguin 
-{display:inline-block; overflow:hidden; background-repeat: no-repeat;
-background-image:url(img/animals.png);}
-
-.flamingo { background-position: 71.5405% 0.617284%; background-size: 396.899%; }
-.fox { background-position: 0.527704% 66.7622%; background-size: 384.962%; }
-.kangaroo {background-position: 0.542005% 0.706714%; background-size: 358.042%; }
-.merkat {background-position: 34.5088% 65.6338%; background-size: 445.217%; }
-.penguin { background-position: 37.9845% 0.645161%; background-size: 409.600%; }
+.flamingo {
+	background-position: 71.5405% 0.617284%;
+	background-size: 396.899%;
+}
+.fox {
+	background-position: 0.527704% 66.7622%;
+	background-size: 384.962%;
+}
+.kangaroo {
+	background-position: 0.542005% 0.706714%;
+	background-size: 358.042%;
+}
+.merkat {
+	background-position: 34.5088% 65.6338%;
+	background-size: 445.217%;
+}
+.penguin {
+	background-position: 37.9845% 0.645161%;
+	background-size: 409.6%;
+}
 .token_neutral {
 	width: 40px;
 	height: 80px;
 	background-image: url(img/tokens.png);
-	background-size: calc(600px / 50 * 40) auto;	
+	background-size: calc(600px / 50 * 40) auto;
 	background-position: 0 37%;
 	z-index: 20;
 	filter: drop-shadow(0px 2px 4px black);
