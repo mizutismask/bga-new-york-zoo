@@ -44,7 +44,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
 
   function processPlayerBlock($player_id, $player, $player_count)
   {
-    $color = $player['player_color'];
+    $order = $player['player_no'];
     $name = $player['player_name'];
     $no = $player['player_no'];
     global $g_user;
@@ -69,13 +69,13 @@ class view_newyorkzoo_newyorkzoo extends game_view
         $classes = '';
         $this->page->insert_block("square", array(
           'X' => $x, 'Y' => $y, 'LEFT' => round(($x) * $hor_scale),
-          'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "COLOR" => $color
+          'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "ORDER" => $order
         ));
       }
     }
     $own = $player_id == $current_player;
     $this->page->insert_block("player_board", array(
-      "COLOR" => $color, "PLAYER_NAME" => $name, "PLAYER_NO" => $no,
+      "ORDER" => $order, "PLAYER_NAME" => $name, 
       "PLAYER_ID" => $player_id, "OWN" => $own ? "own" : "",
       "PLAYER_COUNT" => $player_count,
     ));

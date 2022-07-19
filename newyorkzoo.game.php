@@ -230,10 +230,10 @@ class NewYorkZoo extends EuroGame
         $result = parent::getAllDatas();
         $players_basic = $this->loadPlayersBasicInfos();
         foreach ($players_basic as $player_info) {
-            $color = $player_info['player_color'];
-            $occupancy = $this->getOccupancyMatrix($color);
+            $order = $player_info['player_no'];
+            $occupancy = $this->getOccupancyMatrix($order);
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
-            $this->setCounter($result['counters'], "empties_${color}_counter", $unoccup_count);
+            $this->setCounter($result['counters'], "empties_${order}_counter", $unoccup_count);
         }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
@@ -426,22 +426,22 @@ class NewYorkZoo extends EuroGame
         $buts = $this->getRulesFor($token_id, 'cost');
         $time = $this->getRulesFor($token_id, 'time');
 
-        $color = $this->getPlayerColor($player_id);
-        $canBuy  = $this->arg_canBuyPatches($color);
+        $order = $this->getPlayerPosition($player_id);
+        $canBuy  = $this->arg_canBuyPatches($order);
         $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
         $pos = $this->tokens->getTokenState($token_id);
-        $this->saction_PlacePatch($color, $token_id, $dropTarget, $rotateZ, $rotateY);
+        $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
 
         $this->gamestate->nextState('next');
     }
 
-    function saction_PlacePatch($color, $token_id, $dropTarget, $rotateZ, $rotateY)
+    function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY)
     {
         $rotateZ = $rotateZ % 360;
         $rotateY = $rotateY % 360;
         $rotor = "${rotateZ}_$rotateY";
-        $occupancy = $this->getOccupancyMatrix($color);
-        $moves = $this->arg_possibleMoves($token_id, $color, $rotor, $occupancy)[$rotor];
+        $occupancy = $this->getOccupancyMatrix($order);
+        $moves = $this->arg_possibleMoves($token_id, $order, $rotor, $occupancy)[$rotor];
         $valid = array_search($dropTarget, $moves) !== false;
         $this->userAssertTrue(self::_("Not possible to place patch: illegal move"), $valid);
         $state = $rotateZ / 90 + $rotateY / 180 * 4;
@@ -455,9 +455,9 @@ class NewYorkZoo extends EuroGame
             $message,
             ['but' => $buts, 'time' => $time]
         );
-        $occupancy = $this->getOccupancyMatrix($color);
+        $occupancy = $this->getOccupancyMatrix($order);
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
-        $this->notifyCounterDirect("empties_${color}_counter", $unoccup_count, '');
+        $this->notifyCounterDirect("empties_${order}_counter", $unoccup_count, '');
     }
 
     function saction_FinalScoring()
@@ -466,10 +466,10 @@ class NewYorkZoo extends EuroGame
 
         foreach ($players as $player_id => $info) {
             $this->dbSetScore($player_id, 0);
-            $color = $info['player_color'];
+            $order = $info['player_no'];
 
             // empty spaces
-            $occupancy = $this->getOccupancyMatrix($color);
+            $occupancy = $this->getOccupancyMatrix($order);
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
             $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count * 2, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_slot');
         }
@@ -483,15 +483,15 @@ class NewYorkZoo extends EuroGame
     function arg_playerTurn()
     {
         $player_id = $this->getActivePlayerId();
-        $color = $this->getPlayerColor($player_id);
+        $order = $this->getPlayerPosition($player_id);
         $res = [];
-        $patches = $this->arg_canBuyPatches($color);
-        $curbuttons = $this->tokens->getTokensInLocation("buttons_$color");
+        $patches = $this->arg_canBuyPatches($order);
+        $curbuttons = $this->tokens->getTokensInLocation("buttons_$order");
         $buttons = count($curbuttons);
         $canUseAny = false;
-        $occupancy = $this->getOccupancyMatrix($color);
+        $occupancy = $this->getOccupancyMatrix($order);
         foreach ($patches as $patch) {
-            $moves = $this->arg_possibleMoves($patch, $color, null, $occupancy);
+            $moves = $this->arg_possibleMoves($patch, $order, null, $occupancy);
             $canPlace = false;
             foreach ($moves as $arr) {
                 if (count($arr) > 0) {
@@ -517,9 +517,9 @@ class NewYorkZoo extends EuroGame
         return $res;
     }
 
-    function arg_occupancyData($color)
+    function arg_occupancyData($order)
     {
-        $tokens = $this->tokens->getTokensOfTypeInLocation("patch", "square_${color}%");
+        $tokens = $this->tokens->getTokensOfTypeInLocation("patch", "square_${order}%");
         //$this->warn(toJson($tokens));
         $occupdata = [];
         foreach ($tokens as $key => $info) {
@@ -534,11 +534,11 @@ class NewYorkZoo extends EuroGame
         return $occupdata;
     }
 
-    function getOccupancyMatrix($color)
+    function getOccupancyMatrix($order)
     {
         $occupdata = null;
-        if ($color !== null) {
-            $occupdata = $this->arg_occupancyData($color);
+        if ($order !== null) {
+            $occupdata = $this->arg_occupancyData($order);
         }
         $occupancy = $this->matrix->occupancyMatrix($occupdata);
 
@@ -553,21 +553,21 @@ class NewYorkZoo extends EuroGame
         return $empty;
     }
 
-    function arg_possibleMoves($patch, $color = null, $rotor = null, $occupancy = null)
+    function arg_possibleMoves($patch, $order = null, $rotor = null, $occupancy = null)
     {
-        if ($color !== null) {
-            $prefix = "square_${color}_";
+        if ($order !== null) {
+            $prefix = "square_${order}_";
         } else
             $prefix = '';
 
         if ($occupancy == null) {
-            $occupancy = $this->getOccupancyMatrix($color);
+            $occupancy = $this->getOccupancyMatrix($order);
         }
         $mask = $this->getRulesFor($patch, 'mask');
         return $this->matrix->possibleMoves($mask, $prefix, $rotor, $occupancy);
     }
 
-    function arg_canBuyPatches($color)
+    function arg_canBuyPatches($order)
     {
         //$patches = ['patch_16', 'patch_1', 'patch_18'];
         $patchesall = $this->tokens->getTokensInLocation('market', null, 'token_state');

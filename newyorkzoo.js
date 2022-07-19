@@ -603,7 +603,7 @@ define([
             */
 
             setup: function (gamedatas) {
-                console.log("Starting game setup", gamedatas);
+                console.log("Starting game setup, gamedatas:", gamedatas);
                 var playerCount = Object.keys(gamedatas.players).length;
 
                 // Setting up player boards
@@ -639,8 +639,8 @@ define([
                 console.log("player info " + playerId, playerInfo);
                 // move miniboards to the right
                 var playerBoardDiv = dojo.byId('player_board_' + playerId);
-                var color = gamedatas.players[playerId].color;
-                dojo.place('miniboard_' + color, playerBoardDiv);
+                var order = gamedatas.players[playerId].no;
+                dojo.place('miniboard_' + order, playerBoardDiv);
             },
 
             setupScrollableMap: function () {
