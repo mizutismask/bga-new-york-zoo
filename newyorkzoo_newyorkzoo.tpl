@@ -28,13 +28,7 @@
 
 This is your game interface. You can edit this HTML in your ".tpl" file.
 <div id="thething" class="thething">
-<div id="test" class="test">
-<!-- BEGIN patchTest -->
-				
-					<div class="patch-face patch-face-{NUM} shape-patch-{NUM}"></div>
-				
-				<!-- END patchTest -->
-</div>
+
 <div id="map_container" class="map_container">
 	<div id="map_scrollable" class="map_scrollable map_layer">
 		<div class="actionStripWrapper">
