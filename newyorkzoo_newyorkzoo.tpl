@@ -91,6 +91,7 @@ This is your game interface. You can edit this HTML in your ".tpl" file.
 	
 </div>
 <div id="circle_market" class="circle_market"></div>
+<div id="bonus_market" class="bonus_market"></div>
 <div id="limbo" class="limbo">
 	<div id="rotate_control_template" class="rotate-image control-image"></div>
 	<div id="flip_control_template" class="mirror-image control-image"></div>

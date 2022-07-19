@@ -119,10 +119,12 @@ class NewYorkZoo extends EuroGame
         foreach ($this->token_types as $id => &$info) {
             if (startsWith($id, 'patch')) {
                 $occ = $this->getRulesFor($id, "occurrences");
+                $patchColor = $this->getRulesFor($id, "color");
+                $dest= $patchColor==="bonus"?"bonus_market":"limbo";
                 if ($occ > 1) {
-                    $this->tokens->createTokensPack($id . "_{INDEX}", "limbo", $occ, 1);
+                    $this->tokens->createTokensPack($id . "_{INDEX}", $dest, $occ, 1);
                 } else {
-                    $this->tokens->createToken($id, "limbo", 1);
+                    $this->tokens->createToken($id, $dest, 1);
                 }
             }
         }

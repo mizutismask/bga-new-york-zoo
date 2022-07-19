@@ -786,6 +786,13 @@
 	border: #436aab solid 1px;
 }
 
+/* Bonus patches */
+
+.bonus_market > * {
+	display: inline-block;
+	padding: 5px;
+}
+
 .board_houses {
 	position: absolute;
 }

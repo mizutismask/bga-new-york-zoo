@@ -56,11 +56,11 @@ class view_newyorkzoo_newyorkzoo extends game_view
     $ver_scale = CELL_WIDTH;
 
     for ($x = 1; $x <= 3; $x++) {
-        $classes = 'house_'.$x;
-        $this->page->insert_block("house", array(
-          'X' => $x, 'Y' => 0, 'LEFT' => round(($x) * $hor_scale),
-          'TOP' => round((0) * $ver_scale), 'CLASSES' => $classes, "PLAYER_ID" => $player_id, "HOUSE_INDEX" => $x
-        ));
+      $classes = 'house_' . $x;
+      $this->page->insert_block("house", array(
+        'X' => $x, 'Y' => 0, 'LEFT' => round(($x) * $hor_scale),
+        'TOP' => round((0) * $ver_scale), 'CLASSES' => $classes, "PLAYER_ID" => $player_id, "HOUSE_INDEX" => $x
+      ));
     }
 
     $gridSize = $this->game->getGridSize();
@@ -75,7 +75,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
     }
     $own = $player_id == $current_player;
     $this->page->insert_block("player_board", array(
-      "ORDER" => $order, "PLAYER_NAME" => $name, 
+      "ORDER" => $order, "PLAYER_NAME" => $name,
       "PLAYER_ID" => $player_id, "OWN" => $own ? "own" : "",
       "PLAYER_COUNT" => $player_count,
     ));
@@ -121,19 +121,23 @@ class view_newyorkzoo_newyorkzoo extends game_view
           $clippoints .= "$px% $py%,";
         }
         $clippoints = substr($clippoints, 0, strlen($clippoints) - 1);
+        $patchId = $id;
         for ($i = 0; $i < $occ; $i++) {
-          $this->page->insert_block("patch", ['PATCH_ID' => $id,'NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
+          if ($occ != 1) {
+            $patchId = $id . "_" . ($i+1);
+          }
+          $this->page->insert_block("patch", ['PATCH_ID' => $patchId, 'NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
         }
 
-          $fw = $w * CELL_WIDTH;
-          $fh = $h * CELL_WIDTH;
-          $i = ($num - 1) % $COLS;
-          $j = floor(($num - 1) / $COLS);
+        $fw = $w * CELL_WIDTH;
+        $fh = $h * CELL_WIDTH;
+        $i = ($num - 1) % $COLS;
+        $j = floor(($num - 1) / $COLS);
 
-          $this->page->insert_block("patchcss", [
-            'NUM' => $num, 'CLIP_POINTS' => $clippoints,
-            'W' => $fw, 'H' => $fh,
-          ]);
+        $this->page->insert_block("patchcss", [
+          'NUM' => $num, 'CLIP_POINTS' => $clippoints,
+          'W' => $fw, 'H' => $fh,
+        ]);
       }
     }
     $this->page->begin_block($template, "actionStripZone");
