@@ -276,7 +276,7 @@ $this->token_types = [
   ],
   'empties' => [
     'name' => clienttranslate("Empties Counter"),
-    'tooltip' => clienttranslate("Counter for remaining empty spaces. You will get 2 point penalty at the end of game per empty space."),
+    'tooltip' => clienttranslate("Counter for remaining empty spaces. The first player who fill his board wins the game."),
   ],
   'patch_1' => [
     'num' => 1,
