@@ -59,156 +59,157 @@ $this->boards = [
 /* Action board */
 $topY = 2.42;
 $topYLine2 = 70.56;
-$smallWidth = 7.10;
-$mediumWidth = 7.75;
-$bigWidth = 11.33;
+$smallWidth = 6.42;
+$mediumWidth = 7.30;
+$bigWidth = 10.49;
 $height = 27;
-$this->actionStripZones = [
-  'action_zone_1' => [
-    'topX' =>  0.52,
-    'topY' =>  $topY,
-    'width' =>  $bigWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_2' => [
-    'topX' =>  11.82,
-    'topY' =>  $topY,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_3' => [
-    'topX' =>  19,
-    'topY' =>  $topY,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_4' => [
-    'topX' =>  29.5,
-    'topY' =>  $topY,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_5' => [
-    'topX' =>  37.33,
-    'topY' =>  $topY,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_6' => [
-    'topX' =>  44.5,
-    'topY' =>  $topY,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_7' => [
-    'topX' =>  52.08,
-    'topY' =>  $topY,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_8' => [
-    'topX' =>   59.25,
-    'topY' =>  $topY,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_9' => [
-    'topX' =>  69.92,
-    'topY' =>  $topY,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_10' => [
-    'topX' =>  77.75,
-    'topY' =>  $topY,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_11' => [
-    'topX' =>  84.75,
-    'topY' =>  $topY,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_12' => [
-    'topX' =>  92.33,
-    'topY' =>  $topY,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_13' => [
-    'topX' =>  99.67,
-    'topY' =>  $topY,
-    'width' =>  $smallWidth,
-    'height' =>  100,
-  ],
-  'action_zone_14' => [
-    'topX' =>  84.67,
-    'topY' =>  $topYLine2,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_15' => [
-    'topX' =>  77.58,
-    'topY' =>  $topYLine2,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_16' => [
-    'topX' =>  69.92,
-    'topY' =>  $topYLine2,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_17' => [
-    'topX' =>  62.75,
-    'topY' =>  $topYLine2,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_18' => [
-    'topX' =>  54.92,
-    'topY' =>  $topYLine2,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_19' => [
-    'topX' =>  44.33,
-    'topY' =>  $topYLine2,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_20' => [
-    'topX' =>  37.33,
-    'topY' =>  $topYLine2,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_21' => [
-    'topX' =>  29.5,
-    'topY' =>  $topYLine2,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_22' => [
-    'topX' =>  22.33,
-    'topY' =>  $topYLine2,
-    'width' =>  $smallWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_23' => [
-    'topX' =>  14.6,
-    'topY' =>  $topYLine2,
-    'width' =>  $mediumWidth,
-    'height' =>  $height,
-  ],
-  'action_zone_24' => [
-    'topX' =>  0.52,
-    'topY' =>  $topYLine2,
-    'width' =>  $bigWidth,
-    'height' =>  $height,
-  ],
+$offsetZones = 0.01;
+$this->actionStripZones = [];
+$this->actionStripZones['action_zone_1'] = [
+  'topX' =>  0.52,
+  'topY' =>  $topY,
+  'width' =>  $bigWidth,
+  'height' =>  $height,
 ];
+$this->actionStripZones['action_zone_2'] = [
+  'topX' =>  $this->actionStripZones['action_zone_1']['topX'] + $this->actionStripZones['action_zone_1']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_3'] = [
+  'topX' =>  $this->actionStripZones['action_zone_2']['topX'] + $this->actionStripZones['action_zone_2']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_4'] = [
+  'topX' => 27.28,
+  'topY' =>  $topY,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_5'] = [
+  'topX' =>  $this->actionStripZones['action_zone_4']['topX'] + $this->actionStripZones['action_zone_4']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_6'] = [
+  'topX' =>  $this->actionStripZones['action_zone_5']['topX'] + $this->actionStripZones['action_zone_5']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_7'] = [
+  'topX' =>  $this->actionStripZones['action_zone_6']['topX'] + $this->actionStripZones['action_zone_6']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_8'] = [
+  'topX' =>  $this->actionStripZones['action_zone_7']['topX'] + $this->actionStripZones['action_zone_7']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_9'] = [
+  'topX' =>  64.68,
+  'topY' =>  $topY,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_10'] = [
+  'topX' =>  $this->actionStripZones['action_zone_9']['topX'] + $this->actionStripZones['action_zone_9']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_11'] = [
+  'topX' =>  $this->actionStripZones['action_zone_10']['topX'] + $this->actionStripZones['action_zone_10']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_12'] = [
+  'topX' =>  $this->actionStripZones['action_zone_11']['topX'] + $this->actionStripZones['action_zone_11']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_13'] = [
+  'topX' =>  $this->actionStripZones['action_zone_12']['topX'] + $this->actionStripZones['action_zone_12']['width'] + $offsetZones,
+  'topY' =>  $topY,
+  'width' =>  $smallWidth,
+  'height' =>  100,
+];
+$this->actionStripZones['action_zone_14'] = [
+  'topX' =>  78.46,
+  'topY' =>  $topYLine2,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_15'] = [
+  'topX' =>  $this->actionStripZones['action_zone_14']['topX'] - $smallWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_16'] = [
+  'topX' =>  $this->actionStripZones['action_zone_15']['topX'] - $mediumWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_17'] = [
+  'topX' =>  $this->actionStripZones['action_zone_16']['topX'] - $smallWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_18'] = [
+  'topX' =>  $this->actionStripZones['action_zone_17']['topX'] - $mediumWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_19'] = [
+  'topX' =>  41.05,
+  'topY' =>  $topYLine2,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_20'] = [
+  'topX' =>  $this->actionStripZones['action_zone_19']['topX'] - $smallWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_21'] = [
+  'topX' =>  $this->actionStripZones['action_zone_20']['topX'] - $mediumWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_22'] = [
+  'topX' =>  $this->actionStripZones['action_zone_21']['topX'] - $smallWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $smallWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_23'] = [
+  'topX' =>  $this->actionStripZones['action_zone_22']['topX'] - $mediumWidth - $offsetZones,
+  'topY' =>  $topYLine2,
+  'width' =>  $mediumWidth,
+  'height' =>  $height,
+];
+$this->actionStripZones['action_zone_24'] = [
+  'topX' =>  0.52,
+  'topY' =>  $topYLine2,
+  'width' =>  $bigWidth,
+  'height' =>  $height,
+];
+
 
 $this->token_types = [
 
