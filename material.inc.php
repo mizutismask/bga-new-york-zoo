@@ -226,6 +226,29 @@ $this->actionStripZones['action_zone_25'] = [
   'animals' =>  [PENGUIN, FLAMINGO],
 ];
 
+$this->birthZones = [
+  'birth_zone_1' => [
+    'triggerZone' =>  4,
+    'animal' =>  KANGAROO,
+  ],
+  'birth_zone_2' => [
+    'triggerZone' =>  9,
+    'animal' =>  PENGUIN,
+  ],
+  'birth_zone_3' => [
+    'triggerZone' =>  14,
+    'animal' =>  FOX,
+  ],
+  'birth_zone_4' => [
+    'triggerZone' =>  19,
+    'animal' =>  MEERKAT,
+  ],
+  'birth_zone_5' => [
+    'triggerZone' =>  24,
+    'animal' =>  FLAMINGO,
+  ],
+];
+
 
 $this->token_types = [
 
