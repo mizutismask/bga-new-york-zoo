@@ -120,7 +120,7 @@ class NewYorkZoo extends EuroGame
             if (startsWith($id, 'patch')) {
                 $occ = $this->getRulesFor($id, "occurrences");
                 $patchColor = $this->getRulesFor($id, "color");
-                $dest= $patchColor==="bonus"?"bonus_market":"limbo";
+                $dest = $patchColor === "bonus" ? "bonus_market" : "limbo";
                 if ($occ > 1) {
                     $this->tokens->createTokensPack($id . "_{INDEX}", $dest, $occ, 1);
                 } else {
@@ -143,10 +143,11 @@ class NewYorkZoo extends EuroGame
         //self::dump("**********************",$players);
         $i = 1;
         foreach ($players as $player_id => $player) {
-            $this->tokens->createTokensPack($player_id . "_house_{INDEX}",  "house_" . $player_id, 3);
+            //$this->tokens->createTokensPack($player_id . "_house_{INDEX}",  "house_" . $player_id, 3);
             $playerOrder = $player["player_no"];
             $boardConf = $this->boards[count($players)][$playerOrder];
             $h = 1;
+            self::dump("***********boardConf***********", $boardConf);
             foreach ($boardConf["animals"] as $animal) {
                 $this->tokens->moveToken($animal . '_' . $i, "house_" . $player_id . "_" . $h, 0);
                 $i++;

@@ -833,12 +833,14 @@
 	.flamingo,
 	.fox,
 	.kangaroo,
-	.merkat,
+	.meerkat,
 	.penguin {
 		display: inline-block;
 		overflow: hidden;
 		background-repeat: no-repeat;
 		background-image: url(img/animals.png);
+		width: var(--cellWidth);
+		height: var(--cellWidth);
 	}
 
 	.flamingo {
@@ -853,7 +855,7 @@
 		background-position: 0.542005% 0.706714%;
 		background-size: 358.042%;
 	}
-	.merkat {
+	.meerkat {
 		background-position: 34.5088% 65.6338%;
 		background-size: 445.217%;
 	}

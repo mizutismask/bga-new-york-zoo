@@ -680,6 +680,9 @@ define([
                     var rotateZ = 0;
                     dojo.setAttr(token, { "data-order": this.getTokenState(token), "data-dx": dx, "data-dy": dy, "data-rz": rotateZ });
                 }
+                else {
+                    console.log("setupToken unknown", token);
+                }
             },
             setupGameTokens: function () {
 
@@ -1147,6 +1150,13 @@ define([
 
                     return result;
                 }
+                if (location.startsWith('house') ) {
+                    if (!$(token)) {
+                        console.log("create token in house ", token, location, tokenInfo);
+                        this.createToken(token, tokenInfo, location);
+                    }
+                   return result;
+                }
                 if (location.startsWith('supply_buttons') || location.startsWith('buttons')) {
                     //	debugger;
                     result.inlinecoords = true;
@@ -1172,9 +1182,19 @@ define([
                     if ($(token))
                         $(token).style.removeProperty("transform");
                 }
-                if (location.startsWith('buttons')) {
-                    //debugger;
-                }
+                /* if (location.startsWith('action_zone')) {
+                     result.inlinecoords = true;
+                     var locbox = dojo.contentBox(location);
+                     var tokenbox = dojo.contentBox(token);
+                     var width = cbox.w - 40;
+                     var height = cbox.h - 40;
+                     result.x = locbox.w - tokenbox.w/2;
+                     result.y = locbox.h - tokenbox.h/2;
+                     if (!$(token))
+                         this.createToken(token, tokenInfo, location);
+                     //dojo.attr(token, 'data-pos', getIntPart(token, 1));
+                     return result;
+                 }*/
 
                 return result;
             },
