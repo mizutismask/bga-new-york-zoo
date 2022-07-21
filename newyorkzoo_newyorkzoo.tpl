@@ -25,8 +25,6 @@
     Please REMOVE this comment before publishing your game on BGA
 -->
 
-
-This is your game interface. You can edit this HTML in your ".tpl" file.
 <div id="thething" class="thething">
 
 <div id="map_container" class="map_container">
