@@ -224,7 +224,7 @@
 	position: absolute;
 	top: var(--cellWidth);
 	left: var(--cellWidth);
-	width: calc(var(--cellWidth) * var(--rowsNb));
+	width: calc(var(--cellWidth) * var(--colsNb));
 	height: calc(var(--cellWidth) * var(--rowsNb));
 	transform: translateZ(3px);
 	z-index: 100;
