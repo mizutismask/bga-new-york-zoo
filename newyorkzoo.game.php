@@ -570,21 +570,40 @@ class NewYorkZoo extends EuroGame
         return $this->matrix->possibleMoves($mask, $prefix, $rotor, $occupancy);
     }
 
+    /** Return patches that are accessible with an elephant move. */
     function arg_canBuyPatches($order)
     {
         //$patches = ['patch_16', 'patch_1', 'patch_18'];
-        $patchesall = $this->tokens->getTokensInLocation('market', null, 'token_state');
-        $keys = $this->tokens->toTokenKeyList($patchesall);
-        $index = array_search('token_neutral', $keys);
-        array_splice($keys, $index, 1);
-        $size = count($keys);
-        if ($size <= 3)
-            return $keys;
+        $tokenNeutral = $this->tokens->getTokenInfo('token_neutral');
+        $prefix = "action_zone_";
+        $neutralLocation = getPart($tokenNeutral['location'], 2);
+
+        $moveMax = $this->arg_elephantMove();
         $patches = [];
-        for ($i = 0; $i < 3; $i++) {
-            $patches[] = $keys[($index + $i) % $size];
+        for ($i = $neutralLocation + 1; $i <= $neutralLocation + $moveMax; $i++) {
+            if ($i > 25) {
+                $i = 1;
+            }
+            $topPatch = $this->tokens->getTokenOnTop($prefix . $i, true, 'patch');
+            if ($topPatch)
+                $patches[] = $topPatch["key"];
         }
+        self::dump("*****************arg_canBuyPatches*", $patches);
         return $patches;
+    }
+
+    function arg_elephantMove()
+    {
+        $players = $this->loadPlayersBasicInfos();
+        $players_nbr = count($players);
+        switch ($players_nbr) {
+            case 2:
+            case 4:
+                return 4;
+            case 3:
+            case 5:
+                return 3;
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////
