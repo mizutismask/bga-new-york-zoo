@@ -306,8 +306,7 @@ class NewYorkZoo extends EuroGame
     }
     function getMatrixHeightEnd()
     {
-        return $this->getGridHeight();
-        +OFFSET;
+        return $this->getGridHeight() + OFFSET;
     }
 
     function getPolyominoesCount($color)
