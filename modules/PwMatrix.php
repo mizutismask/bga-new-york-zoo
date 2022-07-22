@@ -10,7 +10,7 @@ if (!function_exists('array_key_first')) {
         return NULL;
     }
 }
-
+/** Double entry array : [height/line][width/col] */
 class PwMatrix extends APP_Object
 {
 
@@ -32,8 +32,8 @@ class PwMatrix extends APP_Object
     function emptyMatrix()
     {
         $res = [];
-        for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixWidthEnd(); $i++) {
-            for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixHeightEnd(); $j++) {
+        for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixHeightEnd(); $i++) {
+            for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixWidthEnd(); $j++) {
                 $res[$i][$j] = 0;
             }
         }
@@ -46,11 +46,11 @@ class PwMatrix extends APP_Object
         $this->game->dump("par", $this->game->getGridHeight());
 
         $res = [];
-        for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixWidthEnd(); $i++) {
-            for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixHeightEnd(); $j++) {
+        for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixHeightEnd(); $i++) {
+            for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixWidthEnd(); $j++) {
                 if ($j < 0 || $i < 0)
                     $val = 1;
-                else if ($j >= $this->game->getGridHeight() || $i >= $this->game->getGridWidth())
+                else if ($j >= $this->game->getGridWidth() || $i >= $this->game->getGridHeight())
                     $val = 1;
                 else {
                     $val = 0;
@@ -144,9 +144,9 @@ class PwMatrix extends APP_Object
         $h = count($matrix);
         $w = count($matrix[0]);
         $str = "matrix $name  $w x $h|\n";
-        for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixWidthEnd(); $i++) {
+        for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixHeightEnd(); $i++) {
             $row = '';
-            for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixHeightEnd(); $j++) {
+            for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixWidthEnd(); $j++) {
                 if (isset($matrix[$i][$j])) {
                     $val = $matrix[$i][$j] ? 'X' : '_';
                 } else {
@@ -157,15 +157,15 @@ class PwMatrix extends APP_Object
             $str .= $row . "\n";
         }
         //if (!$retstr)
-            //print $str;
+        //print $str;
         return $str;
     }
     function availability($occupancy, $mask, $deg_z, $deg_y)
     {
         $piecematrix = $this->pieceMatrix($mask, $deg_z, $deg_y);
         $dominance = [];
-        for ($i = 0; $i < $this->game->getGridWidth(); $i++) {
-            for ($j = 0; $j < $this->game->getGridHeight(); $j++) {
+        for ($i = 0; $i < $this->game->getGridHeight(); $i++) {
+            for ($j = 0; $j < $this->game->getGridWidth(); $j++) {
                 $overlap = $this->intersectMatrix($occupancy, $piecematrix, $i, $j, true);
                 $dominance[$i][$j] = $overlap;
             }
@@ -180,7 +180,7 @@ class PwMatrix extends APP_Object
         else
             $rotor_arr = $this->rotors($mask);
         $res = [];
-        // $this->dump("occup",$this->dumpMatrix($occupancy,'occup', true));
+        $this->dump("possibleMoves occup", $this->dumpMatrix($occupancy, 'occup', true));
         foreach ($rotor_arr as $rot) {
             $deg_z = getPart($rot, 0);
             $deg_y = getPart($rot, 1);
@@ -214,8 +214,8 @@ class PwMatrix extends APP_Object
 
     function hasfilled($matrix, $max = 7)
     {
-        for ($start_i = 0; $start_i <= $this->game->getGridWidth() - $max; $start_i++) {
-            for ($start_j = 0; $start_j <= $this->game->getGridHeight() - $max; $start_j++) {
+        for ($start_i = 0; $start_i <= $this->game->getGridHeight() - $max; $start_i++) {
+            for ($start_j = 0; $start_j <= $this->game->getGridWidth() - $max; $start_j++) {
                 $found = true;
                 for ($i = $start_i; $i < $start_i + $max; $i++) {
                     for ($j = $start_j; $j < $start_j + $max; $j++) {
@@ -240,8 +240,8 @@ class PwMatrix extends APP_Object
     {
         //$this->dumpMatrix($matrix,'dominance');
         $res = [];
-        for ($i = 0; $i < $this->game->getGridWidth(); $i++) {
-            for ($j = 0; $j < $this->game->getGridHeight(); $j++) {
+        for ($i = 0; $i < $this->game->getGridHeight(); $i++) {
+            for ($j = 0; $j < $this->game->getGridWidth(); $j++) {
                 if (array_key_exists($i, $matrix) && array_key_exists($j, $matrix[$i])) {
                     if ($matrix[$i][$j] === $value) {
                         $res[] = "${prefix}${i}_${j}";
