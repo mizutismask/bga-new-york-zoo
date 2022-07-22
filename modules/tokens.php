@@ -225,14 +225,14 @@ class Tokens extends APP_GameClass {
     /**
      * Return token on top of this location, top defined as item with higher state value
      */
-    function getTokenOnTop($location, $no_deck_reform = true) {
-        $result_arr = $this->getTokensOnTop(1, $location);
+    function getTokenOnTop($location, $no_deck_reform = true,$type=null) {
+        $result_arr = $this->getTokensOnTop(1, $location,$type);
         if (count($result_arr) > 0)
             return $result_arr [0];
         if (isset($this->autoreshuffle_custom [$location]) && $this->autoreshuffle && !$no_deck_reform) {
             // No more cards in deck & reshuffle is active => form another deck
             self::reformDeckFromDiscard($location);
-            $result_arr = $this->getTokensOnTop(1, $location);
+            $result_arr = $this->getTokensOnTop(1, $location,$type);
             if (count($result_arr) > 0)
                 return $result_arr [0];
         }
@@ -242,12 +242,19 @@ class Tokens extends APP_GameClass {
     /**
      * Return "$nbr" tokens on top of this location, top defined as item with higher state value
      */
-    function getTokensOnTop($nbr, $location) {
+    function getTokensOnTop($nbr, $location,$type=null) {
         self::checkLocation($location);
         self::checkPosInt($nbr);
         $result = array ();
         $sql = $this->getSelectQuery();
         $sql .= " WHERE token_location='$location'";
+        if ($type !== null) {
+            if (strpos($type, "%") === false) {
+                $type .= "%";
+            }
+            self::checkType($type);
+            $sql .= " AND token_key LIKE '$type'";
+        }
         $sql .= " ORDER BY token_state DESC";
         $sql .= " LIMIT $nbr";
         $dbres = self::DbQuery($sql);
@@ -526,6 +533,7 @@ class Tokens extends APP_GameClass {
         return $result;
     }
 
+    /** Replace variables inside {} with their value in the keymap. */
     function varsub($line, $keymap) {
         if ($line === null)
             throw new feException("varsub: line cannot be null");
