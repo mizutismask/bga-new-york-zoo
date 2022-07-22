@@ -144,7 +144,7 @@
 .actionStripWrapper {
 	position: relative;
 	width: 100%;
-	height: 218px;
+	height: 100%;
 }
 
 .tableau {
@@ -277,6 +277,8 @@
 .patch {
 	transition: 0.5s;
 	transform-style: preserve-3d;
+	grid-column: 1 / 1;
+    grid-row: 1 / 1
 }
 
 .patch-face {
@@ -786,7 +788,8 @@
 		display: inline-block;
 		position: absolute;
 		border: #436aab solid 1px;
-		overflow:hidden
+		display: grid;
+    	grid-template-columns: 1fr;
 	}
 
 	/* Bonus patches */
