@@ -135,7 +135,7 @@ class NewYorkZoo extends EuroGame
         $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", 24);
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", 24);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", 24);
-        $this->tokens->createToken("token_neutral", "action_zone_10", 0); //elephant
+        $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_10
 
 
         //creates houses and gets animals from the board
@@ -187,6 +187,16 @@ class NewYorkZoo extends EuroGame
                     $layers[$loc]++;
                 }
                 $this->tokens->moveToken($patchId, "action_zone_" . $loc, $layers[$loc]);
+            }
+        }
+        $players = $this->loadPlayersBasicInfos();
+        $players_nbr = count($players);
+        if ($players_nbr == 2) {
+            $locations = $this->getPolyominoesLocationsOnBoard();
+            foreach ($locations as $loc) {
+                $patch = $this->tokens->getTokenOnTop("action_zone_" . $loc, true, "patch");
+                $this->tokens->moveToken($patch["key"], "deck");
+                //todo distribuer équitablement par couleur
             }
         }
     }
@@ -342,6 +352,11 @@ class NewYorkZoo extends EuroGame
                 return [1, 3, 11, 13, 14, 16, 24];
         }
         // }
+    }
+
+    function getPolyominoesLocationsOnBoard()
+    {
+        return [1, 3, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24];
     }
 
     function mtCollectWithField($field, $callback = null)
