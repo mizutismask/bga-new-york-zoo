@@ -60,9 +60,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				}
 				this.first_player_id = Object.keys(gamedatas.players)[0];
 				if (!this.isSpectator)
-					this.player_color = gamedatas.players[this.player_id].color;
+					this.player_no = gamedatas.players[this.player_id].no;
 				else
-					this.player_color = gamedatas.players[this.first_player_id].color;
+					this.player_no = gamedatas.players[this.first_player_id].no;
 				if (!this.gamedatas.tokens) {
 					console.error("Missing gamadatas.tokens!");
 					this.gamedatas.tokens = {};
@@ -108,7 +108,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				this.clientStateArgs = {};
 			}
 
-			//console.log('onEnteringState: ' + stateName, args, this.debugStateInfo());
+			console.log('onEnteringState: ' + stateName, args, this.debugStateInfo());
 			if (args && args.args) args = args.args;
 			this.curstate = stateName;
 			// Call appropriate method
@@ -867,6 +867,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			this.updateTooltip(token);
 			if (tokenInfo) this.updateTooltip(tokenInfo.location);
 		},
+
+		/** Return an array with location,inlinecoords and temp info. */
 		getPlaceRedirect: function(token, tokenInfo) {
 			var location = tokenInfo.location;
 			var result = {

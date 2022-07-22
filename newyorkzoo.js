@@ -132,7 +132,7 @@ class PatchManager {
         this.emptyimg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
         this.gamebody = $('ebd-body');
 
-        var pboard = $('pboard_' + gameui.player_color);
+        var pboard = $('pboard_' + gameui.player_no);
         this.createPatchControl('rotate_control', pboard, "_a");
         this.createPatchControl('flip_control', pboard, "_a");
         this.createPatchControl('done_control', pboard, "_a");
@@ -144,7 +144,7 @@ class PatchManager {
             item.addEventListener("click", event => this.onClickPatch(event), false)
         }
 
-        document.querySelectorAll(".tableau_" + gameui.player_color + " .square")
+        document.querySelectorAll(".tableau_" + gameui.player_no + " .square")
             .forEach(item => {
                 item.classList.add("drop-zone");
                 item.addEventListener("click", event => this.onSquare(event), false)
@@ -189,7 +189,7 @@ class PatchManager {
             event.stopPropagation();
             return;
         }
-        var shadowNode = this.createShadowNode(targetNode, 'pieces_' + gameui.player_color);
+        var shadowNode = this.createShadowNode(targetNode, 'pieces_' + gameui.player_no);
         this.applyRotate(this.mobileNode);
         gameui.moveClass('selected', this.selectedNode);
         shadowNode.style.setProperty("pointer-events", 'none');
@@ -386,7 +386,7 @@ class PatchManager {
             }
             this.applyRotate(this.mobileNode);
             targetNode.style.transition = "none";
-            gameui.attachToNewParentNoDestroy(targetNode, 'pieces_' + gameui.player_color);
+            gameui.attachToNewParentNoDestroy(targetNode, 'pieces_' + gameui.player_no);
             targetNode.style.removeProperty("transition");
             gameui.moveClass('selected', targetNode);
 
@@ -426,7 +426,7 @@ class PatchManager {
             dojo.place(targetNode.id, 'market');
             gameui.adjustScrollMap();
         } else {
-            dojo.place(targetNode, 'tableau_' + gameui.player_color);
+            dojo.place(targetNode, 'tableau_' + gameui.player_no);
             gameui.stripPosition(targetNode);
         }
     };
