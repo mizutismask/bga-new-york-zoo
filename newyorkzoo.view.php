@@ -55,7 +55,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
     $hor_scale = CELL_WIDTH;
     $ver_scale = CELL_WIDTH;
 
-    for ($x = 1; $x <= 3; $x++) {
+    for ($x = 1; $x <= $this->game->boards[$player_count][$order]['houses']; $x++) {
       $classes = 'house_' . $x;
       $this->page->insert_block("house", array(
         'X' => $x, 'Y' => 0, 'LEFT' => round(($x) * $hor_scale),

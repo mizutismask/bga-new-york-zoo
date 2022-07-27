@@ -49,9 +49,65 @@ $this->boards = [
   '2' => [
     '1' => [
       'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 3,
     ],
     '2' => [
       'animals' => [MEERKAT, KANGAROO],
+      'houses' => 3,
+    ],
+  ],
+  '3' => [
+    '1' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 2,
+    ],
+    '2' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 3,
+    ],
+    '3' => [
+      'animals' => [MEERKAT, KANGAROO],
+      'houses' => 3,
+    ],
+  ],
+  '4' => [
+    '1' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 2,
+    ],
+    '2' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 3,
+    ],
+    '3' => [
+      'animals' => [MEERKAT, KANGAROO],
+      'houses' => 3,
+    ],
+    '4' => [
+      'animals' => [MEERKAT, KANGAROO],
+      'houses' => 4,
+    ],
+  ],
+  '5' => [
+    '1' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 2,
+    ],
+    '2' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 3,
+    ],
+    '3' => [
+      'animals' => [MEERKAT, KANGAROO],
+      'houses' => 3,
+    ],
+    '4' => [
+      'animals' => [MEERKAT, KANGAROO],
+      'houses' => 4,
+    ],
+    '5' => [
+      'animals' => [FLAMINGO, KANGAROO],
+      'houses' => 4,
     ],
   ],
 ];
@@ -253,7 +309,7 @@ $this->birthZones = [
 $this->token_types = [
 
   'token_neutral' => [
-    'name' => clienttranslate("Neutral Token"),
+    'name' => clienttranslate("Elephant"),
     'w' => 1, 'h' => 1,
   ],
   'rotate_control' => [
@@ -298,7 +354,6 @@ $this->token_types = [
     'type' => KANGAROO,
     'name' => clienttranslate("Kangaroo"),
   ],
-
 
   'patch_1' => [
     'num' => 1,

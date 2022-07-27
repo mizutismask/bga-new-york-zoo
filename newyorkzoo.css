@@ -833,6 +833,155 @@
 		left: -76.5%;
 	}
 
+	.player_count_3.player_order_1 .house_1 {
+		top: 32.5%;
+		left: 9%;
+	}
+	.player_count_3.player_order_1 .house_2 {
+		top: 29.8%;
+		left: -27.5%;
+	}
+	.player_count_3.player_order_2 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_3.player_order_2 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_3.player_order_2 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_3.player_order_3 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_3.player_order_3 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_3.player_order_3 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	
+	.player_count_4.player_order_1 .house_1 {
+		top: 32.5%;
+		left: 9%;
+	}
+	.player_count_4.player_order_1 .house_2 {
+		top: 29.8%;
+		left: -27.5%;
+	}
+	.player_count_4.player_order_2 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_4.player_order_2 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_4.player_order_2 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_4.player_order_3 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_4.player_order_3 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_4.player_order_3 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_4.player_order_4 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_4.player_order_4 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_4.player_order_4 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_4.player_order_4 .house_4{
+		top: 44.5%;
+		left: -76.5%;
+	}
+
+	.player_count_5.player_order_1 .house_1 {
+		top: 29.8%;
+		left: 14%;
+	}
+	.player_count_5.player_order_1 .house_2 {
+		top: 41.7%;
+		left: -10.6%;
+	}
+	.player_count_5.player_order_2 .house_1 {
+		top: 33.0%;
+		left: 9%;
+	}
+	.player_count_5.player_order_2 .house_2 {
+		top: 29.6%;
+		left: 4.5%;
+	}
+	.player_count_5.player_order_2 .house_3 {
+		top: 45.5%;
+		left: -17.8%;
+	}
+	.player_count_5.player_order_3 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_5.player_order_3 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_5.player_order_3 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_5.player_order_4 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_5.player_order_4 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_5.player_order_4 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_5.player_order_4 .house_4{
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_5.player_order_5 .house_1 {
+		top: 33.5%;
+		left: 9%;
+	}
+	.player_count_5.player_order_5 .house_2 {
+		top: 29.6%;
+		left: -26.9%;
+	}
+	.player_count_5.player_order_5 .house_3 {
+		top: 44.5%;
+		left: -76.5%;
+	}
+	.player_count_5.player_order_5 .house_4{
+		top: 44.5%;
+		left: -76.5%;
+	}
+
+	/*todo*/
+
 	.flamingo,
 	.fox,
 	.kangaroo,
