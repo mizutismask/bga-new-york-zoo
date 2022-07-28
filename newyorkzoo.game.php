@@ -25,6 +25,8 @@ require_once('modules/PwMatrix.php');
 
 if (!defined('OFFSET')) {
     define("OFFSET", 5);
+    define("ACTION_ZONES_COUNT", 25);
+    define("ACTION_ZONE_PREFIX", "action_zone_");
 }
 
 class NewYorkZoo extends EuroGame
@@ -186,7 +188,7 @@ class NewYorkZoo extends EuroGame
                 } else {
                     $layers[$loc]++;
                 }
-                $this->tokens->moveToken($patchId, "action_zone_" . $loc, $layers[$loc]);
+                $this->tokens->moveToken($patchId, ACTION_ZONE_PREFIX . $loc, $layers[$loc]);
             }
         }
         $players = $this->loadPlayersBasicInfos();
@@ -194,8 +196,8 @@ class NewYorkZoo extends EuroGame
         if ($players_nbr == 2) {
             $locations = $this->getPolyominoesLocationsOnBoard();
             foreach ($locations as $loc) {
-                $patch = $this->tokens->getTokenOnTop("action_zone_" . $loc, true, "patch");
-                $this->tokens->moveToken($patch["key"], "deck");
+                $patch = $this->tokens->getTokenOnTop(ACTION_ZONE_PREFIX . $loc, true, "patch");
+                $this->tokens->moveToken($patch["key"], "limbo");
                 //todo distribuer équitablement par couleur
             }
         }
@@ -359,6 +361,35 @@ class NewYorkZoo extends EuroGame
         return [1, 3, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24];
     }
 
+    function getNextActionZoneNumber($current)
+    {
+        return $current == ACTION_ZONES_COUNT ? 1 : $current + 1;
+    }
+
+    function getNextActionZones()
+    {
+        $tokenNeutral = $this->tokens->getTokenInfo('token_neutral');
+        $neutralLocation = getPart($tokenNeutral['location'], 2);
+
+        $moveMax = $this->arg_elephantMove();
+        $zones = [];
+        $moveCount = 1;
+        $nextZone = $this->getNextActionZoneNumber($neutralLocation);
+        while (count($zones) < $moveMax) {
+            $patches = $this->tokens->getTokensOfTypeInLocation('patch', ACTION_ZONE_PREFIX . $nextZone);
+            if ($this->actionStripZones[ACTION_ZONE_PREFIX . $nextZone]['type'] == PATCH && !$patches) {
+                //empty patch zones do not count
+                self::dump("************no patch at******************", ACTION_ZONE_PREFIX . $nextZone);
+            } else {
+                $zones[] = $nextZone;
+                $moveCount++;
+            }
+            $nextZone = $this->getNextActionZoneNumber($nextZone);
+        }
+        self::dump("************possible zones******************", $zones);
+        return $zones;
+    }
+
     function mtCollectWithField($field, $callback = null)
     {
         $res = [];
@@ -462,15 +493,13 @@ class NewYorkZoo extends EuroGame
         $valid = array_search($dropTarget, $moves) !== false;
         $this->userAssertTrue(self::_("Not possible to place patch: illegal move"), $valid);
         $state = $rotateZ / 90 + $rotateY / 180 * 4;
-        $buts = $this->getRulesFor($token_id, 'cost');
-        $time = $this->getRulesFor($token_id, 'time');
-        $message = clienttranslate('${player_name} places patch paying ${but} buttons and ${time} time ${token_div}');
+        $message = clienttranslate('${player_name} places patch ${token_div}');
         $this->dbSetTokenLocation(
             $token_id,
             $dropTarget,
             $state,
             $message,
-            ['but' => $buts, 'time' => $time]
+            []
         );
         $occupancy = $this->getOccupancyMatrix($order);
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
@@ -588,17 +617,12 @@ class NewYorkZoo extends EuroGame
     function arg_canBuyPatches($order)
     {
         //$patches = ['patch_16', 'patch_1', 'patch_18'];
-        $tokenNeutral = $this->tokens->getTokenInfo('token_neutral');
-        $prefix = "action_zone_";
-        $neutralLocation = getPart($tokenNeutral['location'], 2);
-
-        $moveMax = $this->arg_elephantMove();
+        $prefix = ACTION_ZONE_PREFIX;
         $patches = [];
-        for ($i = $neutralLocation + 1; $i <= $neutralLocation + $moveMax; $i++) {
-            if ($i > 25) {
-                $i = 1;
-            }
-            $topPatch = $this->tokens->getTokenOnTop($prefix . $i, true, 'patch');
+        $nextZones = $this->getNextActionZones();
+        foreach ($nextZones as $nz) {
+            self::dump("*****************getNextActionZones rs*", $nz);
+            $topPatch = $this->tokens->getTokenOnTop($prefix . $nz, true, 'patch');
             if ($topPatch)
                 $patches[] = $topPatch["key"];
         }

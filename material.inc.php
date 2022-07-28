@@ -43,6 +43,9 @@ if (!defined("LIGHTEST_GREEN")) {
   define("KANGAROO", "kangaroo");
   define("PENGUIN", "penguin");
   define("FOX", "fox");
+
+  define("ANIMAL", "animal");
+  define("PATCH", "patch");
 }
 
 $this->boards = [
@@ -126,6 +129,7 @@ $this->actionStripZones['action_zone_1'] = [
   'topY' =>  $topY,
   'width' =>  $bigWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_2'] = [
   'topX' =>  $this->actionStripZones['action_zone_1']['topX'] + $this->actionStripZones['action_zone_1']['width'] + $offsetZones,
@@ -133,18 +137,21 @@ $this->actionStripZones['action_zone_2'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [FOX, KANGAROO],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_3'] = [
   'topX' =>  $this->actionStripZones['action_zone_2']['topX'] + $this->actionStripZones['action_zone_2']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_4'] = [
   'topX' => 27.28,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_5'] = [
   'topX' =>  $this->actionStripZones['action_zone_4']['topX'] + $this->actionStripZones['action_zone_4']['width'] + $offsetZones,
@@ -152,12 +159,14 @@ $this->actionStripZones['action_zone_5'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [PENGUIN, MEERKAT],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_6'] = [
   'topX' =>  $this->actionStripZones['action_zone_5']['topX'] + $this->actionStripZones['action_zone_5']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_7'] = [
   'topX' =>  $this->actionStripZones['action_zone_6']['topX'] + $this->actionStripZones['action_zone_6']['width'] + $offsetZones,
@@ -165,18 +174,21 @@ $this->actionStripZones['action_zone_7'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [PENGUIN, FOX],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_8'] = [
   'topX' =>  $this->actionStripZones['action_zone_7']['topX'] + $this->actionStripZones['action_zone_7']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_9'] = [
   'topX' =>  64.68,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_10'] = [
   'topX' =>  $this->actionStripZones['action_zone_9']['topX'] + $this->actionStripZones['action_zone_9']['width'] + $offsetZones,
@@ -184,12 +196,14 @@ $this->actionStripZones['action_zone_10'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [FOX, FLAMINGO],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_11'] = [
   'topX' =>  $this->actionStripZones['action_zone_10']['topX'] + $this->actionStripZones['action_zone_10']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_12'] = [
   'topX' =>  $this->actionStripZones['action_zone_11']['topX'] + $this->actionStripZones['action_zone_11']['width'] + $offsetZones,
@@ -197,18 +211,21 @@ $this->actionStripZones['action_zone_12'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [PENGUIN, KANGAROO],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_13'] = [
   'topX' =>  $this->actionStripZones['action_zone_12']['topX'] + $this->actionStripZones['action_zone_12']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $smallWidth,
   'height' =>  100,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_14'] = [
   'topX' =>  78.46,
   'topY' =>  $topYLine2,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_15'] = [
   'topX' =>  $this->actionStripZones['action_zone_14']['topX'] - $smallWidth - $offsetZones,
@@ -216,12 +233,14 @@ $this->actionStripZones['action_zone_15'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [KANGAROO, MEERKAT],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_16'] = [
   'topX' =>  $this->actionStripZones['action_zone_15']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_17'] = [
   'topX' =>  $this->actionStripZones['action_zone_16']['topX'] - $smallWidth - $offsetZones,
@@ -229,18 +248,21 @@ $this->actionStripZones['action_zone_17'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [FLAMINGO, MEERKAT],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_18'] = [
   'topX' =>  $this->actionStripZones['action_zone_17']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_19'] = [
   'topX' =>  41.05,
   'topY' =>  $topYLine2,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_20'] = [
   'topX' =>  $this->actionStripZones['action_zone_19']['topX'] - $smallWidth - $offsetZones,
@@ -248,12 +270,14 @@ $this->actionStripZones['action_zone_20'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [FLAMINGO, KANGAROO],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_21'] = [
   'topX' =>  $this->actionStripZones['action_zone_20']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_22'] = [
   'topX' =>  $this->actionStripZones['action_zone_21']['topX'] - $smallWidth - $offsetZones,
@@ -261,18 +285,21 @@ $this->actionStripZones['action_zone_22'] = [
   'width' =>  $smallWidth,
   'height' =>  $height,
   'animals' =>  [FOX, MEERKAT],
+  'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_23'] = [
   'topX' =>  $this->actionStripZones['action_zone_22']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2,
   'width' =>  $mediumWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_24'] = [
   'topX' =>  0.52,
   'topY' =>  $topYLine2,
   'width' =>  $bigWidth,
   'height' =>  $height,
+  'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_25'] = [
   'topX' =>  0.52,
@@ -280,6 +307,7 @@ $this->actionStripZones['action_zone_25'] = [
   'width' =>  $smallWidth,
   'height' =>  26.57,
   'animals' =>  [PENGUIN, FLAMINGO],
+  'type' =>  ANIMAL,
 ];
 
 $this->birthZones = [
