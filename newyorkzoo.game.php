@@ -477,8 +477,10 @@ class NewYorkZoo extends EuroGame
         $order = $this->getPlayerPosition($player_id);
         $canBuy  = $this->arg_canBuyPatches($order);
         $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
-        $pos = $this->tokens->getTokenState($token_id);
+        $pos = $this->tokens->getTokenLocation($token_id);
+        //self::dump("**************pos*********************", $pos);
         $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
+        $this->saction_MoveNeutralToken($pos);
 
         $this->gamestate->nextState('next');
     }
@@ -504,6 +506,14 @@ class NewYorkZoo extends EuroGame
         $occupancy = $this->getOccupancyMatrix($order);
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
         $this->notifyCounterDirect("empties_${order}_counter", $unoccup_count, '');
+    }
+
+    function saction_MoveNeutralToken($pos)
+    {
+        $this->dbSetTokenLocation('token_neutral', $pos);
+        $this->notifyAllPlayers('eofnet', '', [
+            
+        ]); // end of moving neutral token
     }
 
     function saction_FinalScoring()

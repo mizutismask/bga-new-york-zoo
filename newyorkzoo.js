@@ -1303,17 +1303,7 @@ define([
             
             */
             notif_eofnet: function (notif) {
-
                 this.adjustScrollMap();
-                if (notif && notif.args.income) {
-
-                    var loc = 'income_' + notif.args.player_color + "_counter";
-                    var counter = $(loc);
-                    //console.log('income counter update ' + loc, notif.args);
-                    if (counter) counter.innerHTML = notif.args.income;
-                    else console.error("cannot find player counter " + loc);
-                    gameui.gamedatas.counters[loc] = { counter_value: notif.args.income, counter_name: loc };
-                }
             },
         });
     });
