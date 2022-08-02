@@ -201,6 +201,11 @@ class NewYorkZoo extends EuroGame
                 //todo distribuer équitablement par couleur
             }
         }
+        //place fake filler token at the top left corner
+        for ($i = 0; $i < $players_nbr; $i++) {
+            $order = $i + 1;
+            $this->tokens->moveToken("patch_1" . $players_nbr . $order, "square_" . $order . "_0_0");
+        }
     }
     /*
         getAllDatas: 
@@ -511,9 +516,7 @@ class NewYorkZoo extends EuroGame
     function saction_MoveNeutralToken($pos)
     {
         $this->dbSetTokenLocation('token_neutral', $pos);
-        $this->notifyAllPlayers('eofnet', '', [
-            
-        ]); // end of moving neutral token
+        $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
 
     function saction_FinalScoring()

@@ -108,6 +108,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
         $num = $this->game->getRulesFor($id, 'num');
         $mask = $this->game->getRulesFor("patch_$num", 'mask');
         $occ = $this->game->getRulesFor($id, 'occurrences');
+        $color = $this->game->getRulesFor($id, 'color');
         $matrix = [];
         $coords = $this->game->matrix->toPolygon($mask, CELL_WIDTH, $matrix);
         $h = count($matrix);
@@ -124,9 +125,14 @@ class view_newyorkzoo_newyorkzoo extends game_view
         $patchId = $id;
         for ($i = 0; $i < $occ; $i++) {
           if ($occ != 1) {
-            $patchId = $id . "_" . ($i+1);
+            $patchId = $id . "_" . ($i + 1);
           }
-          $this->page->insert_block("patch", ['PATCH_ID' => $patchId, 'NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints]);
+          //todo add classes
+          $classes = "";
+          if ($color === "filler") {
+            $classes = "filler";
+          }
+          $this->page->insert_block("patch", ['PATCH_ID' => $patchId, 'NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints, 'CLASSES' => $classes,]);
         }
 
         $fw = $w * CELL_WIDTH;
