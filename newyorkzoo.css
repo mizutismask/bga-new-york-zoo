@@ -790,6 +790,7 @@
 		border: #436aab solid 1px;
 		display: grid;
     	grid-template-columns: 1fr;
+		justify-items: center;
 	}
 
 	/* Bonus patches */
@@ -978,6 +979,9 @@
 	.player_count_5.player_order_5 .house_4{
 		top: 44.5%;
 		left: -76.5%;
+	}
+	.filler{
+		background: white;
 	}
 
 	/*todo*/
