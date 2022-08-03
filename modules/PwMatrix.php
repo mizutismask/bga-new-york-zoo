@@ -42,8 +42,8 @@ class PwMatrix extends APP_Object
 
     function occupancyMatrix($data = null)
     {
-        $this->game->dump("occupancyMatrix***************************************************", $this->game->getGridWidth());
-        $this->game->dump("par", $this->game->getGridHeight());
+        //$this->game->dump("occupancyMatrix***************************************************", $this->game->getGridWidth());
+        //$this->game->dump("par", $this->game->getGridHeight());
 
         $res = [];
         for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixHeightEnd(); $i++) {
@@ -65,7 +65,7 @@ class PwMatrix extends APP_Object
             $piecematrix = $this->pieceMatrix($mask, $deg_z, $deg_y);
             $pic = $this->dumpMatrix($piecematrix, "$mask $deg_z $deg_y", true);
             //$this->game->dump("pic***************************************************", $pic);
-            $this->warn($pic);
+            //$this->warn($pic);
             $res = $this->unionMatrix($res, $piecematrix, $y, $x);
         }
         return $res;
@@ -234,6 +234,19 @@ class PwMatrix extends APP_Object
             }
         }
         return false;
+    }
+
+    function isFullyFilled($matrix)
+    {
+        for ($i = 0; $i <= $this->game->getGridHeight(); $i++) {
+            for ($j = 0; $j <= $this->game->getGridWidth(); $j++) {
+                if (isset($matrix[$i][$j]) && $matrix[$i][$j]) {
+                    continue;
+                }
+                return false;
+            }
+        }
+        return true;
     }
 
     function remap($matrix, $prefix, $value)

@@ -47,6 +47,9 @@ if (!defined("LIGHTEST_GREEN")) {
   define("ANIMAL", "animal");
   define("PATCH", "patch");
 }
+
+$this->animals = [MEERKAT, FLAMINGO, KANGAROO, PENGUIN, FOX];
+
 //by player count, then player order
 $this->boards = [
   '2' => [
@@ -384,7 +387,7 @@ $this->token_types = [
   ],
 
   //1 to indicate filler, then playerCount_playerOrder
-   'patch_121' => [
+  'patch_121' => [
     'num' => 121,
     'type' => 'patch filler filler_2_1',
     'spaces' => 19,
@@ -394,12 +397,12 @@ $this->token_types = [
     'color' => 'filler',
     'occurrences' => 1,
   ],
- 'patch_122' => [
+  'patch_122' => [
     'num' => 122,
     'type' => 'patch filler filler_2_2',
     'spaces' => 21,
     'mask' => ':11111:11110:11110:11110:11110',
-    'w' =>5,
+    'w' => 5,
     'h' => 5,
     'color' => 'filler',
     'occurrences' => 1,
@@ -414,7 +417,7 @@ $this->token_types = [
     'color' => 'filler',
     'occurrences' => 1,
   ],
- 'patch_132' => [
+  'patch_132' => [
     'num' => 132,
     'type' => 'patch filler filler_3_2',
     'spaces' => 19,
@@ -445,7 +448,7 @@ $this->token_types = [
     'color' => 'filler',
     'occurrences' => 1,
   ],
- 'patch_142' => [
+  'patch_142' => [
     'num' => 142,
     'type' => 'patch filler filler_4_2',
     'spaces' => 19,
@@ -486,7 +489,7 @@ $this->token_types = [
     'color' => 'filler',
     'occurrences' => 1,
   ],
- 'patch_152' => [
+  'patch_152' => [
     'num' => 152,
     'type' => 'patch filler filler_5_2',
     'spaces' => 19,
