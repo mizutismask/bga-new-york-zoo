@@ -29,6 +29,9 @@
 
 <div id="map_container" class="map_container">
 	<div id="map_scrollable" class="map_scrollable map_layer">
+	</div>
+	<div id="map_surface" class="map_surface map_layer"></div>
+	<div id="market" class="market map_scrollable_oversurface map_layer">
 		<div class="actionStripWrapper">
 			<div class="actionStrip">
 				<!-- BEGIN actionStripZone -->
@@ -48,8 +51,6 @@
 			</div>
 		</div>
 	</div>
-	<div id="map_surface" class="map_surface map_layer"></div>
-	<div id="market" class="market map_scrollable_oversurface map_layer"></div>
 	<div class="moveleft"></div>
 	<div class="moveright"></div>
 </div>
