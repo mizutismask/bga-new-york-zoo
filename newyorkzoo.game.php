@@ -188,7 +188,8 @@ class NewYorkZoo extends EuroGame
                 } else {
                     $layers[$loc]++;
                 }
-                $this->tokens->moveToken($patchId, ACTION_ZONE_PREFIX . $loc, $layers[$loc]);
+                //$state = $this->token_types[$patchId]["w"] > $this->token_types[$patchId]["h"] ? 1 : 0;
+                $this->tokens->moveToken($patchId, ACTION_ZONE_PREFIX . $loc, $layers[$loc], $state);
             }
         }
         $players = $this->loadPlayersBasicInfos();
@@ -530,10 +531,16 @@ class NewYorkZoo extends EuroGame
             // empty spaces
             $occupancy = $this->getOccupancyMatrix($order);
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
-            $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count * 2, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_slot');
+            $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_slot');
+
+            //tie breaker
+            $animalCount = 0;
+            foreach ($this->animals as $type) {
+                $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "square_" . $order));
+            }
+            $animalCount += $this->tokens->countTokensInLocation($type, "house_" . $player_id);
+            $this->dbSetAuxScore($player_id, $animalCount);
         }
-        $firstOnSpot = $this->dbGetFirstPlayerId();
-        $this->dbSetAuxScore($firstOnSpot, 1);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -668,6 +675,17 @@ class NewYorkZoo extends EuroGame
     function st_gameTurnNextPlayer()
     {
         $endOfGame = false;
+        $players = $this->loadPlayersBasicInfos();
+        foreach ($players as $player_id => $info) {
+            $order = $info['player_no'];
+            $occupdata = $this->arg_occupancyData($order);
+            $occupancy = $this->matrix->occupancyMatrix($occupdata);
+            $filled = $this->matrix->isFullyFilled($occupancy);
+            if (!$endOfGame && $filled) {
+                $endOfGame = true;
+            }
+        }
+
         if ($endOfGame) {
             $this->saction_FinalScoring();
             $this->gamestate->nextState('last');
