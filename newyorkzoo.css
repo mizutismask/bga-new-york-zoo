@@ -226,8 +226,8 @@
 
 .pieces {
 	position: absolute;
-	top: var(--cellWidth);
-	left: var(--cellWidth);
+	/*top: var(--cellWidth);
+	left: var(--cellWidth);*/
 	width: calc(var(--cellWidth) * var(--colsNb));
 	height: calc(var(--cellWidth) * var(--rowsNb));
 	transform: translateZ(3px);
@@ -542,32 +542,32 @@
 	outline: 3px solid red !important;
 }
 
-.pboard .control-node {
+.tableau .control-node {
 	position: absolute;
 	cursor: pointer;
 	user-select: none;
 	opacity: 0;
 }
 
-.pboard .rotate-image,
-.pboard .mirror-image {
-	filter: invert(1);
+.tableau .rotate-image,
+.tableau .mirror-image {
+	/*filter: invert(1);*/
 }
 
-.pboard .rotate_control {
+.tableau .rotate_control {
 	top: calc(50% - 2.5em / 2);
 	left: 0px;
 }
-.pboard .flip_control {
+.tableau .flip_control {
 	top: calc(50% - 2.5em / 2);
-	right: 0px;
+	right: 8px;
 }
-.pboard .done_control {
+.tableau .done_control {
 	left: 30%;
 	top: 0px;
 	visibility: hidden;
 }
-.pboard .cancel_control {
+.tableau .cancel_control {
 	right: 30%;
 	top: 0px;
 }
