@@ -38,9 +38,9 @@
 				<div id="{ID}" class="nyz_action_zone" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
 				<!-- END actionStripZone -->
 				<!-- BEGIN patch -->
-				<div id="{PATCH_ID}" class="patch flipper patch_{NUM} {CLASSES}">
+				<div id="{PATCH_ID}" class="patch flipper patch_{NUM} {PATCH_CLASSES}">
 					<div class="target-image target-spot"></div>
-					<div class="patch-face patch-face-{NUM} shape-patch-{NUM}"></div>
+					<div class="patch-face patch-face-{NUM} shape-patch-{NUM} {PATCH_FACE_CLASSES}"></div>
 					<svg class="patch-outline" draggable="false" >
 						<polygon class="patch-outline-poligon"
 							points="{POL_POINTS}"></polygon>

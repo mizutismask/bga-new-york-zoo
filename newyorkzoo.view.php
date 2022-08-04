@@ -127,12 +127,13 @@ class view_newyorkzoo_newyorkzoo extends game_view
           if ($occ != 1) {
             $patchId = $id . "_" . ($i + 1);
           }
-          //todo add classes
           $classes = "";
+          $faceClasses = "";
           if ($color === "filler") {
             $classes = "filler";
+            $faceClasses = "filler_face";
           }
-          $this->page->insert_block("patch", ['PATCH_ID' => $patchId, 'NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints, 'CLASSES' => $classes,]);
+          $this->page->insert_block("patch", ['PATCH_ID' => $patchId, 'NUM' => $num, 'POL_POINTS' => $points, 'CLIP_POINTS' => $clippoints, 'PATCH_CLASSES' => $classes, 'PATCH_FACE_CLASSES' => $faceClasses]);
         }
 
         $fw = $w * CELL_WIDTH;

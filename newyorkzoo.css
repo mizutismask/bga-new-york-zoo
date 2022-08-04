@@ -307,7 +307,7 @@
 
 .patch-outline-poligon {
 	fill: none;
-	stroke: #795548;
+	stroke: #4e352a;
 	stroke-width: 1;
 	stroke-dasharray: 8, 2;
 }
@@ -980,10 +980,14 @@
 		top: 44.5%;
 		left: -76.5%;
 	}
-	.filler{
-		background: white;
+	.filler .target-image{
+		display: none;
 	}
 
+	.filler_face{
+		background: none;
+	}
+	
 	/*todo*/
 
 	.flamingo,
