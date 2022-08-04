@@ -251,7 +251,7 @@
 	pointer-events: none;
 }
 .pboard .patch.state_1 {
-	transform: rotateZ(var(--rowsNb) 0deg);
+	transform: rotateZ(90deg);
 }
 .pboard .patch.state_2 {
 	transform: rotateZ(180deg);
@@ -264,7 +264,7 @@
 	transform: rotateY(180deg);
 }
 .pboard .patch.state_5 {
-	transform: rotateY(180deg) rotateZ(var(--rowsNb) 0deg);
+	transform: rotateY(180deg) rotateZ(90deg);
 }
 .pboard .patch.state_6 {
 	transform: rotateY(180deg) rotateZ(180deg);
@@ -302,12 +302,12 @@
 }
 .pboard .patch-outline {
 	display: block;
-	z-index: var(--rowsNb) 0;
+	z-index: 90;
 }
 
 .patch-outline-poligon {
 	fill: none;
-	stroke: #7var(--rowsNb) 5548;
+	stroke: #795548;
 	stroke-width: 1;
 	stroke-dasharray: 8, 2;
 }
@@ -376,12 +376,12 @@
 
 .target-image {
 	background-image: url(img/tokens.png);
-	background-size: 18.2em auto;
-	width: 3em;
-	height: 3em;
-	font-size: small;
-	background-position: 3var (--rowsNb) 0.5% 100%;
-	filter: opacity(80%);
+    background-size: 18.2em auto;
+    width: 3em;
+    height: 3em;
+    font-size: small;
+    background-position: 39.5% 100%;
+    filter: opacity(80%);
 }
 
 .patch > * {
@@ -441,7 +441,7 @@
 	background-image: url(img/tokens.png);
 	background-size: 18.2em auto;
 	font-size: small;
-	background-position: 3var (--rowsNb) % 100%;
+	background-position: 39% 100%;
 
 	opacity: 0.5;
 	z-index: 100;
@@ -490,7 +490,7 @@
 	background-position: 0% 100%;
 }
 .mirror-image {
-	background-position: 1var (--rowsNb) % 100%;
+    background-position: 19% 100%;
 }
 
 .done-image,
@@ -527,7 +527,7 @@
 	transform: rotateZ(180deg);
 }
 .rotate-right {
-	transform: rotateZ(var(--rowsNb) 0deg);
+	transform: rotateZ(90deg);
 }
 
 .bgaimagebutton .control-node {
@@ -771,7 +771,7 @@
 
 	.tooltiptitle {
 		font-weight: bold;
-		font-size: var(--colsNb) 0%;
+		font-size: 110%;
 		margin-left: 10px;
 		text-transform: uppercase;
 	}

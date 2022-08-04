@@ -42,7 +42,7 @@
 					<div class="target-image target-spot"></div>
 					<div class="patch-face patch-face-{NUM} shape-patch-{NUM}"></div>
 					<svg class="patch-outline" draggable="false" >
-						<polygon class="patch-//outline-poligon"
+						<polygon class="patch-outline-poligon"
 							points="{POL_POINTS}"></polygon>
 					</svg>
 				</div>

@@ -189,7 +189,7 @@ class NewYorkZoo extends EuroGame
                     $layers[$loc]++;
                 }
                 //$state = $this->token_types[$patchId]["w"] > $this->token_types[$patchId]["h"] ? 1 : 0;
-                $this->tokens->moveToken($patchId, ACTION_ZONE_PREFIX . $loc, $layers[$loc], $state);
+                $this->tokens->moveToken($patchId, ACTION_ZONE_PREFIX . $loc, $layers[$loc], null);
             }
         }
         $players = $this->loadPlayersBasicInfos();

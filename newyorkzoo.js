@@ -129,7 +129,7 @@ class PatchManager {
     setupDragAndDropSupport() {
         // empty image hack to not have native ghost image
         this.emptyimg = new Image();
-        this.emptyimg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+        this.emptyimg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='; //1x1px black GIF
         this.gamebody = $('ebd-body');
 
         var pboard = $('pboard_' + gameui.player_no);
@@ -167,7 +167,7 @@ class PatchManager {
     addDropListeners(item, useCapture) {
         item.addEventListener("dragover", event => this.dragOver(event), useCapture);
         item.addEventListener("dragenter", event => this.dragEnter(event), useCapture);
-        //item.addEventListener("dragleave", event => this.dragLeave(event), useCapture);
+        item.addEventListener("dragleave", event => this.dragLeave(event), useCapture);
         item.addEventListener("drop", event => this.dragDrop(event), useCapture);
     };
 
@@ -319,6 +319,7 @@ class PatchManager {
         // 2) we sekected drag shadow
         targetNode = $(targetNode);
         this.practiceMode = gameui.isPracticeMode();
+        var location = targetNode.parentNode.id;
         //console.log("begin "+targetNode.id);
 
 
@@ -363,7 +364,7 @@ class PatchManager {
             this.cancelPickPatch();
             gameui.clientStateArgs.token = targetNode.id;
             // shadow clone will apear where it will be snapped
-            //console.log("creating new shadow for "+targetNode.id);
+            console.log("creating new shadow for "+targetNode.id);
 
             this.selectedNode = targetNode;
             this.mobileNode = targetNode;
@@ -379,10 +380,9 @@ class PatchManager {
                 tokenOrig.classList.remove('active_slot');
                 tokenOrig.classList.add('original');
 
-
-                dojo.place(tokenOrig, 'market');
+                dojo.place(tokenOrig, location);
                 var order = parseInt(tokenOrig.getAttribute('data-order'));
-                gameui.placeTokenLocal(tokenOrig.id, 'market', order - 1, { noa: true });
+                gameui.placeTokenLocal(tokenOrig.id, location, order - 1, { noa: true });
             }
             this.applyRotate(this.mobileNode);
             targetNode.style.transition = "none";
@@ -405,6 +405,7 @@ class PatchManager {
     };
 
     cancelPickPatch() {
+        console.log("cancelPickPatch", this.selectedNode);
         if (this.selectedNode) {
             this.restoreOriginalPatch(this.selectedNode.id);
         }
@@ -421,6 +422,7 @@ class PatchManager {
     restoreOriginalPatch(targetNode) {
         targetNode = $(targetNode);
         dojo.destroy(targetNode.id + "_temp");
+        console.log("restoreOriginalPatch", $(targetNode));
         if (!targetNode.id.startsWith("patch_0")) {
             //var order = parseInt(targetNode.getAttribute('data-order'));
             dojo.place(targetNode.id, 'market');
@@ -552,8 +554,8 @@ class PatchManager {
         shadowNode.style.top = y + "px";
         shadowNode.style.removeProperty("transition");
 
-        //this.addDragListeners(shadowNode, false);
-        //shadowNode.addEventListener("click", event => this.onClickPatch(event), false)
+        this.addDragListeners(shadowNode, false);
+        shadowNode.addEventListener("click", event => this.onClickPatch(event), false)
 
         return shadowNode;
     };
@@ -740,7 +742,7 @@ define([
                 var height = container.offsetHeight;
 
                 var pawnPos = parseInt(gameui.getTokenState('token_neutral'));
-                var TOTAL = 34;
+                /*var TOTAL = 34;
                 var off = 0;// TOTAL - pawnPos;
 
                 var patchList = Array.from(document.querySelectorAll("#market > *")).sort(function (a, b) {
@@ -796,7 +798,7 @@ define([
                     dojo.setAttr(tokenNode, "data-x", mwidth);
                     dojo.setAttr(tokenNode, "data-y", mheight);
                 };
-
+*/
                 if (this.scrollmap) {
 
 
@@ -804,7 +806,12 @@ define([
 
                     var sect = CELL_WIDTH * 5 * 3;
                     var half = (width - sect) / 2;
-
+                //todo
+                    var cbox = dojo.contentBox('token_neutral');
+                    console.log("cbox",cbox);
+                    var width = cbox.w - 40;
+                    var height = cbox.h - 40;
+                    mwidth = cbox.x;
 
                     if (half <= 0) {
                         this.scrollmap.setPos(-mwidth, 0);
@@ -1150,12 +1157,12 @@ define([
 
                     return result;
                 }
-                if (location.startsWith('house') ) {
+                if (location.startsWith('house')) {
                     if (!$(token)) {
                         console.log("create token in house ", token, location, tokenInfo);
                         this.createToken(token, tokenInfo, location);
                     }
-                   return result;
+                    return result;
                 }
                 if (location.startsWith('supply_buttons') || location.startsWith('buttons')) {
                     //	debugger;
