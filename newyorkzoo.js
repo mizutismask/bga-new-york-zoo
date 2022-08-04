@@ -675,6 +675,14 @@ define([
                     var dx = Math.floor((Math.random() * CELL_WIDTH));
                     var dy = Math.floor((Math.random() * CELL_WIDTH * (4 - mat.h)));
                     var rotateZ = Math.floor((Math.random() * 20 - 10));
+
+                    var tokenInfo = this.gamedatas.tokens[token];
+                    var location = tokenInfo.location;
+                    if (location.startsWith('action_zone') && mat.w > mat.h) {
+                        //rotate to minimize board width needed
+                        dojo.addClass(token, "minimized");
+              
+                    }
                     dojo.setAttr(token, { "data-order": this.getTokenState(token), "data-dx": dx, "data-dy": dy, "data-rz": rotateZ });
                 } else if (token == 'token_neutral') {
                     var dx = CELL_WIDTH;

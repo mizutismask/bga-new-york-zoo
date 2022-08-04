@@ -147,6 +147,10 @@
 	height: 100%;
 }
 
+.minimized{
+	transform: rotate(90deg);
+}
+
 .tableau {
 	position: relative;
 	display: flex;
@@ -791,6 +795,7 @@
 		display: grid;
     	grid-template-columns: 1fr;
 		justify-items: center;
+		/*align-content: center;*/
 	}
 
 	/* Bonus patches */
