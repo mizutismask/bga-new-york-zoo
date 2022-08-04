@@ -132,7 +132,7 @@ class PatchManager {
         this.emptyimg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='; //1x1px black GIF
         this.gamebody = $('ebd-body');
 
-        var pboard = $('pboard_' + gameui.player_no);
+        var pboard = $('tableau_' + gameui.player_no);
         this.createPatchControl('rotate_control', pboard, "_a");
         this.createPatchControl('flip_control', pboard, "_a");
         this.createPatchControl('done_control', pboard, "_a");
