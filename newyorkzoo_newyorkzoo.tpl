@@ -69,11 +69,6 @@
 		</div>
 
 		<div id="tableau_{ORDER}" data-title="{PLAYER_NAME}" class="tableau tableau_{ORDER} {OWN} player_count_{PLAYER_COUNT} player_order_{ORDER}">
-				<!--<div class="board_houses"> -->
-				<!-- BEGIN house -->
-					<div id="house_{PLAYER_ID}_{HOUSE_INDEX}" class="house {CLASSES}"></div>
-				<!-- END house -->
-			<!--</div> -->
 			<div id="pboard_{ORDER}" class="pboard pboard_{ORDER}">
 				<div id="squares_{ORDER}" class="squares squares_{ORDER}">
     <!-- BEGIN square -->
@@ -81,6 +76,11 @@
     <!-- END square -->
 				</div>
 				<div id="pieces_{ORDER}" class="pieces pieces_{ORDER}"></div>
+				<!--<div class="board_houses"> -->
+				<!-- BEGIN house -->
+					<div id="house_{PLAYER_ID}_{HOUSE_INDEX}" class="house {CLASSES}"></div>
+				<!-- END house -->
+				<!--</div> -->
 			</div>
 		</div>
 

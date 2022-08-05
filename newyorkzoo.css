@@ -178,7 +178,7 @@
 	height: calc(var(--cellWidth) * var(--rowsNb));
 	position: relative;
 	background-size: calc(var(--colsNb) * var(--cellWidth));
-	padding: 48px 0px 0px 48px;
+	padding: 136px 0px 0px 48px;
 	background-repeat: no-repeat;
 	z-index: 20;
 }
@@ -812,31 +812,33 @@
 		border: orange solid 1px;
 		width: var(--cellWidth);
 		height: var(--cellWidth);
+		position: relative;
+		z-index: 110;
 	}
 
 	.player_count_2.player_order_1 .house_1 {
-		top: 32.5%;
-		left: 9%;
+		top: 8.9%;
+		left: 14%;
 	}
 	.player_count_2.player_order_1 .house_2 {
-		top: 29.8%;
-		left: -27.5%;
+		top: 1.8%;
+		left: 2.5%;
 	}
 	.player_count_2.player_order_1 .house_3 {
-		top: 45.9%;
-		left: -82%;
+		top: 8.8%;
+		left: 5.4%;
 	}
 	.player_count_2.player_order_2 .house_1 {
-		top: 33.5%;
-		left: 9%;
+		top: 8.3%;
+		left: 15%;
 	}
 	.player_count_2.player_order_2 .house_2 {
-		top: 29.6%;
-		left: -26.9%;
+		top: 2.4%;
+		left: 2.4%;
 	}
 	.player_count_2.player_order_2 .house_3 {
-		top: 44.5%;
-		left: -76.5%;
+		top: 6.6%;
+		left: 11.7%;
 	}
 
 	.player_count_3.player_order_1 .house_1 {
