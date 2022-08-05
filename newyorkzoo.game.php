@@ -579,6 +579,9 @@ class NewYorkZoo extends EuroGame
         $res += ['advance' => $advance];
         $res += ['buttons' => $buttons];
         $res['canPatch'] = $canUseAny;
+        $res['maxMoves'] = $this->arg_elephantMove();
+        $res['canGetAnimals'] = true;//$this->hasEmptyHouses(1)||$this->hasFenceAcceptinq();
+        
 
         return $res;
     }
@@ -650,6 +653,10 @@ class NewYorkZoo extends EuroGame
         return $patches;
     }
 
+    function arg_canTakeAnimal($order)
+    {
+    }
+
     function arg_elephantMove()
     {
         $players = $this->loadPlayersBasicInfos();
@@ -662,6 +669,18 @@ class NewYorkZoo extends EuroGame
             case 5:
                 return 3;
         }
+    }
+
+    function arg_placeAnimal()
+    {
+    }
+
+    function arg_placeAttraction()
+    {
+    }
+
+    function arg_chooseFences()
+    {
     }
 
     //////////////////////////////////////////////////////////////////////////////

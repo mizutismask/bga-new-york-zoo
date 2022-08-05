@@ -53,7 +53,20 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_PLAYER_TURN", 2);
     define("STATE_GAME_TURN_NEXT_PLAYER", 3);
     define("STATE_PLAYER_GAME_END", 4);
+    define("STATE_PLAYER_PLACE_ANIMAL", 5);
+    define("STATE_PLAYER_PLACE_ATTRACTION", 6);
+    define("STATE_PLAYER_CHOOSE_FENCE", 7);
+    define("STATE_PLAYER_CHOOSE_BREEDING_FENCE", 8);
     define("STATE_END_GAME", 99);
+
+
+    define("TRANSITION_NEXT_PLAYER", "nextPlayer");
+    define("TRANSITION_END_GAME", "endGame");
+    define("TRANSITION_PASS", "pass");
+    define("TRANSITION_DISMISS", "dismiss");
+    define("TRANSITION_PLACE_ANIMAL", "placeAnimal");
+    define("TRANSITION_PLACE_ATTRACTION", "placeAttraction");
+    define("TRANSITION_CHOOSE_FENCE", "chooseFence");
 }
 
 $machinestates = array(
@@ -69,17 +82,65 @@ $machinestates = array(
 
     STATE_PLAYER_TURN => [ // main active player state 
         "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must take an action'),
-        "descriptionmyturn" => clienttranslate('${you} must take an action'),
+        "description" => clienttranslate('${actplayer} must move the elephant to choose an action'),
+        "descriptionmyturn" => clienttranslate('${you} must move the elephant up to ${maxMoves} spaces to choose an action'),
         "type" => "activeplayer",
         "args" => "arg_playerTurn",
         "action" => "st_playerTurn",
-        "possibleactions" => ["place", "advance"],
+        "possibleactions" => ["place", "placeAnimal"],
         "transitions" => [
             "next" => STATE_GAME_TURN_NEXT_PLAYER,
-            "last" => STATE_PLAYER_GAME_END
+            "last" => STATE_PLAYER_GAME_END,
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
         ] // 
     ],
+
+    STATE_PLAYER_PLACE_ANIMAL => [
+        "name" => "placeAnimal",
+        "description" => clienttranslate('${actplayer} can place an ${animalType1} and/or a ${animalType1}'),
+        "descriptionmyturn" => clienttranslate('${you} can place an ${animalType1} and/or a ${animalType1}'),
+        "type" => "activeplayer",
+        "args" => "arg_placeAnimal",
+        "possibleactions" => ["dismiss", "placeAnimal"],
+        "transitions" => [
+            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            "last" => STATE_PLAYER_GAME_END,
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
+            TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
+            TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE
+        ] // 
+    ],
+
+    STATE_PLAYER_PLACE_ATTRACTION => [
+        "name" => "placeAttraction",
+        "description" => clienttranslate('${actplayer} can place a bonus attraction'),
+        "descriptionmyturn" => clienttranslate('${you} can place a bonus attraction'),
+        "type" => "activeplayer",
+        "args" => "arg_placeAttraction",
+        "possibleactions" => ["dismiss", "placeAttraction"],
+        "transitions" => [
+            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            "last" => STATE_PLAYER_GAME_END,
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
+            TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
+            TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE
+        ] // 
+    ],
+
+    STATE_PLAYER_CHOOSE_BREEDING_FENCE => [
+        "name" => "choose fence",
+        "description" => clienttranslate('${actplayer} can choose fences for breeding'),
+        "descriptionmyturn" => clienttranslate('${you} can choose at most two fences for breeding'),
+        "type" => "multipleactiveplayer",
+        "args" => "arg_chooseFences",
+        "possibleactions" => ["chooseFence"],
+        "transitions" => [
+            "next" => STATE_GAME_TURN_NEXT_PLAYER, //maybe check fences state
+        ]
+    ],
+
     STATE_GAME_TURN_NEXT_PLAYER => [ // next player state
         "name" => "gameTurnNextPlayer", "description" => clienttranslate('Upkeep...'),
         "type" => "game", //
