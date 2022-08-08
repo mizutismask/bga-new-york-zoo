@@ -46,7 +46,6 @@ class view_newyorkzoo_newyorkzoo extends game_view
   {
     $order = $player['player_no'];
     $name = $player['player_name'];
-    $no = $player['player_no'];
     global $g_user;
     $current_player = $g_user->get_id();
     // Create squares
@@ -59,7 +58,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
       $classes = 'house_' . $x;
       $this->page->insert_block("house", array(
         'X' => $x, 'Y' => 0, 'LEFT' => round(($x) * $hor_scale),
-        'TOP' => round((0) * $ver_scale), 'CLASSES' => $classes, "PLAYER_ID" => $player_id, "HOUSE_INDEX" => $x
+        'TOP' => round((0) * $ver_scale), 'CLASSES' => $classes, "PLAYER_ORDER" => $order, "HOUSE_INDEX" => $x
       ));
     }
 
@@ -149,7 +148,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
     }
     $this->page->begin_block($template, "actionStripZone");
     foreach ($this->game->actionStripZones as $id => &$zone) {
-      $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height']]);
+      $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'],'ANIMAL_ZONE' => $zone['type']===ANIMAL?"nyz_animal_action_zone":""]);
     }
 
     $this->page->begin_block($template, "square");

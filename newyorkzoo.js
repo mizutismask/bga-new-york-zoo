@@ -154,7 +154,6 @@ class PatchManager {
         document.querySelectorAll(".drop-zone").forEach(item => this.addDropListeners(item, false));
         this.addDropListeners($('thething'), false); // this is everyting else to show ghost image
 
-
     };
 
     addDragListeners(item, useCapture) {
@@ -364,7 +363,7 @@ class PatchManager {
             this.cancelPickPatch();
             gameui.clientStateArgs.token = targetNode.id;
             // shadow clone will apear where it will be snapped
-            console.log("creating new shadow for "+targetNode.id);
+            console.log("creating new shadow for " + targetNode.id);
 
             this.selectedNode = targetNode;
             this.mobileNode = targetNode;
@@ -681,7 +680,7 @@ define([
                     if (location.startsWith('action_zone') && mat.w > mat.h) {
                         //rotate to minimize board width needed
                         dojo.addClass(token, "minimized");
-              
+
                     }
                     dojo.setAttr(token, { "data-order": this.getTokenState(token), "data-dx": dx, "data-dy": dy, "data-rz": rotateZ });
                 } else if (token == 'token_neutral') {
@@ -723,6 +722,13 @@ define([
                 this.pm.setupDragAndDropSupport();
 
                 this.connectClass('timetracker', 'onclick', 'onTimeTracker');
+
+                /*const animalZonesQuery = document.querySelectorAll('.nyz_animal_action_zone');
+                for (const item of animalZonesQuery) {
+                    item.addEventListener("click", event => this.onClickAnimalZone(event), false)
+                }*/
+                this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
+
                 dojo.query(".timetracker").forEach((node) => {
                     this.updateTooltip(node.id);
                 });
@@ -814,9 +820,9 @@ define([
 
                     var sect = CELL_WIDTH * 5 * 3;
                     var half = (width - sect) / 2;
-                //todo
+                    //todo
                     var cbox = dojo.contentBox('token_neutral');
-                    console.log("cbox",cbox);
+                    console.log("cbox", cbox);
                     var width = cbox.w - 40;
                     var height = cbox.h - 40;
                     mwidth = cbox.x;
@@ -966,7 +972,7 @@ define([
                     gameui.addImageActionButton('practice', _('Practice Mode'), () => {
                         $('ebd-body').classList.add("practice_mode");
                         this.onUpdateActionButtons_client_PickPatch(args);
-                    }, undefined, _('In this mode you can place any patches to practice fitting'));
+                    }, undefined, _('In this mode you can place any fences to practice fitting'));
                 }
             },
 
@@ -982,6 +988,16 @@ define([
 
                 });
 
+                args.canGetAnimals.forEach((id) => {
+                    //var canUse = args.patches[id].canUse;
+                    dojo.addClass(id, 'active_slot');
+                    //if (canUse == false)
+                    //    dojo.addClass(id, 'cannot_use');
+
+
+                });
+
+
                 var pickcolor = 'blue';
                 if (!args.canPatch)
                     pickcolor = 'red';
@@ -991,9 +1007,12 @@ define([
                     else
                         this.showError(_('No legal moves'));
                 }, pickcolor);
-                gameui.addImageActionButton('a', _('Advance') + " " + this.createDiv('pbutton') + " x " + args.advance, () => {
-                    gameui.ajaxClientStateAction('advance')
-                }, 'blue', _('Pay time to receive buttons'));
+                gameui.addImageActionButton('a', _('Get animals'), () => {
+                    if (args.canGetAnimals)
+                        this.setClientStateAction('client_GetAnimals')
+                    else
+                        this.showError(_('No space to put those animals'));
+                }, 'blue', _('Get one or two animals and place them'));
             },
 
             onUpdateActionButtons_client_PickPatch: function (args) {
@@ -1222,7 +1241,22 @@ define([
                 script.
             
             */
+            onAnimalZone: function (event) {
+                dojo.stopEvent(event);
+                var id = event.currentTarget.id;
+                gameui.clientStateArgs.action = 'getAnimals'
+                gameui.clientStateArgs.actionZone=id;
+                if (!gameui.isActiveSlot(id)) {
+                    return;
+                }
+        
+                gameui.removeClass('original');
+                gameui.removeClass('active_slot');
 
+                console.log("onAnimalZone", gameui.clientStateArgs);
+                //ajaxAction
+                gameui.ajaxClientStateAction();
+            },
 
             ///////////////////////////////////////////////////
             //// Player's action

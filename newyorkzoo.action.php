@@ -36,7 +36,7 @@ class action_newyorkzoo extends APP_GameAction
       self::trace("Complete reinitialization of board game");
     }
   }
-  
+
   public function place()
   {
     self::setAjaxMode();
@@ -45,6 +45,14 @@ class action_newyorkzoo extends APP_GameAction
     $rotateZ = self::getArg('rotateZ', AT_int, true);
     $dropTarget = self::getArg('dropTarget', AT_alphanum, true);
     $this->game->action_place($token, $dropTarget, $rotateZ, $rotateY);
+    self::ajaxResponse();
+  }
+
+  public function getAnimals()
+  {
+    self::setAjaxMode();
+    $actionZone = self::getArg('actionZone', AT_alphanum, true);
+    $this->game->action_getAnimals($actionZone);
     self::ajaxResponse();
   }
 

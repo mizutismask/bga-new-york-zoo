@@ -35,7 +35,7 @@
 		<div class="actionStripWrapper">
 			<div class="actionStrip">
 				<!-- BEGIN actionStripZone -->
-				<div id="{ID}" class="nyz_action_zone" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
+				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
 				<!-- END actionStripZone -->
 				<!-- BEGIN patch -->
 				<div id="{PATCH_ID}" class="patch flipper patch_{NUM} {PATCH_CLASSES}">
@@ -78,7 +78,7 @@
 				<div id="pieces_{ORDER}" class="pieces pieces_{ORDER}"></div>
 				<!--<div class="board_houses"> -->
 				<!-- BEGIN house -->
-					<div id="house_{PLAYER_ID}_{HOUSE_INDEX}" class="house {CLASSES}"></div>
+					<div id="house_{PLAYER_ORDER}_{HOUSE_INDEX}" class="house {CLASSES}"></div>
 				<!-- END house -->
 				<!--</div> -->
 			</div>

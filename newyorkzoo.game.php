@@ -145,13 +145,13 @@ class NewYorkZoo extends EuroGame
         //self::dump("**********************",$players);
         $i = 1;
         foreach ($players as $player_id => $player) {
-            //$this->tokens->createTokensPack($player_id . "_house_{INDEX}",  "house_" . $player_id, 3);
+            //$this->tokens->createTokensPack($player_id . "_house_{INDEX}",  "house_" . $playerOrder, 3);
             $playerOrder = $player["player_no"];
             $boardConf = $this->boards[count($players)][$playerOrder];
             $h = 1;
             self::dump("***********boardConf***********", $boardConf);
             foreach ($boardConf["animals"] as $animal) {
-                $this->tokens->moveToken($animal . '_' . $i, "house_" . $player_id . "_" . $h, 0);
+                $this->tokens->moveToken($animal . '_' . $i, "house_" . $playerOrder . "_" . $h, 0);
                 $i++;
                 $h++;
             }
@@ -387,7 +387,7 @@ class NewYorkZoo extends EuroGame
                 //empty patch zones do not count
                 self::dump("************no patch at******************", ACTION_ZONE_PREFIX . $nextZone);
             } else {
-                $zones[] = $nextZone;
+                $zones[] = ACTION_ZONE_PREFIX . $nextZone;
                 $moveCount++;
             }
             $nextZone = $this->getNextActionZoneNumber($nextZone);
@@ -520,6 +520,22 @@ class NewYorkZoo extends EuroGame
         $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
 
+    function action_getAnimals($animalZone)
+    {
+        $this->checkAction('getAnimals');
+
+        $player_id = $this->getActivePlayerId();
+        //$this->notifyWithName('message', clienttranslate('${player_name} plays pick and place action'));
+        $order = $this->getPlayerPosition($player_id);
+        $canGo  = $this->arg_canGetAnimals($order);
+        $this->userAssertTrue(self::_("Cannot place those animals anywhere"), array_search($animalZone, $canGo) !== false);
+        $this->saction_MoveNeutralToken($animalZone);
+
+        //todo get animals
+        $this->gamestate->nextState('next');
+    }
+
+
     function saction_FinalScoring()
     {
         $players = $this->loadPlayersBasicInfos();
@@ -580,8 +596,8 @@ class NewYorkZoo extends EuroGame
         $res += ['buttons' => $buttons];
         $res['canPatch'] = $canUseAny;
         $res['maxMoves'] = $this->arg_elephantMove();
-        $res['canGetAnimals'] = true;//$this->hasEmptyHouses(1)||$this->hasFenceAcceptinq();
-        
+        $res['canGetAnimals'] = $this->arg_canGetAnimals($order); //$this->hasEmptyHouses(1)||$this->hasFenceAcceptinq();
+
 
         return $res;
     }
@@ -640,12 +656,11 @@ class NewYorkZoo extends EuroGame
     function arg_canBuyPatches($order)
     {
         //$patches = ['patch_16', 'patch_1', 'patch_18'];
-        $prefix = ACTION_ZONE_PREFIX;
         $patches = [];
         $nextZones = $this->getNextActionZones();
         foreach ($nextZones as $nz) {
             self::dump("*****************getNextActionZones rs*", $nz);
-            $topPatch = $this->tokens->getTokenOnTop($prefix . $nz, true, 'patch');
+            $topPatch = $this->tokens->getTokenOnTop($nz, true, 'patch');
             if ($topPatch)
                 $patches[] = $topPatch["key"];
         }
@@ -653,8 +668,54 @@ class NewYorkZoo extends EuroGame
         return $patches;
     }
 
-    function arg_canTakeAnimal($order)
+    function arg_canGetAnimals($order)
     {
+        $freeHouses = $this->getFreeHouses($order);
+
+        $from = [];
+        $nextZones = $this->getNextActionZones();
+        foreach ($nextZones as $nz) {
+            //actionStripZones
+            $zoneType = $this->actionStripZones[$nz]["type"];
+            if ($zoneType == ANIMAL && $freeHouses)
+                $from[] = $nz;
+        }
+        self::dump("*****************arg_canGetAnimals*", $from);
+        return $from;
+    }
+
+    function getPlayerHouses($playerOrder)
+    {
+        $players = $this->loadPlayersBasicInfos();
+        $playerCount = count($players);
+        $houseCount = $this->boards[$playerCount][$playerOrder]["houses"];
+        $houses = [];
+        for ($i = 1; $i <= $houseCount; $i++) {
+            $houses[] = "house_" . $playerOrder . "_" . $i;
+        }
+        return $houses;
+    }
+
+    function getFreeHouses($playerOrder)
+    {
+        $houseTokens = $this->tokens->getTokensInLocation("house_" . $playerOrder . "%");
+        $housesWithToken = $this->getFieldValuesFromArray($houseTokens, "location", true);
+        $allHouses = $this->getPlayerHouses($playerOrder);
+        $emptyHouses = array_diff($allHouses, $housesWithToken);
+        self::dump("*****************getFreeHouses ", $emptyHouses);
+        return $emptyHouses;
+    }
+
+
+    function getFieldValuesFromArray($arr, $field, $unique = false)
+    {
+        $concatenated = array();
+        foreach ($arr as $element) {
+            if (isset($element[$field])) {
+                $concatenated[] = $element[$field];
+            }
+        }
+        return $unique ? array_unique($concatenated) : $concatenated;
     }
 
     function arg_elephantMove()

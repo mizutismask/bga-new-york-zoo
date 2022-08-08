@@ -338,7 +338,10 @@ $this->birthZones = [
 
 
 $this->token_types = [
-
+  'house' => [
+    'name' => clienttranslate("You can stock one animal per house"),
+    'type' => 'house',
+  ],
   'token_neutral' => [
     'name' => clienttranslate("Elephant"),
     'w' => 1, 'h' => 1,

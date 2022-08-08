@@ -419,23 +419,23 @@
 	display: unset;
 }
 
-.patch.active_slot:hover {
+.active_slot:hover {
 	filter: drop-shadow(0px 0px 4px green) !important;
 }
 
-.market .patch.active_slot:hover {
+.market .active_slot:hover {
 	transform: rotateZ(0) !important;
 }
 .current_player_is_active .market .patch:not(.active_slot) {
 	opacity: 0.8;
 	pointer-events: auto;
 }
-.patch.cannot_use {
+.cannot_use {
 	filter: drop-shadow(6px 6px 6px #e55) drop-shadow(2px 2px 2px red) !important;
 	opacity: 1;
 	z-index: 20;
 }
-.market .patch.active_slot {
+.market .active_slot {
 	filter: drop-shadow(6px 6px 6px #8a8) drop-shadow(2px 2px 2px black);
 	z-index: 30;
 }
@@ -796,6 +796,10 @@
     	grid-template-columns: 1fr;
 		justify-items: center;
 		/*align-content: center;*/
+	}
+
+	.nyz_animal_action_zone{
+		border-radius:85px;
 	}
 
 	/* Bonus patches */
