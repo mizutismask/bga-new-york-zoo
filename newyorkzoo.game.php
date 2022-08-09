@@ -27,6 +27,8 @@ if (!defined('OFFSET')) {
     define("OFFSET", 5);
     define("ACTION_ZONES_COUNT", 25);
     define("ACTION_ZONE_PREFIX", "action_zone_");
+    define('GS_ANIMAL_TO_PLACE', "animalToPlace");
+    define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
 }
 
 class NewYorkZoo extends EuroGame
@@ -48,6 +50,8 @@ class NewYorkZoo extends EuroGame
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
+            GS_ANIMAL_TO_PLACE => 10, //animalType
+            GS_OTHER_ANIMAL_TO_PLACE => 11,
         ));
 
         $this->tokens = new Tokens();
@@ -95,6 +99,8 @@ class NewYorkZoo extends EuroGame
 
             // Init global values with their initial values
             //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+            self::setGameStateInitialValue(GS_ANIMAL_TO_PLACE, 0);
+            self::setGameStateInitialValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
 
             // Init game statistics
             // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -531,10 +537,21 @@ class NewYorkZoo extends EuroGame
         $this->userAssertTrue(self::_("Cannot place those animals anywhere"), array_search($animalZone, $canGo) !== false);
         $this->saction_MoveNeutralToken($animalZone);
 
-        //todo get animals
-        $this->gamestate->nextState('next');
+        self::setGameStateValue(GS_ANIMAL_TO_PLACE, $this->getAnimalType($this->actionStripZones[$animalZone]['animals'][0]));
+        self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, $this->getAnimalType($this->actionStripZones[$animalZone]['animals'][1]));
+        $this->gamestate->nextState('placeAnimal');
     }
 
+    function getAnimalType($animalName)
+    {
+        $index = array_search($animalName, $this->animals);
+        return $index === false ? 0 : $this->animalTypes[$index];
+    }
+    function getAnimalName($animalType)
+    {
+        $index = array_search($animalType, $this->animalTypes);
+        return $index === false ? null : $this->animals[$index];
+    }
 
     function saction_FinalScoring()
     {
@@ -734,6 +751,36 @@ class NewYorkZoo extends EuroGame
 
     function arg_placeAnimal()
     {
+        $player_id = $this->getActivePlayerId();
+        $order = $this->getPlayerPosition($player_id);
+        $args = [];
+        $first = $this->getGameStateValue(GS_ANIMAL_TO_PLACE);
+        $second = $this->getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE);
+        $args["animalType1"] = "";
+        $args["animalType2"] = "";
+        if ($first) {
+            $anmlType = $this->getAnimalName($first);
+            $args["animalType1"] = $anmlType;
+            $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
+            $args["animals"][$anmlType]["possibleTargets"] =  $targets;
+            $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
+        }
+        if ($second) {
+            $anmlType = $this->getAnimalName($second);
+            $args["animalType2"] = $anmlType;
+            $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
+            $args["animals"][$anmlType]["possibleTargets"] =  $targets;
+            $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
+        }
+
+        return $args;
+    }
+
+    function arg_possibleTargetsForAnimal($playerOrder, $animal)
+    {
+        $freeHouses = $this->getFreeHouses($playerOrder);
+        $fencesAcceptingAnml = []; //todo
+        return array_merge($freeHouses ,$fencesAcceptingAnml);
     }
 
     function arg_placeAttraction()

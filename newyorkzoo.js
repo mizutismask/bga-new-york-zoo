@@ -1081,7 +1081,44 @@ define([
                 this.addCancelButton();
             },
 
+            onUpdateActionButtons_placeAnimal: function (args) {
+                this.clientStateArgs.action = 'placeAnimal';
+               
+                  
 
+                var possibleAnimals = [];
+                if (args.animalType1)
+                    possibleAnimals.push(args.animalType1);
+                if (args.animalType2)
+                    possibleAnimals.push(args.animalType2);
+
+                for (const anml of possibleAnimals) {
+                    var pickcolor = 'blue';
+                    if (!args.animals[anml].canPlace)
+                        pickcolor = 'red';
+
+                    gameui.addImageActionButton('place_animal', this.createDiv(anml + " smallIcon"), () => {//todo translate i18
+
+                        if (args.animals[anml].canPlace) {
+                            this.setClientStateAction('client_PlaceAnimal')
+                            this.clientStateArgs.animal = anml;
+
+                            args.animals[anml].possibleTargets.forEach((id) => {
+                                dojo.addClass(id, 'active_slot');
+                            });
+                        }
+                        else
+                            this.showError(_('No legal location'));
+                    }, pickcolor);
+                }
+                if (possibleAnimals.length == 1) {
+                    var pickcolor = 'blue';
+
+                    gameui.addImageActionButton('c', _('Dismiss'), () => {
+                        //todo
+                    }, pickcolor);
+                }
+            },
 
             // debug state
             onUpdateActionButtons_playerGameEnd: function (args) {
@@ -1245,16 +1282,15 @@ define([
                 dojo.stopEvent(event);
                 var id = event.currentTarget.id;
                 gameui.clientStateArgs.action = 'getAnimals'
-                gameui.clientStateArgs.actionZone=id;
+                gameui.clientStateArgs.actionZone = id;
                 if (!gameui.isActiveSlot(id)) {
                     return;
                 }
-        
+
                 gameui.removeClass('original');
                 gameui.removeClass('active_slot');
 
                 console.log("onAnimalZone", gameui.clientStateArgs);
-                //ajaxAction
                 gameui.ajaxClientStateAction();
             },
 

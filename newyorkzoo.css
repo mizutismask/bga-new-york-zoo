@@ -241,7 +241,7 @@
 	/* background-color: cyan; */
 	width: var(--cellWidth);
 	height: var(--cellWidth);
-	border: 1px solid white; /* to comment*/
+	border: 1px solid hsl(0deg 0% 100% / 70%); /* to comment*/
 	overflow: visible;
 	z-index: 99;
 }
@@ -435,7 +435,7 @@
 	opacity: 1;
 	z-index: 20;
 }
-.market .active_slot {
+.market .active_slot, .house.active_slot {
 	filter: drop-shadow(6px 6px 6px #8a8) drop-shadow(2px 2px 2px black);
 	z-index: 30;
 }
@@ -800,6 +800,10 @@
 
 	.nyz_animal_action_zone{
 		border-radius:85px;
+	}
+
+	.smallIcon{
+
 	}
 
 	/* Bonus patches */

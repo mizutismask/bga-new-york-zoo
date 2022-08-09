@@ -43,12 +43,18 @@ if (!defined("LIGHTEST_GREEN")) {
   define("KANGAROO", "kangaroo");
   define("PENGUIN", "penguin");
   define("FOX", "fox");
+  define("MEERKAT_TYPE", 1);
+  define("FLAMINGO_TYPE", 2);
+  define("KANGAROO_TYPE", 3);
+  define("PENGUIN_TYPE", 4);
+  define("FOX_TYPE", 5);
 
   define("ANIMAL", "animal");
   define("PATCH", "patch");
 }
 
 $this->animals = [MEERKAT, FLAMINGO, KANGAROO, PENGUIN, FOX];
+$this->animalTypes = [MEERKAT_TYPE, FLAMINGO_TYPE, KANGAROO_TYPE, PENGUIN_TYPE, FOX_TYPE];
 
 //by player count, then player order
 $this->boards = [

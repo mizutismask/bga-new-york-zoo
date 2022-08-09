@@ -97,8 +97,8 @@ $machinestates = array(
 
     STATE_PLAYER_PLACE_ANIMAL => [
         "name" => "placeAnimal",
-        "description" => clienttranslate('${actplayer} can place an ${animalType1} and/or a ${animalType1}'),
-        "descriptionmyturn" => clienttranslate('${you} can place an ${animalType1} and/or a ${animalType1}'),
+        "description" => clienttranslate('${actplayer} can place an animal'),
+        "descriptionmyturn" => clienttranslate('${you} can place an animal'),
         "type" => "activeplayer",
         "args" => "arg_placeAnimal",
         "possibleactions" => ["dismiss", "placeAnimal"],
