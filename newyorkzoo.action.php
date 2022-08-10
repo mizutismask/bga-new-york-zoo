@@ -56,6 +56,25 @@ class action_newyorkzoo extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function placeAnimal()
+  {
+    self::setAjaxMode();
+    $from = self::getArg('from', AT_alphanum, false);
+    $to = self::getArg('to', AT_alphanum, true);
+    $animalType = self::getArg('animalType', AT_alphanum, true);
+    $animalId = self::getArg('animalId', AT_alphanum, false);
+    $this->game->action_placeAnimal($from, $to, $animalType, $animalId);
+    self::ajaxResponse();
+  }
+  
+  public function dismiss()
+  {
+    self::setAjaxMode();
+    $this->game->action_dismissAnimal();
+    self::ajaxResponse();
+  }
+  
+
   /*
     
     Example:

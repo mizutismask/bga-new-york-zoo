@@ -60,7 +60,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_END_GAME", 99);
 
 
-    define("TRANSITION_NEXT_PLAYER", "nextPlayer");
+    define("TRANSITION_NEXT_PLAYER", "next");
     define("TRANSITION_END_GAME", "endGame");
     define("TRANSITION_PASS", "pass");
     define("TRANSITION_DISMISS", "dismiss");

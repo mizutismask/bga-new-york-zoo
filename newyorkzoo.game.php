@@ -542,6 +542,35 @@ class NewYorkZoo extends EuroGame
         $this->gamestate->nextState('placeAnimal');
     }
 
+    function action_placeAnimal($from, $to, $animalType, $animalId)
+    {
+        $this->checkAction('placeAnimal');
+        $this->userAssertTrue(self::_("Have to select a location for this animal"), $animalType !== false && $to !== false);
+        $args = $this->arg_placeAnimal();
+        $this->userAssertTrue(self::_("Wrong animal to place"), isset($args["animals"][$animalType]));
+        $canGo  = $args["animals"][$animalType]["possibleTargets"];
+        $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
+
+        $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
+        $this->tokens->moveToken($token["key"], $to);
+
+        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+            self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
+        }
+        if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+            self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
+        }
+        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)){
+            $this->gamestate->nextState('placeAnimal');
+        }else{
+            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+        }
+    }
+
+    function action_dismissAnimal(){
+        $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+    }
+
     function getAnimalType($animalName)
     {
         $index = array_search($animalName, $this->animals);
@@ -772,6 +801,11 @@ class NewYorkZoo extends EuroGame
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
             $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
         }
+        if ($first && $second) {
+            $args["canDismiss"] = false;
+        } else {
+            $args["canDismiss"] = true;
+        }
 
         return $args;
     }
@@ -780,7 +814,7 @@ class NewYorkZoo extends EuroGame
     {
         $freeHouses = $this->getFreeHouses($playerOrder);
         $fencesAcceptingAnml = []; //todo
-        return array_merge($freeHouses ,$fencesAcceptingAnml);
+        return array_merge($freeHouses, $fencesAcceptingAnml);
     }
 
     function arg_placeAttraction()

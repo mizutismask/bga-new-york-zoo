@@ -728,6 +728,7 @@ define([
                     item.addEventListener("click", event => this.onClickAnimalZone(event), false)
                 }*/
                 this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
+                this.connectClass('house', 'onclick', 'onHouse');
 
                 dojo.query(".timetracker").forEach((node) => {
                     this.updateTooltip(node.id);
@@ -1083,9 +1084,6 @@ define([
 
             onUpdateActionButtons_placeAnimal: function (args) {
                 this.clientStateArgs.action = 'placeAnimal';
-               
-                  
-
                 var possibleAnimals = [];
                 if (args.animalType1)
                     possibleAnimals.push(args.animalType1);
@@ -1097,11 +1095,11 @@ define([
                     if (!args.animals[anml].canPlace)
                         pickcolor = 'red';
 
-                    gameui.addImageActionButton('place_animal', this.createDiv(anml + " smallIcon"), () => {//todo translate i18
+                    gameui.addImageActionButton('place_animal_' + anml, this.createDiv(anml + " smallIcon"), () => {//todo translate i18
 
                         if (args.animals[anml].canPlace) {
                             this.setClientStateAction('client_PlaceAnimal')
-                            this.clientStateArgs.animal = anml;
+                            this.clientStateArgs.animalType = anml;
 
                             args.animals[anml].possibleTargets.forEach((id) => {
                                 dojo.addClass(id, 'active_slot');
@@ -1111,12 +1109,10 @@ define([
                             this.showError(_('No legal location'));
                     }, pickcolor);
                 }
-                if (possibleAnimals.length == 1) {
-                    var pickcolor = 'blue';
-
+                if (args.canDismiss) {
                     gameui.addImageActionButton('c', _('Dismiss'), () => {
-                        //todo
-                    }, pickcolor);
+                        gameui.ajaxClientStateAction('dismiss')
+                    }, 'blue');
                 }
             },
 
@@ -1291,6 +1287,22 @@ define([
                 gameui.removeClass('active_slot');
 
                 console.log("onAnimalZone", gameui.clientStateArgs);
+                gameui.ajaxClientStateAction();
+            },
+
+            onHouse: function (event) {
+                dojo.stopEvent(event);
+                var id = event.currentTarget.id;
+                gameui.clientStateArgs.action = 'placeAnimal'
+                gameui.clientStateArgs.to = id;
+                if (!gameui.isActiveSlot(id)) {
+                    return;
+                }
+
+                gameui.removeClass('original');
+                gameui.removeClass('active_slot');
+
+                console.log("onHouse", gameui.clientStateArgs);
                 gameui.ajaxClientStateAction();
             },
 
