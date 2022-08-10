@@ -29,6 +29,7 @@ if (!defined('OFFSET')) {
     define("ACTION_ZONE_PREFIX", "action_zone_");
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
+    define("GS_BREEDING", "breeding");
 }
 
 class NewYorkZoo extends EuroGame
@@ -52,6 +53,7 @@ class NewYorkZoo extends EuroGame
             //      ...
             GS_ANIMAL_TO_PLACE => 10, //animalType
             GS_OTHER_ANIMAL_TO_PLACE => 11,
+            GS_BREEDING => 12,
         ));
 
         $this->tokens = new Tokens();
@@ -101,6 +103,7 @@ class NewYorkZoo extends EuroGame
             //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
             self::setGameStateInitialValue(GS_ANIMAL_TO_PLACE, 0);
             self::setGameStateInitialValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
+            self::setGameStateInitialValue(GS_BREEDING, 0);
 
             // Init game statistics
             // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -522,7 +525,22 @@ class NewYorkZoo extends EuroGame
 
     function saction_MoveNeutralToken($pos)
     {
+        $old = $this->tokens->getTokenLocation('token_neutral');
+        $old = getPart($old, 2) + 0;
+        $new = getPart($pos, 2) + 0;
+
         $this->dbSetTokenLocation('token_neutral', $pos);
+        //breeding ?
+        foreach ($this->birthZones as $info) {
+            $limit = $info['triggerZone'];
+            if ($old < $limit && $new >= $limit) {
+                self::setGameStateInitialValue(GS_BREEDING, 1);
+                break;
+            } else {
+                self::setGameStateInitialValue(GS_BREEDING, 0);
+            }
+        }
+
         $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
 
@@ -560,14 +578,17 @@ class NewYorkZoo extends EuroGame
         if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
             self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
         }
-        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)){
+        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
             $this->gamestate->nextState('placeAnimal');
-        }else{
+        } else {
             $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
         }
     }
 
-    function action_dismissAnimal(){
+    function action_dismissAnimal()
+    {
+        self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
+        self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
         $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
     }
 
