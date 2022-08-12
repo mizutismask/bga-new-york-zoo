@@ -492,8 +492,8 @@ class NewYorkZoo extends EuroGame
         $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
         $pos = $this->tokens->getTokenLocation($token_id);
         //self::dump("**************pos*********************", $pos);
-        $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
         $this->saction_MoveNeutralToken($pos);
+        $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
 
         $this->gamestate->nextState('next');
     }
@@ -527,7 +527,9 @@ class NewYorkZoo extends EuroGame
         $old = getPart($old, 2) + 0;
         $new = getPart($pos, 2) + 0;
 
-        $this->dbSetTokenLocation('token_neutral', $pos);
+        $spaces = array_search( $pos,$this->getNextActionZones())+1;
+
+        $this->dbSetTokenLocation('token_neutral', $pos, null,'${player_name} moves ${token_name} ${spaces_count} spaces away',['spaces_count'=>$spaces]);
         //breeding ?
         foreach ($this->birthZones as $info) {
             $limit = $info['triggerZone'];
