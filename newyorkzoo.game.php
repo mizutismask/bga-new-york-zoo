@@ -124,30 +124,16 @@ class NewYorkZoo extends EuroGame
         /************ End of the game initialization *****/
     }
 
+    function debugZoo()
+    {
+    }
+
+
+
+
     function initTables()
     {
-        // patches 
-        foreach ($this->token_types as $id => &$info) {
-            if (startsWith($id, 'patch')) {
-                $occ = $this->getRulesFor($id, "occurrences");
-                $patchColor = $this->getRulesFor($id, "color");
-                $dest = $patchColor === "bonus" ? "bonus_market" : "limbo";
-                if ($occ > 1) {
-                    $this->tokens->createTokensPack($id . "_{INDEX}", $dest, $occ, 1);
-                } else {
-                    $this->tokens->createToken($id, $dest, 1);
-                }
-            }
-        }
-
-        //animals
-        $this->tokens->createTokensPack("meerkat_{INDEX}", "limbo", 28);
-        $this->tokens->createTokensPack("flamingo_{INDEX}", "limbo", 26);
-        $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", 24);
-        $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", 24);
-        $this->tokens->createTokensPack("fox_{INDEX}", "limbo", 24);
-        $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_10
-
+        $this->createTokens();
 
         //creates houses and gets animals from the board
         $players = $this->loadPlayersBasicInfos();
@@ -165,21 +151,33 @@ class NewYorkZoo extends EuroGame
                 $h++;
             }
         }
-
-        /*
-        shuffle($patches);
-        $i = 0;
-        $this->tokens->moveToken('patch_1', "market", $i);
-        $i++;
-        $this->tokens->moveToken('token_neutral', "market", $i);
-        $i++;
-        foreach ($patches as $patch) {
-            if ($patch !== "patch_1") {
-                $this->tokens->moveToken($patch, "market", $i);
-                $i++;
-            }
-        }*/
         $this->setupPatchesOnBoard();
+    }
+
+    function createTokens()
+    {
+        //patches
+        foreach ($this->token_types as $id => &$info) {
+            if (startsWith($id, 'patch')) {
+                $occ = $this->getRulesFor($id, "occurrences");
+                $patchColor = $this->getRulesFor($id, "color");
+                $dest = $patchColor === "bonus" ? "bonus_market" : "limbo";
+                $state = $patchColor === "bonus" ? $this->getRulesFor($id, "spaces") : 0;
+                if ($occ > 1) {
+                    $this->tokens->createTokensPack($id . "_{INDEX}", $dest, $occ, 1, null, $state);
+                } else {
+                    $this->tokens->createToken($id, $dest, $state);
+                }
+            }
+        }
+
+        //animals
+        $this->tokens->createTokensPack("meerkat_{INDEX}", "limbo", 28);
+        $this->tokens->createTokensPack("flamingo_{INDEX}", "limbo", 26);
+        $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", 24);
+        $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", 24);
+        $this->tokens->createTokensPack("fox_{INDEX}", "limbo", 24);
+        $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_10
     }
 
     function setupPatchesOnBoard()
@@ -383,11 +381,11 @@ class NewYorkZoo extends EuroGame
 
     function getNextActionZones()
     {
+        $zones = [];
         $tokenNeutral = $this->tokens->getTokenInfo('token_neutral');
         $neutralLocation = getPart($tokenNeutral['location'], 2);
 
         $moveMax = $this->arg_elephantMove();
-        $zones = [];
         $moveCount = 1;
         $nextZone = $this->getNextActionZoneNumber($neutralLocation);
         while (count($zones) < $moveMax) {
@@ -661,7 +659,8 @@ class NewYorkZoo extends EuroGame
         $advance = 0; //todo
         $res += ['advance' => $advance];
         $res += ['buttons' => $buttons];
-        $res['canPatch'] = $canUseAny;
+
+        $res['canPatch'] = true; //$canUseAny;
         $res['maxMoves'] = $this->arg_elephantMove();
         $res['canGetAnimals'] = $this->arg_canGetAnimals($order); //$this->hasEmptyHouses(1)||$this->hasFenceAcceptinq();
 
