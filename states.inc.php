@@ -130,12 +130,12 @@ $machinestates = array(
     ],
 
     STATE_PLAYER_CHOOSE_BREEDING_FENCE => [
-        "name" => "choose fence",
+        "name" => "chooseFence",
         "description" => clienttranslate('${actplayer} can choose fences for breeding'),
         "descriptionmyturn" => clienttranslate('${you} can choose at most two fences for breeding'),
         "type" => "multipleactiveplayer",
         "args" => "arg_chooseFences",
-        "possibleactions" => ["chooseFence"],
+        "possibleactions" => ["chooseFences"],
         "transitions" => [
             "next" => STATE_GAME_TURN_NEXT_PLAYER, //maybe check fences state
         ]

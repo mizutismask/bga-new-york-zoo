@@ -66,14 +66,28 @@ class action_newyorkzoo extends APP_GameAction
     $this->game->action_placeAnimal($from, $to, $animalType, $animalId);
     self::ajaxResponse();
   }
-  
+
   public function dismiss()
   {
     self::setAjaxMode();
     $this->game->action_dismissAnimal();
     self::ajaxResponse();
   }
-  
+
+  public function chooseFences()
+  {
+    self::setAjaxMode();
+    $tokenIdsRaw = self::getArg("tokenIds", AT_alphanum, true);
+    $tokenIdsRaw = trim($tokenIdsRaw);
+
+    if ($tokenIdsRaw == '')
+      $tokenIds = array();
+    else
+      $tokenIds = explode(' ', $tokenIdsRaw);
+    $this->game->action_chooseFences($tokenIds);
+    self::ajaxResponse();
+  }
+
 
   /*
     

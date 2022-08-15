@@ -128,9 +128,6 @@ class NewYorkZoo extends EuroGame
     {
     }
 
-
-
-
     function initTables()
     {
         $this->createTokens();
@@ -527,14 +524,15 @@ class NewYorkZoo extends EuroGame
         $old = getPart($old, 2) + 0;
         $new = getPart($pos, 2) + 0;
 
-        $spaces = array_search( $pos,$this->getNextActionZones())+1;
+        $spaces = array_search($pos, $this->getNextActionZones()) + 1;
 
-        $this->dbSetTokenLocation('token_neutral', $pos, null,'${player_name} moves ${token_name} ${spaces_count} spaces away',['spaces_count'=>$spaces]);
+        $this->dbSetTokenLocation('token_neutral', $pos, null, '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
         //breeding ?
         foreach ($this->birthZones as $info) {
             $limit = $info['triggerZone'];
             if ($old < $limit && $new >= $limit) {
-                self::setGameStateInitialValue(GS_BREEDING, 1);
+                $animal = $info['animal'];
+                self::setGameStateInitialValue(GS_BREEDING, $this->getAnimalType($animal));
                 break;
             } else {
                 self::setGameStateInitialValue(GS_BREEDING, 0);
@@ -590,6 +588,22 @@ class NewYorkZoo extends EuroGame
         self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
         self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
         $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+    }
+
+    function action_chooseFences($tokenIds)
+    {
+        $this->checkAction('chooseFences');
+        $this->userAssertTrue(self::_("Have to select at most 2 fences"), count($tokenIds) <= 0);
+        $args = $this->arg_chooseFences();
+        foreach ($tokenIds as $token) {
+            $this->userAssertTrue(self::_("This fence can't be placed anywhere"), array_search($token, $args) !== false);
+        }
+        $animalType = self::getGameStateValue(GS_BREEDING);
+        foreach ($tokenIds as $token) {
+            $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
+            $this->tokens->moveToken($token["key"], $tokenIds); //todo specify where exactly
+        }
+        self::setGameStateValue(GS_BREEDING, 0);
     }
 
     function getAnimalType($animalName)
@@ -774,6 +788,11 @@ class NewYorkZoo extends EuroGame
         return $emptyHouses;
     }
 
+    function getTokensOfTypeInPatch($anmlType, $patch)
+    {
+        return [];
+    }
+
 
     function getFieldValuesFromArray($arr, $field, $unique = false)
     {
@@ -841,10 +860,45 @@ class NewYorkZoo extends EuroGame
 
     function arg_placeAttraction()
     {
+        $player_id = $this->getActivePlayerId();
+        $playerOrder = $this->getPlayerPosition($player_id);
+        $patches = $this->tokens->getTokensInLocation("bonus_market");
+
+        $canUseAny = false;
+        $occupancy = $this->getOccupancyMatrix($playerOrder);
+        foreach ($patches as $patch) {
+            $moves = $this->arg_possibleMoves($patch, $playerOrder, null, $occupancy);
+            $canPlace = false;
+            foreach ($moves as $arr) {
+                if (count($arr) > 0) {
+                    $canPlace = true;
+                    break;
+                }
+            }
+            $res['patches'][$patch]['moves'] = $moves;
+            $res['patches'][$patch]['canPlace'] = $canPlace;
+            $canPay = true;
+            $res['patches'][$patch]['canPay'] = $canPay;
+            $canUse = $canPay && $canPlace;
+            $res['patches'][$patch]['canUse'] = $canPay && $canUse;
+            $canUseAny = $canUseAny || $canUse;
+        }
+
+        $res['canPatch'] = true; //$canUseAny;
+        return $res;
     }
 
     function arg_chooseFences()
     {
+        $player_id = $this->getActivePlayerId();
+        $playerOrder = $this->getPlayerPosition($player_id);
+        $allFences = $this->tokens->getTokensOfTypeInLocation("patch", "square_" . $playerOrder);
+        $anmlType = self::getGameStateValue(GS_BREEDING);
+        //only keep those with 2 animals of the required type
+        $validFences = array_filter($allFences, function ($f) use ($anmlType) {
+            return $this->getTokensOfTypeInPatch($anmlType, $f);
+        });
+        return $validFences;//todo get ids only
     }
 
     //////////////////////////////////////////////////////////////////////////////
