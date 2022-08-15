@@ -56,6 +56,12 @@
 	background-color: #e2e7c2c2;
 }
 
+.playerOrderHelp{
+	display: inline-block;
+	padding-right: 3px;
+	padding-left: 3px;
+}
+
 /** Shadow for square tokens or boards, make them appear more real board-gamish */
 .shadow {
 	box-shadow: 1px 1px 3px 1px #555555;

@@ -638,10 +638,25 @@ define([
             setupPlayer: function (playerId, playerInfo, gamedatas) {
                 // does nothing here, override
                 console.log("player info " + playerId, playerInfo);
+
+                this.setupPlayerOrderHints(playerId, gamedatas);
+
                 // move miniboards to the right
                 var playerBoardDiv = dojo.byId('player_board_' + playerId);
                 var order = gamedatas.players[playerId].no;
                 dojo.place('miniboard_' + order, playerBoardDiv);
+            },
+
+            /** adds previous and next player color and name in a tooltip */
+            setupPlayerOrderHints(playerId, gamedatas) {
+                var nameDiv = this.queryFirst('#player_name_' + playerId + ' a');
+                var playerIndex = gamedatas.playerorder.indexOf(parseInt(playerId)); //playerorder is a mixed types array
+                if (playerIndex == -1) playerIndex = gamedatas.playerorder.indexOf(playerId.toString());
+
+                var previousId = playerIndex - 1 < 0 ? gamedatas.playerorder[gamedatas.playerorder.length - 1] : gamedatas.playerorder[playerIndex - 1];
+                var nextId = playerIndex + 1 >= gamedatas.playerorder.length ? gamedatas.playerorder[0] : gamedatas.playerorder[playerIndex + 1];
+                dojo.create('div', { class: 'playerOrderHelp', title: gamedatas.players[previousId].name, style: 'color:#' + gamedatas.players[previousId]['color'], innerHTML: "&gt;" }, nameDiv, 'before');
+                dojo.create('div', { class: 'playerOrderHelp', title: gamedatas.players[nextId].name, style: 'color:#' + gamedatas.players[nextId]['color'], innerHTML: "&gt;" }, nameDiv, 'after');
             },
 
             setupScrollableMap: function () {
