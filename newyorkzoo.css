@@ -296,7 +296,7 @@
 }
 
 /* flip speed goes here */
-.patch {
+.patch, .nyz_animal_action_zone {
 	transition: 0.5s;
 	transform-style: preserve-3d;
 	grid-column: 1 / 1;
