@@ -32,10 +32,8 @@ if (!defined('OFFSET')) {
     define("GS_BREEDING", "breeding");
 }
 
-class NewYorkZoo extends EuroGame
-{
-    function __construct()
-    {
+class NewYorkZoo extends EuroGame {
+    function __construct() {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
         //  You can use any number of global variables with IDs between 10 and 99.
@@ -60,8 +58,7 @@ class NewYorkZoo extends EuroGame
         $this->matrix = new PwMatrix($this);
     }
 
-    protected function getGameName()
-    {
+    protected function getGameName() {
         // Used for translations and stuff. Please do not modify.
         return "newyorkzoo";
     }
@@ -73,8 +70,7 @@ class NewYorkZoo extends EuroGame
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame($players, $options = array())
-    {
+    protected function setupNewGame($players, $options = array()) {
         try {
             // Set the colors of the players with HTML color code
             // The default below is red/green/blue/orange/brown
@@ -124,12 +120,10 @@ class NewYorkZoo extends EuroGame
         /************ End of the game initialization *****/
     }
 
-    function debugZoo()
-    {
+    function debugZoo() {
     }
 
-    function initTables()
-    {
+    function initTables() {
         $this->createTokens();
 
         //creates houses and gets animals from the board
@@ -151,8 +145,7 @@ class NewYorkZoo extends EuroGame
         $this->setupPatchesOnBoard();
     }
 
-    function createTokens()
-    {
+    function createTokens() {
         //patches
         foreach ($this->token_types as $id => &$info) {
             if (startsWith($id, 'patch')) {
@@ -177,8 +170,7 @@ class NewYorkZoo extends EuroGame
         $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_10
     }
 
-    function setupPatchesOnBoard()
-    {
+    function setupPatchesOnBoard() {
         $colors = [LIGHTEST_GREEN, LIGHT_GREEN, DARK_GREEN, DARKEST_GREEN];
         $layers = array();
         foreach ($colors as $color) {
@@ -221,8 +213,7 @@ class NewYorkZoo extends EuroGame
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas()
-    {
+    protected function getAllDatas() {
         $result = array();
 
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
@@ -275,8 +266,7 @@ class NewYorkZoo extends EuroGame
         This method is called each time we are in a game state with the "updateGameProgression" property set to true 
         (see states.inc.php)
     */
-    function getGameProgression()
-    {
+    function getGameProgression() {
         // TODO: compute and return the game progression
 
         return 0;
@@ -290,8 +280,7 @@ class NewYorkZoo extends EuroGame
     /*
         In this space, you can put any utility methods useful for your game logic
     */
-    function getGridSize()
-    {
+    function getGridSize() {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
         if ($players_nbr == 2) {
@@ -305,34 +294,28 @@ class NewYorkZoo extends EuroGame
         }
     }
 
-    function getGridWidth()
-    {
+    function getGridWidth() {
         $boardSize = $this->getGridSize();
         return $boardSize[0];
     }
 
-    function getGridHeight()
-    {
+    function getGridHeight() {
         $boardSize = $this->getGridSize();
         return $boardSize[1];
     }
 
-    function getMatrixStart()
-    {
+    function getMatrixStart() {
         return 0 - OFFSET;
     }
 
-    function getMatrixWidthEnd()
-    {
+    function getMatrixWidthEnd() {
         return $this->getGridWidth() +  OFFSET;
     }
-    function getMatrixHeightEnd()
-    {
+    function getMatrixHeightEnd() {
         return $this->getGridHeight() + OFFSET;
     }
 
-    function getPolyominoesCount($color)
-    {
+    function getPolyominoesCount($color) {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
         if ($players_nbr >= 2) {
@@ -349,8 +332,7 @@ class NewYorkZoo extends EuroGame
         }
     }
     //todo ajouter les autres nb de joueurs
-    function getPolyominoesLocationOnBoard($color)
-    {
+    function getPolyominoesLocationOnBoard($color) {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
         //if ($players_nbr >= 2) {
@@ -366,18 +348,18 @@ class NewYorkZoo extends EuroGame
         // }
     }
 
-    function getPolyominoesLocationsOnBoard()
-    {
+    function getPolyominoesLocationsOnBoard() {
         return [1, 3, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24];
     }
 
-    function getNextActionZoneNumber($current)
-    {
+    function getNextActionZoneNumber($current) {
         return $current == ACTION_ZONES_COUNT ? 1 : $current + 1;
     }
 
-    function getNextActionZones()
-    {
+    /**
+     * Get actions zones (animal or patches) that can be reach within an elephant move.
+     */
+    function getNextActionZones() {
         $zones = [];
         $tokenNeutral = $this->tokens->getTokenInfo('token_neutral');
         $neutralLocation = getPart($tokenNeutral['location'], 2);
@@ -400,8 +382,7 @@ class NewYorkZoo extends EuroGame
         return $zones;
     }
 
-    function mtCollectWithField($field, $callback = null)
-    {
+    function mtCollectWithField($field, $callback = null) {
         $res = [];
         foreach ($this->token_types as $id => $info) {
             if (array_key_exists($field, $info)) {
@@ -414,8 +395,7 @@ class NewYorkZoo extends EuroGame
         return $res;
     }
 
-    function mtCollectWithFieldValue($field, $expectedValue, $callback = null)
-    {
+    function mtCollectWithFieldValue($field, $expectedValue, $callback = null) {
         $res = [];
         foreach ($this->token_types as $id => $info) {
             if (array_key_exists($field, $info)) {
@@ -430,8 +410,7 @@ class NewYorkZoo extends EuroGame
         return $res;
     }
 
-    function stateToRotor($state)
-    {
+    function stateToRotor($state) {
         $ydir = (int) ($state / 4);
         $zdir = $state % 4;
         $rotateY = $ydir * 180;
@@ -474,8 +453,7 @@ class NewYorkZoo extends EuroGame
     }
     
     */
-    function action_place($token_id, $dropTarget, $rotateZ, $rotateY)
-    {
+    function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
         $this->checkAction('place');
 
         $player_id = $this->getActivePlayerId();
@@ -495,8 +473,7 @@ class NewYorkZoo extends EuroGame
         $this->gamestate->nextState('next');
     }
 
-    function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY)
-    {
+    function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY) {
         $rotateZ = $rotateZ % 360;
         $rotateY = $rotateY % 360;
         $rotor = "${rotateZ}_$rotateY";
@@ -518,8 +495,7 @@ class NewYorkZoo extends EuroGame
         $this->notifyCounterDirect("empties_${order}_counter", $unoccup_count, '');
     }
 
-    function saction_MoveNeutralToken($pos)
-    {
+    function saction_MoveNeutralToken($pos) {
         $old = $this->tokens->getTokenLocation('token_neutral');
         $old = getPart($old, 2) + 0;
         $new = getPart($pos, 2) + 0;
@@ -542,8 +518,7 @@ class NewYorkZoo extends EuroGame
         $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
 
-    function action_getAnimals($animalZone)
-    {
+    function action_getAnimals($animalZone) {
         $this->checkAction('getAnimals');
 
         $player_id = $this->getActivePlayerId();
@@ -558,8 +533,7 @@ class NewYorkZoo extends EuroGame
         $this->gamestate->nextState('placeAnimal');
     }
 
-    function action_placeAnimal($from, $to, $animalType, $animalId)
-    {
+    function action_placeAnimal($from, $to, $animalType, $animalId) {
         $this->checkAction('placeAnimal');
         $this->userAssertTrue(self::_("Have to select a location for this animal"), $animalType !== false && $to !== false);
         $args = $this->arg_placeAnimal();
@@ -583,15 +557,13 @@ class NewYorkZoo extends EuroGame
         }
     }
 
-    function action_dismissAnimal()
-    {
+    function action_dismissAnimal() {
         self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
         self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
         $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
     }
 
-    function action_chooseFences($tokenIds)
-    {
+    function action_chooseFences($tokenIds) {
         $this->checkAction('chooseFences');
         $this->userAssertTrue(self::_("Have to select at most 2 fences"), count($tokenIds) <= 0);
         $args = $this->arg_chooseFences();
@@ -606,19 +578,16 @@ class NewYorkZoo extends EuroGame
         self::setGameStateValue(GS_BREEDING, 0);
     }
 
-    function getAnimalType($animalName)
-    {
+    function getAnimalType($animalName) {
         $index = array_search($animalName, $this->animals);
         return $index === false ? 0 : $this->animalTypes[$index];
     }
-    function getAnimalName($animalType)
-    {
+    function getAnimalName($animalType) {
         $index = array_search($animalType, $this->animalTypes);
         return $index === false ? null : $this->animals[$index];
     }
 
-    function saction_FinalScoring()
-    {
+    function saction_FinalScoring() {
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $info) {
@@ -643,8 +612,7 @@ class NewYorkZoo extends EuroGame
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
     ////////////
-    function arg_playerTurn()
-    {
+    function arg_playerTurn() {
         $player_id = $this->getActivePlayerId();
         $order = $this->getPlayerPosition($player_id);
         $res = [];
@@ -684,8 +652,7 @@ class NewYorkZoo extends EuroGame
         return $res;
     }
 
-    function arg_occupancyData($order)
-    {
+    function arg_occupancyData($order) {
         $tokens = $this->tokens->getTokensOfTypeInLocation("patch", "square_${order}%");
         //$this->warn(toJson($tokens));
         $occupdata = [];
@@ -701,8 +668,7 @@ class NewYorkZoo extends EuroGame
         return $occupdata;
     }
 
-    function getOccupancyMatrix($order)
-    {
+    function getOccupancyMatrix($order) {
         $occupdata = null;
         if ($order !== null) {
             $occupdata = $this->arg_occupancyData($order);
@@ -712,16 +678,14 @@ class NewYorkZoo extends EuroGame
         return $occupancy;
     }
 
-    function getOccupancyEmpty($occupancy)
-    {
+    function getOccupancyEmpty($occupancy) {
         $unoccup = $this->matrix->remap($occupancy, '', 0);
         $unoccup_count = count($unoccup);
         $empty = $unoccup_count;
         return $empty;
     }
 
-    function arg_possibleMoves($patch, $order = null, $rotor = null, $occupancy = null)
-    {
+    function arg_possibleMoves($patch, $order = null, $rotor = null, $occupancy = null) {
         if ($order !== null) {
             $prefix = "square_${order}_";
         } else
@@ -735,8 +699,7 @@ class NewYorkZoo extends EuroGame
     }
 
     /** Return patches that are accessible with an elephant move. */
-    function arg_canBuyPatches($order)
-    {
+    function arg_canBuyPatches($order) {
         //$patches = ['patch_16', 'patch_1', 'patch_18'];
         $patches = [];
         $nextZones = $this->getNextActionZones();
@@ -750,8 +713,7 @@ class NewYorkZoo extends EuroGame
         return $patches;
     }
 
-    function arg_canGetAnimals($order)
-    {
+    function arg_canGetAnimals($order) {
         $freeHouses = $this->getFreeHouses($order);
 
         $from = [];
@@ -766,8 +728,7 @@ class NewYorkZoo extends EuroGame
         return $from;
     }
 
-    function getPlayerHouses($playerOrder)
-    {
+    function getPlayerHouses($playerOrder) {
         $players = $this->loadPlayersBasicInfos();
         $playerCount = count($players);
         $houseCount = $this->boards[$playerCount][$playerOrder]["houses"];
@@ -778,8 +739,7 @@ class NewYorkZoo extends EuroGame
         return $houses;
     }
 
-    function getFreeHouses($playerOrder)
-    {
+    function getFreeHouses($playerOrder) {
         $houseTokens = $this->tokens->getTokensInLocation("house_" . $playerOrder . "%");
         $housesWithToken = $this->getFieldValuesFromArray($houseTokens, "location", true);
         $allHouses = $this->getPlayerHouses($playerOrder);
@@ -788,14 +748,12 @@ class NewYorkZoo extends EuroGame
         return $emptyHouses;
     }
 
-    function getTokensOfTypeInPatch($anmlType, $patch)
-    {
+    function getTokensOfTypeInPatch($anmlType, $patch) {
         return [];
     }
 
 
-    function getFieldValuesFromArray($arr, $field, $unique = false)
-    {
+    function getFieldValuesFromArray($arr, $field, $unique = false) {
         $concatenated = array();
         foreach ($arr as $element) {
             if (isset($element[$field])) {
@@ -805,8 +763,7 @@ class NewYorkZoo extends EuroGame
         return $unique ? array_unique($concatenated) : $concatenated;
     }
 
-    function arg_elephantMove()
-    {
+    function arg_elephantMove() {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
         switch ($players_nbr) {
@@ -819,8 +776,7 @@ class NewYorkZoo extends EuroGame
         }
     }
 
-    function arg_placeAnimal()
-    {
+    function arg_placeAnimal() {
         $player_id = $this->getActivePlayerId();
         $order = $this->getPlayerPosition($player_id);
         $args = [];
@@ -851,15 +807,13 @@ class NewYorkZoo extends EuroGame
         return $args;
     }
 
-    function arg_possibleTargetsForAnimal($playerOrder, $animal)
-    {
+    function arg_possibleTargetsForAnimal($playerOrder, $animal) {
         $freeHouses = $this->getFreeHouses($playerOrder);
         $fencesAcceptingAnml = []; //todo
         return array_merge($freeHouses, $fencesAcceptingAnml);
     }
 
-    function arg_placeAttraction()
-    {
+    function arg_placeAttraction() {
         $player_id = $this->getActivePlayerId();
         $playerOrder = $this->getPlayerPosition($player_id);
         $patches = $this->tokens->getTokensInLocation("bonus_market");
@@ -888,8 +842,7 @@ class NewYorkZoo extends EuroGame
         return $res;
     }
 
-    function arg_chooseFences()
-    {
+    function arg_chooseFences() {
         $player_id = $this->getActivePlayerId();
         $playerOrder = $this->getPlayerPosition($player_id);
         $allFences = $this->tokens->getTokensOfTypeInLocation("patch", "square_" . $playerOrder);
@@ -898,7 +851,7 @@ class NewYorkZoo extends EuroGame
         $validFences = array_filter($allFences, function ($f) use ($anmlType) {
             return $this->getTokensOfTypeInPatch($anmlType, $f);
         });
-        return $validFences;//todo get ids only
+        return $validFences; //todo get ids only
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -909,8 +862,7 @@ class NewYorkZoo extends EuroGame
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
-    function st_gameTurnNextPlayer()
-    {
+    function st_gameTurnNextPlayer() {
         $endOfGame = false;
         $players = $this->loadPlayersBasicInfos();
         foreach ($players as $player_id => $info) {
@@ -932,8 +884,7 @@ class NewYorkZoo extends EuroGame
         $this->gamestate->nextState('next');
     }
 
-    function st_playerTurn()
-    {
+    function st_playerTurn() {
         $args = $this->arg_playerTurn();
         $canPatch = $args['canPatch'];
         //$this->warn("st_playerTurn canPatch='".$canPatch."' pl=$player_id ".toJson($args)."|");
@@ -961,8 +912,7 @@ class NewYorkZoo extends EuroGame
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn($state, $active_player)
-    {
+    function zombieTurn($state, $active_player) {
         $statename = $state['name'];
 
         if ($state['type'] === "activeplayer") {
@@ -1000,8 +950,7 @@ class NewYorkZoo extends EuroGame
     
     */
 
-    function upgradeTableDb($from_version)
-    {
+    function upgradeTableDb($from_version) {
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
