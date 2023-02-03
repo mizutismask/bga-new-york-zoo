@@ -167,6 +167,7 @@
 	align-items: flex-start;
 	width: 700px;
 	height: 569px;
+	text-align:center;
 }
 
 .tableau.own {
@@ -229,6 +230,16 @@
 }
 .tableau.player_order_5 {
 	background-position: calc(100% / var(--playerCountMinus1) * 4) 0%;
+}
+
+.player_name{
+	position: absolute;
+	bottom: 8px;
+	z-index: 100;
+	width: 100%;
+	left: 0px;
+	color: #d1cece;
+	font-weight: bold;
 }
 
 .pieces {

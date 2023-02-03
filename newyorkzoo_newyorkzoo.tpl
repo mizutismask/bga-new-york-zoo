@@ -82,6 +82,7 @@
 				<!-- END house -->
 				<!--</div> -->
 			</div>
+			<span class="player_name">{PLAYER_NAME}</span>
 		</div>
 
 		<!-- END player_board -->
