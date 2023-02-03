@@ -611,6 +611,7 @@ define([
                 document.documentElement.style.setProperty('--colsNb', gamedatas.gridSize[0]);
                 document.documentElement.style.setProperty('--rowsNb', gamedatas.gridSize[1]);
                 document.documentElement.style.setProperty('--playerCount', playerCount);
+                document.documentElement.style.setProperty('--playerCountMinus1', playerCount-1);
 
                 for (let index = 1; index <= 5; index++) {
                     if (i != playerCount) {

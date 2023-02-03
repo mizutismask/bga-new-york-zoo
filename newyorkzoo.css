@@ -219,16 +219,16 @@
 	background-position: 0 0;
 }
 .tableau.player_order_2 {
-	background-position: calc(100% / calc(var(--playerCount)-1)) 0%;
+	background-position: calc(100% / var(--playerCountMinus1)) 0%;
 }
 .tableau.player_order_3 {
-	background-position: calc(100% / calc(var(--playerCount)-1) * 2) 0%;
+	background-position: calc(100% / var(--playerCountMinus1) * 2) 0%;
 }
 .tableau.player_order_4 {
-	background-position: calc(100% / calc(var(--playerCount)-1) * 3) 0%;
+	background-position: calc(100% / var(--playerCountMinus1) * 3) 0%;
 }
 .tableau.player_order_5 {
-	background-position: calc(100% / calc(var(--playerCount)-1) * 4) 0%;
+	background-position: calc(100% / var(--playerCountMinus1) * 4) 0%;
 }
 
 .pieces {
