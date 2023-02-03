@@ -636,16 +636,14 @@ define([
             },
 
             setupPlayer: function (playerId, playerInfo, gamedatas) {
-                // does nothing here, override
                 console.log("player info " + playerId, playerInfo);
-
-                this.setupPlayerOrderHints(playerId, gamedatas);
-
                 // move miniboards to the right
                 var playerBoardDiv = dojo.byId('player_board_' + playerId);
                 var order = gamedatas.players[playerId].no;
                 dojo.place('miniboard_' + order, playerBoardDiv);
-            },
+
+                this.setupPlayerOrderHints(playerId, gamedatas);
+},
 
             /** adds previous and next player color and name in a tooltip */
             setupPlayerOrderHints(playerId, gamedatas) {
