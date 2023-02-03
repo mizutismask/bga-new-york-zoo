@@ -644,7 +644,7 @@ define([
                 dojo.place('miniboard_' + order, playerBoardDiv);
 
                 this.setupPlayerOrderHints(playerId, gamedatas);
-},
+}           ,
 
             /** adds previous and next player color and name in a tooltip */
             setupPlayerOrderHints(playerId, gamedatas) {
@@ -1382,8 +1382,7 @@ define([
             
             */
             setupNotifications: function () {
-                console.log('notifications subscriptions setup');
-
+                this.inherited(arguments);
                 // TODO: here, associate your game notifications with local methods
 
                 // Example 1: standard notification handling
