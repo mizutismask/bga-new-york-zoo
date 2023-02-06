@@ -491,6 +491,8 @@ class NewYorkZoo extends EuroGame {
             []
         );
         $occupancy = $this->getOccupancyMatrix($order);
+        self::dump('*********getOccupancyMatrix**********', $this->matrix->dumpMatrix($occupancy));
+        ;
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
         $this->notifyCounterDirect("empties_${order}_counter", $unoccup_count, '');
     }
@@ -724,6 +726,8 @@ class NewYorkZoo extends EuroGame {
             if ($zoneType == ANIMAL && $freeHouses)
                 $from[] = $nz;
         }
+        //  $from[$this->actionStripZones[$nz]["animals"][0]]  =$this->getSquaresInFencesAccepting($this->actionStripZones[$nz]["animals"][0]);
+        // $from[$this->actionStripZones[$nz]["animals"][1]]  = $this->getSquaresInFencesAccepting($this->actionStripZones[$nz]["animals"][1]);
         self::dump("*****************arg_canGetAnimals*", $from);
         return $from;
     }
@@ -809,8 +813,13 @@ class NewYorkZoo extends EuroGame {
 
     function arg_possibleTargetsForAnimal($playerOrder, $animal) {
         $freeHouses = $this->getFreeHouses($playerOrder);
-        $fencesAcceptingAnml = []; //todo
+        $fencesAcceptingAnml = $this->getSquaresInFencesAccepting($playerOrder, $animal); //todo
         return array_merge($freeHouses, $fencesAcceptingAnml);
+    }
+
+    function getSquaresInFencesAccepting($playerOrder, $animal) {
+
+        return []; //todo
     }
 
     function arg_placeAttraction() {

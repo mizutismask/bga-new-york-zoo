@@ -1004,6 +1004,7 @@ define([
                 });
 
                 args.canGetAnimals.forEach((id) => {
+                    console.log("args.canGetAnimals", id);
                     //var canUse = args.patches[id].canUse;
                     dojo.addClass(id, 'active_slot');
                     //if (canUse == false)
