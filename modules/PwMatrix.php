@@ -2,8 +2,7 @@
 
 
 if (!function_exists('array_key_first')) {
-    function array_key_first(array $arr)
-    {
+    function array_key_first(array $arr) {
         foreach ($arr as $key => $unused) {
             return $key;
         }
@@ -11,11 +10,9 @@ if (!function_exists('array_key_first')) {
     }
 }
 /** Double entry array : [height/line][width/col] */
-class PwMatrix extends APP_Object
-{
+class PwMatrix extends APP_Object {
 
-    function __construct($game)
-    {
+    function __construct($game) {
         # parent::__construct();
         $this->game = $game;
         $this->rotateZ = [ //
@@ -29,8 +26,7 @@ class PwMatrix extends APP_Object
         ];
     }
 
-    function emptyMatrix()
-    {
+    function emptyMatrix() {
         $res = [];
         for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixHeightEnd(); $i++) {
             for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixWidthEnd(); $j++) {
@@ -40,8 +36,7 @@ class PwMatrix extends APP_Object
         return $res;
     }
 
-    function occupancyMatrix($data = null)
-    {
+    function occupancyMatrix($data = null) {
         //$this->game->dump("occupancyMatrix***************************************************", $this->game->getGridWidth());
         //$this->game->dump("par", $this->game->getGridHeight());
 
@@ -64,8 +59,10 @@ class PwMatrix extends APP_Object
             $deg_y = getPart($rotor, 1);
             $piecematrix = $this->pieceMatrix($mask, $deg_z, $deg_y);
             $pic = $this->dumpMatrix($piecematrix, "$mask $deg_z $deg_y", true);
-            //$this->game->dump("pic***************************************************", $pic);
-            //$this->warn($pic);
+            if (count($data) == 1) {
+                $this->game->dump("pic***************************************************", $pic);
+                $this->warn($pic);
+            }
             $res = $this->unionMatrix($res, $piecematrix, $y, $x);
         }
         return $res;
@@ -73,8 +70,7 @@ class PwMatrix extends APP_Object
 
 
 
-    function pieceMatrix($mask, $deg_z = 0, $deg_y = 0)
-    {
+    function pieceMatrix($mask, $deg_z = 0, $deg_y = 0) {
         $res = [];
         if ($mask) {
             $rrows = explode(':', $mask);
@@ -103,8 +99,7 @@ class PwMatrix extends APP_Object
         return $res;
     }
 
-    function unionMatrix($occupancy, $piecematrix, $off_i, $off_j)
-    {
+    function unionMatrix($occupancy, $piecematrix, $off_i, $off_j) {
         foreach ($piecematrix as $i => $row) {
             foreach ($row as $j => $val) {
                 $occupancy[$off_i + $i][$off_j + $j] |= $val;
@@ -113,8 +108,7 @@ class PwMatrix extends APP_Object
         return $occupancy;
     }
 
-    function intersectMatrix($occupancy, $piecematrix, $off_i, $off_j, $retbool = false)
-    {
+    function intersectMatrix($occupancy, $piecematrix, $off_i, $off_j, $retbool = false) {
         foreach ($piecematrix as $i => $row) {
             foreach ($row as $j => $val) {
                 $nval = ($occupancy[$off_i + $i][$off_j + $j] = $val && $occupancy[$off_i + $i][$off_j + $j]);
@@ -126,8 +120,7 @@ class PwMatrix extends APP_Object
         return $occupancy;
     }
 
-    function hasOverlap($matrix, $negative = false)
-    {
+    function hasOverlap($matrix, $negative = false) {
         foreach ($matrix as $row) {
             foreach ($row as $val) {
                 if ($val && $negative === false)
@@ -139,16 +132,15 @@ class PwMatrix extends APP_Object
         return 0;
     }
 
-    function dumpMatrix($matrix, $name = '', $retstr = false)
-    {
+    function dumpMatrix($matrix, $name = '', $retstr = false) {
         $h = count($matrix);
         $w = count($matrix[0]);
         $str = "matrix $name  $w x $h|\n";
-        for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixHeightEnd(); $i++) {
+        for ($i = 0; $i < $this->game->getGridHeight(); $i++) {
             $row = '';
-            for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixWidthEnd(); $j++) {
+            for ($j = 0; $j < $this->game->getGridWidth() - 1; $j++) {
                 if (isset($matrix[$i][$j])) {
-                    $val = $matrix[$i][$j] ? 'X' : '_';
+                    $val = $matrix[$i][$j] ? '1' : '0';
                 } else {
                     $val = '/';
                 }
@@ -160,8 +152,7 @@ class PwMatrix extends APP_Object
         //print $str;
         return $str;
     }
-    function availability($occupancy, $mask, $deg_z, $deg_y)
-    {
+    function availability($occupancy, $mask, $deg_z, $deg_y) {
         $piecematrix = $this->pieceMatrix($mask, $deg_z, $deg_y);
         $dominance = [];
         for ($i = 0; $i < $this->game->getGridHeight(); $i++) {
@@ -173,14 +164,13 @@ class PwMatrix extends APP_Object
         return $dominance;
     }
 
-    function possibleMoves($mask, $prefix, $rotor, $occupancy)
-    {
+    function possibleMoves($mask, $prefix, $rotor, $occupancy) {
         if ($rotor)
             $rotor_arr = [$rotor];
         else
             $rotor_arr = $this->rotors($mask);
         $res = [];
-        $this->dump("possibleMoves occup", $this->dumpMatrix($occupancy, 'occup', true));
+        //$this->dump("possibleMoves occup", $this->dumpMatrix($occupancy, 'occup', true));
         foreach ($rotor_arr as $rot) {
             $deg_z = getPart($rot, 0);
             $deg_y = getPart($rot, 1);
@@ -190,14 +180,12 @@ class PwMatrix extends APP_Object
         return $res;
     }
 
-    function transformVec($x, $y, $trans)
-    {
+    function transformVec($x, $y, $trans) {
         $x1 = $x * $trans[0] + $y * $trans[1];
         $y1 = $x * $trans[2] + $y * $trans[3];
         return [$x1, $y1];
     }
-    function transform($matrix, $trans)
-    {
+    function transform($matrix, $trans) {
         $res = [];
         //$this->dumpMatrix($matrix,'orig');
         foreach ($matrix as $y => $row) {
@@ -212,8 +200,7 @@ class PwMatrix extends APP_Object
         return $res;
     }
 
-    function hasfilled($matrix, $max = 7)
-    {
+    function hasfilled($matrix, $max = 7) {
         for ($start_i = 0; $start_i <= $this->game->getGridHeight() - $max; $start_i++) {
             for ($start_j = 0; $start_j <= $this->game->getGridWidth() - $max; $start_j++) {
                 $found = true;
@@ -236,8 +223,7 @@ class PwMatrix extends APP_Object
         return false;
     }
 
-    function isFullyFilled($matrix)
-    {
+    function isFullyFilled($matrix) {
         for ($i = 0; $i <= $this->game->getGridHeight(); $i++) {
             for ($j = 0; $j <= $this->game->getGridWidth(); $j++) {
                 if (isset($matrix[$i][$j]) && $matrix[$i][$j]) {
@@ -249,8 +235,7 @@ class PwMatrix extends APP_Object
         return true;
     }
 
-    function remap($matrix, $prefix, $value)
-    {
+    function remap($matrix, $prefix, $value) {
         //$this->dumpMatrix($matrix,'dominance');
         $res = [];
         for ($i = 0; $i < $this->game->getGridHeight(); $i++) {
@@ -265,8 +250,7 @@ class PwMatrix extends APP_Object
         return $res;
     }
 
-    function valueCoords($piecematrix, $xval = null)
-    {
+    function valueCoords($piecematrix, $xval = null) {
         $coords = [];
         foreach ($piecematrix as $i => $row) {
             foreach ($row as $j => $val) {
@@ -278,13 +262,11 @@ class PwMatrix extends APP_Object
         return $coords;
     }
 
-    function rotors($patch)
-    {
+    function rotors($patch) {
         return ["0_0", "90_0", "180_0", "270_0", "0_180", "90_180", "180_180", "270_180"];
     }
 
-    function toPolygon($mask, $mul = 1, &$matrix = null)
-    {
+    function toPolygon($mask, $mul = 1, &$matrix = null) {
         $matrix = $this->pieceMatrix($mask, 0, 0);
         $h = count($matrix);
         $w = count($matrix[0]);
@@ -315,8 +297,7 @@ class PwMatrix extends APP_Object
         return $res;
     }
 
-    function toPolygonRec(&$poly, &$coords, $x, $y, $step_x, $step_y, $matrix)
-    {
+    function toPolygonRec(&$poly, &$coords, $x, $y, $step_x, $step_y, $matrix) {
         list($start_x, $start_y) = $coords[0];
         if ($start_x == $x && $start_y == $y)
             return 1;
