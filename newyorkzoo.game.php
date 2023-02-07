@@ -276,7 +276,19 @@ class NewYorkZoo extends EuroGame {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     ////////////    
-
+    function transformMask($mask) {
+        $mask = preg_replace('/11/', '21', $mask, 1);
+        if (strpos($mask, '2') === false) {
+            $mask = preg_replace('/1:/', '3:', $mask, 1);
+        }
+        if (strpos($mask, '3') === false) {
+            $mask = preg_replace('/1$/', '3', $mask, 1);
+        }
+        if (strpos($mask, '3') === false) {
+            $mask = preg_replace('/1/', '3', $mask, 1);
+        }
+        return $mask;
+    }
     /*
         In this space, you can put any utility methods useful for your game logic
     */
@@ -474,6 +486,9 @@ class NewYorkZoo extends EuroGame {
     }
 
     function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY) {
+        $occupancy = $this->getOccupancyMatrix($order);
+        self::dump('*********getOccupancyMatrixBefore**********', $this->matrix->dumpMatrix($occupancy));
+
         $rotateZ = $rotateZ % 360;
         $rotateY = $rotateY % 360;
         $rotor = "${rotateZ}_$rotateY";
@@ -490,11 +505,29 @@ class NewYorkZoo extends EuroGame {
             $message,
             []
         );
+
         $occupancy = $this->getOccupancyMatrix($order);
         self::dump('*********getOccupancyMatrix**********', $this->matrix->dumpMatrix($occupancy));
-        ;
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
         $this->notifyCounterDirect("empties_${order}_counter", $unoccup_count, '');
+
+     
+        $occupancy = $this->getOccupancyMatrixForPiece($order, $token_id);
+        self::dump('*********getOccupancyMatrixForPiece**********', $this->matrix->dumpMatrix($occupancy));
+        $prefix = "square_${order}_";
+        $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
+        self::dump('*********occupiedByPiece**********', $occupiedByPiece);
+        $this->dbInsertFenceSquares($order, $token_id, $occupiedByPiece);
+    }
+
+    function dbInsertFenceSquares($order, $token_id, $squares){
+        $sql = "INSERT INTO fence (token_key, square, player_order) VALUES ";
+        $values = array();
+        foreach ($squares as $loc) {
+            $values[] = "( '$token_id', '$loc', '$order' )";
+        }
+        $sql .= implode($values, ',');
+        self::DbQuery($sql);
     }
 
     function saction_MoveNeutralToken($pos) {
@@ -674,6 +707,24 @@ class NewYorkZoo extends EuroGame {
         $occupdata = null;
         if ($order !== null) {
             $occupdata = $this->arg_occupancyData($order);
+        }
+        $occupancy = $this->matrix->occupancyMatrix($occupdata);
+
+        return $occupancy;
+    }
+
+    function getOccupancyMatrixForPiece($order, $tokenId) {
+        $occupdata = null;
+        if ($order !== null && $tokenId !==null) {
+            $token = $this->tokens->getTokenInfo($tokenId);
+            $loc = $token['location'];
+            $state = $token['state'];
+            $y = getPart($loc, 2);
+            $x = getPart($loc, 3);
+            $rotor2 = $this->stateToRotor($state);
+            $mask2 = $this->getRulesFor($tokenId, 'mask');
+            $occupdata[] = [$x, $y, $mask2, $rotor2];
+            self::dump('*******************occupdata', $occupdata);
         }
         $occupancy = $this->matrix->occupancyMatrix($occupdata);
 
