@@ -511,20 +511,23 @@ class NewYorkZoo extends EuroGame {
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
         $this->notifyCounterDirect("empties_${order}_counter", $unoccup_count, '');
 
-     
+
         $occupancy = $this->getOccupancyMatrixForPiece($order, $token_id);
         self::dump('*********getOccupancyMatrixForPiece**********', $this->matrix->dumpMatrix($occupancy));
         $prefix = "square_${order}_";
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
         self::dump('*********occupiedByPiece**********', $occupiedByPiece);
-        $this->dbInsertFenceSquares($order, $token_id, $occupiedByPiece);
+        $this->dbInsertFence($order, $token_id, $occupiedByPiece);
     }
 
-    function dbInsertFenceSquares($order, $token_id, $squares){
-        $sql = "INSERT INTO fence (token_key, square, player_order) VALUES ";
+    function dbInsertFence($order, $token_id, $squares) {
+        $sql = "INSERT INTO fence (token_key, player_order) VALUES ('$token_id', '$order') ";
+        self::DbQuery($sql);
+
+        $sql = "INSERT INTO fence_squares (token_key, square) VALUES ";
         $values = array();
         foreach ($squares as $loc) {
-            $values[] = "( '$token_id', '$loc', '$order' )";
+            $values[] = "( '$token_id', '$loc' )";
         }
         $sql .= implode($values, ',');
         self::DbQuery($sql);
@@ -617,9 +620,14 @@ class NewYorkZoo extends EuroGame {
         $index = array_search($animalName, $this->animals);
         return $index === false ? 0 : $this->animalTypes[$index];
     }
-    function getAnimalName($animalType) {
+    function getAnimalName($animalType, $constant = false) {
+
         $index = array_search($animalType, $this->animalTypes);
-        return $index === false ? null : $this->animals[$index];
+        $animalName = $index === false ? null : $this->animals[$index];
+        if ($constant) {
+            return strtoupper($animalName);
+        }
+        return $animalName;
     }
 
     function saction_FinalScoring() {
@@ -715,7 +723,7 @@ class NewYorkZoo extends EuroGame {
 
     function getOccupancyMatrixForPiece($order, $tokenId) {
         $occupdata = null;
-        if ($order !== null && $tokenId !==null) {
+        if ($order !== null && $tokenId !== null) {
             $token = $this->tokens->getTokenInfo($tokenId);
             $loc = $token['location'];
             $state = $token['state'];
@@ -842,14 +850,14 @@ class NewYorkZoo extends EuroGame {
         if ($first) {
             $anmlType = $this->getAnimalName($first);
             $args["animalType1"] = $anmlType;
-            $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
+            $targets = $this->arg_possibleTargetsForAnimal($order, $this->getAnimalName($first, true));
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
             $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
         }
         if ($second) {
             $anmlType = $this->getAnimalName($second);
             $args["animalType2"] = $anmlType;
-            $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
+            $targets = $this->arg_possibleTargetsForAnimal($order, $this->getAnimalName($second, true));
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
             $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
         }
@@ -869,8 +877,25 @@ class NewYorkZoo extends EuroGame {
     }
 
     function getSquaresInFencesAccepting($playerOrder, $animal) {
+        $sql = "SELECT square 
+        FROM fence_squares 
+        JOIN fence on fence.token_key = fence_squares.token_key 
+        WHERE player_order=$playerOrder 
+        AND animal_type in('NONE', '$animal')";
+        $allSquares = self::getObjectListFromDB($sql, true);
 
-        return []; //todo
+        $allSquaresParam = $this->dbArrayParam($allSquares);
+        $sql = "SELECT token_location 
+        FROM token 
+        WHERE token_location in($allSquaresParam) 
+        AND token_key not like 'patch%'";
+        $occupied = self::getObjectListFromDB($sql, true);
+
+        return array_diff($allSquares, $occupied);
+    }
+
+    function dbArrayParam($arrayp) {
+        return '"' . implode($arrayp, '","') . '"';
     }
 
     function arg_placeAttraction() {
