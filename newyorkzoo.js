@@ -37,7 +37,7 @@ class PatchManager {
     };
 
     onSquare(event) {
-        console.log('onSquare', event, gameui.isCurrentPlayerActive(), gameui.isPracticeMode());
+        console.log('onSquare', event, gameui.isCurrentPlayerActive(), gameui.isPracticeMode(), gameui.curstate);
         event.preventDefault();
         var id = event.currentTarget.id;
         if (!id) return;
@@ -48,14 +48,21 @@ class PatchManager {
         //		}
         const dropNode = this.getDropTarget(id);
         if (dropNode == null) return;
-        if (dropNode == gameui.clientStateArgs.dropTarget) {
-            // pick up the piece to move again
-            this.beginPickPatch(this.selectedNode);
-            this.selectPickPatchSquare(dropNode);
-            return;
+
+        if (gameui.curstate === "client_PlaceAnimal") {
+            gameui.clientStateArgs.to = dropNode.id;
+            gameui.ajaxClientStateAction();
         }
-        this.selectPickPatchSquare(dropNode);
-        this.endPickPatch();
+        else {
+            if (dropNode == gameui.clientStateArgs.dropTarget) {
+                // pick up the piece to move again
+                this.beginPickPatch(this.selectedNode);
+                this.selectPickPatchSquare(dropNode);
+                return;
+            }
+            this.selectPickPatchSquare(dropNode);
+            this.endPickPatch();
+        }
     };
 
     applyRotate(targetNode, dir) {
@@ -611,7 +618,7 @@ define([
                 document.documentElement.style.setProperty('--colsNb', gamedatas.gridSize[0]);
                 document.documentElement.style.setProperty('--rowsNb', gamedatas.gridSize[1]);
                 document.documentElement.style.setProperty('--playerCount', playerCount);
-                document.documentElement.style.setProperty('--playerCountMinus1', playerCount-1);
+                document.documentElement.style.setProperty('--playerCountMinus1', playerCount - 1);
 
                 for (let index = 1; index <= 5; index++) {
                     if (i != playerCount) {
@@ -644,7 +651,7 @@ define([
                 dojo.place('miniboard_' + order, playerBoardDiv);
 
                 this.setupPlayerOrderHints(playerId, gamedatas);
-}           ,
+            },
 
             /** adds previous and next player color and name in a tooltip */
             setupPlayerOrderHints(playerId, gamedatas) {
@@ -1113,7 +1120,7 @@ define([
                     gameui.addImageActionButton('place_animal_' + anml, this.createDiv(anml + " smallIcon"), () => {//todo translate i18
 
                         if (args.animals[anml].canPlace) {
-                            this.setClientStateAction('client_PlaceAnimal')
+                            this.setClientStateAction('client_PlaceAnimal');
                             this.clientStateArgs.animalType = anml;
 
                             args.animals[anml].possibleTargets.forEach((id) => {

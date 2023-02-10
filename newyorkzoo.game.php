@@ -580,7 +580,8 @@ class NewYorkZoo extends EuroGame {
         $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
 
         $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
-        $this->tokens->moveToken($token["key"], $to);
+        $this->dbSetTokenLocation($token["key"], $to, null, '${player_name} places a ${token_name}', []);
+       
 
         if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
             self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
