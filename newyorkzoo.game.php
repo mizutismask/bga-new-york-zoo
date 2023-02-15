@@ -615,12 +615,13 @@ class NewYorkZoo extends EuroGame {
         $canGo  = $args["animals"][$animalType]["possibleTargets"];
         $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
 
-        $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
-        $this->dbSetTokenLocation($token["key"], $to, null, '${player_name} places a ${token_name}', []);
+        $animal = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
+        $this->dbSetTokenLocation($animal["key"], $to, null, '${player_name} places a ${token_name}', []);
 
         if (!$this->isHouse($to)) {
             $patch = $this->getPatchFromSquare($to);
             $this->dbUpdateFenceType($patch, $animalType);
+            $this->dbIncFenceAnimalsAddedNumber($patch);
         }
 
 
@@ -640,8 +641,19 @@ class NewYorkZoo extends EuroGame {
     function dbUpdateTable(String $table, String $field, String $newValue, String $pkfield, String $key) {
         $this->DbQuery("UPDATE $table SET $field = '$newValue' WHERE $pkfield = '$key'");
     }
+
+    function dbIncField(String $table, String $field, String $pkfield, String $key) {
+        $this->DbQuery("UPDATE $table SET $field = $field+1 WHERE $pkfield = '$key'");
+    }
+
     function dbUpdateFenceType(String $key, String $newValue) {
         $this->dbUpdateTable("fence", "animal_type", $newValue, "token_key", $key);
+    }
+    function dbIncFenceAnimalsAddedNumber(String $key) {
+        $this->dbIncField("fence", "animals_added", "token_key", $key);
+    }
+    function dbUpdateFenceAnimalsAddedNumber(String $key, Int $newValue) {
+        $this->dbUpdateTable("fence", "animals_added", $newValue, "token_key", $key);
     }
 
     function action_dismissAnimal() {
