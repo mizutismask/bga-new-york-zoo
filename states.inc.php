@@ -57,6 +57,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_PLAYER_PLACE_ATTRACTION", 6);
     define("STATE_PLAYER_CHOOSE_FENCE", 7);
     define("STATE_PLAYER_CHOOSE_BREEDING_FENCE", 8);
+    define("STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE", 9);
     define("STATE_END_GAME", 99);
 
 
@@ -65,6 +66,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("TRANSITION_PASS", "pass");
     define("TRANSITION_DISMISS", "dismiss");
     define("TRANSITION_PLACE_ANIMAL", "placeAnimal");
+    define("TRANSITION_KEEP_ANIMAL", "keepAnimal");
     define("TRANSITION_PLACE_ATTRACTION", "placeAttraction");
     define("TRANSITION_CHOOSE_FENCE", "chooseFence");
 }
@@ -106,6 +108,25 @@ $machinestates = array(
             "next" => STATE_GAME_TURN_NEXT_PLAYER,
             "last" => STATE_PLAYER_GAME_END,
             TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
+            TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
+            TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
+            TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE
+        ] // 
+    ],
+
+    STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE => [
+        "name" => "keepAnimalFromFullFence",
+        "description" => clienttranslate('${actplayer} can place an animal from the full fence to a house'),
+        "descriptionmyturn" => clienttranslate('${you} can place an animal from your full fence to a house'),
+        "type" => "activeplayer",
+        "args" => "arg_keep_animal",
+        "possibleactions" => ["dismiss", "keepAnimal"],
+        "transitions" => [
+            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            "last" => STATE_PLAYER_GAME_END,
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
+            TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
             TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE

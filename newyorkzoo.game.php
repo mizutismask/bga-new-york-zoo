@@ -30,6 +30,7 @@ if (!defined('OFFSET')) {
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
     define("GS_BREEDING", "breeding");
+    define("GS_ANIMAL_TO_KEEP", "animalToKeep");
 }
 
 class NewYorkZoo extends EuroGame {
@@ -49,9 +50,10 @@ class NewYorkZoo extends EuroGame {
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-            GS_ANIMAL_TO_PLACE => 10, //animalType
-            GS_OTHER_ANIMAL_TO_PLACE => 11,
+            GS_ANIMAL_TO_PLACE => 10, //animalType from main action
+            GS_OTHER_ANIMAL_TO_PLACE => 11,  //from main action
             GS_BREEDING => 12,
+            GS_ANIMAL_TO_KEEP => 13, //from full fence
         ));
 
         $this->tokens = new Tokens();
@@ -622,6 +624,14 @@ class NewYorkZoo extends EuroGame {
             $patch = $this->getPatchFromSquare($to);
             $this->dbUpdateFenceType($patch, $animalType);
             $this->dbIncFenceAnimalsAddedNumber($patch);
+            if ($this->isFenceFull($patch)) {
+                $animalType = $this->emptyFence($patch);
+                if ($this->getFreeHouses($this->getMostlyActivePlayerOrder())) {
+                    //offers to keep one animal
+                    self::setGameStateValue(GS_ANIMAL_TO_KEEP, $this->getAnimalType($animalType));
+                } else {
+                }
+            }
         }
 
 
@@ -1124,5 +1134,15 @@ class NewYorkZoo extends EuroGame {
         //
 
 
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////:
+    ////////// Debug utils
+    //////////
+    function fullFence($fenceKey) {
+        $squares=$this->getFenceSquares($fenceKey);
+        foreach ($squares as $square) {
+            $this->tokens->pickTokensForLocation(1, "limbo", $square);
+        }
     }
 }
