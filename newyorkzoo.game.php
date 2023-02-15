@@ -276,9 +276,36 @@ class NewYorkZoo extends EuroGame {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
-    
-    function getPatchFromSquare($square){
+
+    function getFenceType($fenceKey) {
+        return self::getUniqueValueFromDB("SELECT animal_type FROM fence WHERE token_key = '$fenceKey'");
+    }
+
+    function getPatchFromSquare($square) {
         return self::getUniqueValueFromDB("SELECT token_key FROM fence_squares WHERE square = '$square'");
+    }
+
+    function getFenceSquares($fenceKey) {
+        return self::getObjectListFromDB("SELECT square FROM fence_squares WHERE token_key = '$fenceKey'", true);
+    }
+
+    function isFenceFull($fenceId) {
+        $squares = $this->getFenceSquares($fenceId);
+        $empty = $this->filterFreeSquares($squares);
+        self::dump('***********isFenceFull********', !$empty);
+        return !$empty;
+    }
+
+    /** Empty fence and return animal type */
+    function emptyFence($fenceId) {
+        $type = $this->getFenceType($fenceId);
+        $squares = $this->getFenceSquares($fenceId);
+        self::dump('******************getFenceSquares*', $squares);
+        $occupied = $this->filterOccupiedSquares($squares);
+        $tokens = $this->tokens->getTokensInLocations($occupied);
+        $this->dbSetTokensLocation($tokens, "limbo", null, '${player_name} has a full fence', []);
+        //todo save type
+        return $type;
     }
 
     function isHouse($targetName) {
@@ -591,7 +618,7 @@ class NewYorkZoo extends EuroGame {
         $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
         $this->dbSetTokenLocation($token["key"], $to, null, '${player_name} places a ${token_name}', []);
 
-        if(!$this->isHouse($to)){
+        if (!$this->isHouse($to)) {
             $patch = $this->getPatchFromSquare($to);
             $this->dbUpdateFenceType($patch, $animalType);
         }
@@ -646,7 +673,7 @@ class NewYorkZoo extends EuroGame {
 
         $index = array_search($animalType, $this->animalTypes);
         $animalName = $index === false ? null : $this->animals[$index];
-       /* if ($constant) {
+        /* if ($constant) {
             return strtoupper($animalName);
         }*/
         return $animalName;
@@ -901,15 +928,22 @@ class NewYorkZoo extends EuroGame {
     function getSquaresInFencesAccepting($playerOrder, $animal) {
         $sql = "SELECT square FROM fence_squares JOIN fence on fence.token_key = fence_squares.token_key WHERE player_order=$playerOrder AND animal_type in('none', '$animal')";
         $allSquares = self::getObjectListFromDB($sql, true);
+        return $this->filterFreeSquares($allSquares);
+    }
 
-        $allSquaresParam = $this->dbArrayParam($allSquares);
-        $sql = "SELECT token_location 
-        FROM token 
-        WHERE token_location in($allSquaresParam) 
-        AND token_key not like 'patch%'";
+    function filterFreeSquares($squares) {
+        $allSquaresParam = $this->dbArrayParam($squares);
+        $sql = "SELECT token_location FROM token WHERE token_location in($allSquaresParam) AND token_key not like 'patch%'";
         $occupied = self::getObjectListFromDB($sql, true);
+        return array_diff($squares, $occupied);
+    }
 
-        return array_diff($allSquares, $occupied);
+    function filterOccupiedSquares($squares) {
+        $allSquaresParam = $this->dbArrayParam($squares);
+        $sql = "SELECT token_location FROM token WHERE token_location in($allSquaresParam) AND token_key not like 'patch%'";
+        $occupied = self::getObjectListFromDB($sql, true);
+        self::dump('***************filterOccupiedSquares****', $occupied);
+        return $occupied;
     }
 
     function dbArrayParam($arrayp) {

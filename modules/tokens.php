@@ -22,14 +22,14 @@ class Tokens extends APP_GameClass {
     var $autoreshuffle_trigger = null; // Callback to a method called when an autoreshuffle occurs
     // autoreshuffle_trigger = array( 'obj' => object, 'method' => method_name )
     // If defined, tell the name of the deck and what is the corresponding discard (ex : "mydeck" => "mydiscard")
-    var $autoreshuffle_custom = array ();
+    var $autoreshuffle_custom = array();
     private $custom_fields;
     private $g_index;
 
     function __construct() {
         $this->table = 'token';
-        $this->custom_fields = array ();
-        $this->g_index = array ();
+        $this->custom_fields = array();
+        $this->g_index = array();
     }
 
     // MUST be called before any other method if db table is not called 'token'
@@ -54,24 +54,24 @@ class Tokens extends APP_GameClass {
             $next_pos = $this->getExtremePosition(true, $location_global) + 1;
         else
             $next_pos = 0;
-        $values = array ();
-        $keys = array ();
-        foreach ( $tokens as $token_info ) {
-            if (isset($token_info ['nbr']))
-                $n = $token_info ['nbr'];
+        $values = array();
+        $keys = array();
+        foreach ($tokens as $token_info) {
+            if (isset($token_info['nbr']))
+                $n = $token_info['nbr'];
             else
                 $n = 1;
-            if (isset($token_info ['nbr_start']))
-                $start = $token_info ['nbr_start'];
+            if (isset($token_info['nbr_start']))
+                $start = $token_info['nbr_start'];
             else
                 $start = 0;
             for ($i = $start; $i < $n + $start; $i++) {
-                if (isset($token_info ['location']))
-                    $location = $token_info ['location'];
+                if (isset($token_info['location']))
+                    $location = $token_info['location'];
                 else
                     $location = $location_global;
-                if (isset($token_info ['state']))
-                    $token_state = ( int ) ($token_info ['state']);
+                if (isset($token_info['state']))
+                    $token_state = (int) ($token_info['state']);
                 else
                     $token_state = $token_state_global;
                 if ($token_state === null) {
@@ -82,16 +82,16 @@ class Tokens extends APP_GameClass {
                         $token_state = 0;
                     }
                 }
-                $key = $token_info ['key'];
+                $key = $token_info['key'];
                 if ($key == null)
                     throw new feException("createTokens: key cannot be null");
-                $key = $this->varsub($key, array_merge($token_info, array ('INDEX' => $i )), true);
+                $key = $this->varsub($key, array_merge($token_info, array('INDEX' => $i)), true);
                 if ($location == null)
                     throw new feException("createTokens: location cannot be null (set per token location or location_global");
                 self::checkLocation($location);
                 self::checkKey($key);
-                $values [] = "( '$key', '$location', '$token_state' )";
-                $keys [] = $key;
+                $values[] = "( '$key', '$location', '$token_state' )";
+                $keys[] = $key;
             }
         }
         $sql = "INSERT INTO " . $this->table . " (token_key,token_location,token_state)";
@@ -104,8 +104,8 @@ class Tokens extends APP_GameClass {
         self::checkLocation($location);
         self::checkState($token_state);
         self::checkKey($key);
-        $values = array ();
-        $values [] = "( '$key', '$location', '$token_state' )";
+        $values = array();
+        $values[] = "( '$key', '$location', '$token_state' )";
         $sql = "INSERT INTO " . $this->table . " (token_key,token_location,token_state)";
         $sql .= " VALUES " . implode(",", $values);
         $this->DbQuery($sql);
@@ -126,7 +126,7 @@ class Tokens extends APP_GameClass {
         $resnum = count($allsuf);
         try {
             return $this->createToken("${type}_${resnum}", $location, $token_state);
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             // hack, remove later
             return $this->createToken("${type}_0", $location, $token_state);
         }
@@ -134,20 +134,20 @@ class Tokens extends APP_GameClass {
 
     function createTokensPack($key, $location, $nbr = 1, $nbr_start = 1, $iterArr = null, $token_state = null) {
         if ($iterArr == null)
-            $iterArr = array ('' );
-        if ( !is_array($iterArr))
+            $iterArr = array('');
+        if (!is_array($iterArr))
             throw new feException("iterArr must be an array");
         if (count($iterArr) == 0)
-            $iterArr = array ('' );
-        $tokenSpec = array ('key' => $key,'location' => $location,'nbr' => $nbr,'nbr_start' => $nbr_start );
-        $tokens = array ();
-        foreach ( $iterArr as $iterKey ) {
-            $newspec = array ();
-            foreach ( $tokenSpec as $tokenSpecKey => $value ) {
-                $value = $this->varsub($value, array ('TYPE' => $iterKey ));
-                $newspec [$tokenSpecKey] = $value;
+            $iterArr = array('');
+        $tokenSpec = array('key' => $key, 'location' => $location, 'nbr' => $nbr, 'nbr_start' => $nbr_start);
+        $tokens = array();
+        foreach ($iterArr as $iterKey) {
+            $newspec = array();
+            foreach ($tokenSpec as $tokenSpecKey => $value) {
+                $value = $this->varsub($value, array('TYPE' => $iterKey));
+                $newspec[$tokenSpecKey] = $value;
             }
-            $tokens [] = $newspec;
+            $tokens[] = $newspec;
         }
         return $this->createTokens($tokens, null, $token_state);
     }
@@ -176,7 +176,7 @@ class Tokens extends APP_GameClass {
         $dbres = self::DbQuery($sql);
         $row = mysql_fetch_assoc($dbres);
         if ($row)
-            return $row ['res'];
+            return $row['res'];
         else
             return 0;
     }
@@ -187,7 +187,7 @@ class Tokens extends APP_GameClass {
         $token_keys = self::getObjectListFromDB("SELECT token_key FROM " . $this->table . " WHERE token_location='$location'", true);
         shuffle($token_keys);
         $n = 0;
-        foreach ( $token_keys as $token_key ) {
+        foreach ($token_keys as $token_key) {
             self::DbQuery("UPDATE " . $this->table . " SET token_state='$n' WHERE token_key='$token_key'");
             $n++;
         }
@@ -201,22 +201,22 @@ class Tokens extends APP_GameClass {
     // Return cards infos or void array if no card in the specified location
     function pickTokensForLocation($nbr, $from_location, $to_location, $state = 0, $no_deck_reform = false) {
         $tokens = self::getTokensOnTop($nbr, $from_location);
-        $tokens_ids = array ();
-        foreach ( $tokens as $i => $card ) {
-            $tokens_ids [] = $card ['key'];
-            $tokens [$i] ['location'] = $to_location;
-            $tokens [$i] ['state'] = $state;
+        $tokens_ids = array();
+        foreach ($tokens as $i => $card) {
+            $tokens_ids[] = $card['key'];
+            $tokens[$i]['location'] = $to_location;
+            $tokens[$i]['state'] = $state;
         }
         $sql = "UPDATE " . $this->table . " SET token_location='" . addslashes($to_location) . "', token_state='$state' ";
         $sql .= "WHERE token_key IN ('" . implode("','", $tokens_ids) . "') ";
         self::DbQuery($sql);
-        if (isset($this->autoreshuffle_custom [$from_location]) && count($tokens) < $nbr && $this->autoreshuffle && !$no_deck_reform) {
+        if (isset($this->autoreshuffle_custom[$from_location]) && count($tokens) < $nbr && $this->autoreshuffle && !$no_deck_reform) {
             // No more cards in deck & reshuffle is active => form another deck
             $nbr_token_missing = $nbr - count($tokens);
             self::reformDeckFromDiscard($from_location);
             $newcards = self::pickTokensForLocation($nbr_token_missing, $from_location, $to_location, $state, true); // Note: block anothr deck reform
-            foreach ( $newcards as $card ) {
-                $tokens [] = $card;
+            foreach ($newcards as $card) {
+                $tokens[] = $card;
             }
         }
         return $tokens;
@@ -225,16 +225,16 @@ class Tokens extends APP_GameClass {
     /**
      * Return token on top of this location, top defined as item with higher state value
      */
-    function getTokenOnTop($location, $no_deck_reform = true,$type=null) {
-        $result_arr = $this->getTokensOnTop(1, $location,$type);
+    function getTokenOnTop($location, $no_deck_reform = true, $type = null) {
+        $result_arr = $this->getTokensOnTop(1, $location, $type);
         if (count($result_arr) > 0)
-            return $result_arr [0];
-        if (isset($this->autoreshuffle_custom [$location]) && $this->autoreshuffle && !$no_deck_reform) {
+            return $result_arr[0];
+        if (isset($this->autoreshuffle_custom[$location]) && $this->autoreshuffle && !$no_deck_reform) {
             // No more cards in deck & reshuffle is active => form another deck
             self::reformDeckFromDiscard($location);
-            $result_arr = $this->getTokensOnTop(1, $location,$type);
+            $result_arr = $this->getTokensOnTop(1, $location, $type);
             if (count($result_arr) > 0)
-                return $result_arr [0];
+                return $result_arr[0];
         }
         return null;
     }
@@ -242,10 +242,10 @@ class Tokens extends APP_GameClass {
     /**
      * Return "$nbr" tokens on top of this location, top defined as item with higher state value
      */
-    function getTokensOnTop($nbr, $location,$type=null) {
+    function getTokensOnTop($nbr, $location, $type = null) {
         self::checkLocation($location);
         self::checkPosInt($nbr);
-        $result = array ();
+        $result = array();
         $sql = $this->getSelectQuery();
         $sql .= " WHERE token_location='$location'";
         if ($type !== null) {
@@ -258,24 +258,24 @@ class Tokens extends APP_GameClass {
         $sql .= " ORDER BY token_state DESC";
         $sql .= " LIMIT $nbr";
         $dbres = self::DbQuery($sql);
-        while ( $row = mysql_fetch_assoc($dbres) ) {
-            $result [] = $row;
+        while ($row = mysql_fetch_assoc($dbres)) {
+            $result[] = $row;
         }
         return $result;
     }
 
     function reformDeckFromDiscard($from_location) {
         self::checkLocation($from_location);
-        if (isset($this->autoreshuffle_custom [$from_location]))
-            $discard_location = $this->autoreshuffle_custom [$from_location];
+        if (isset($this->autoreshuffle_custom[$from_location]))
+            $discard_location = $this->autoreshuffle_custom[$from_location];
         else
             throw new feException("reformDeckFromDiscard: Unknown discard location for $from_location !");
         self::checkLocation($discard_location);
         self::moveAllTokensInLocation($discard_location, $from_location);
         self::shuffle($from_location);
         if ($this->autoreshuffle_trigger) {
-            $obj = $this->autoreshuffle_trigger ['obj'];
-            $method = $this->autoreshuffle_trigger ['method'];
+            $obj = $this->autoreshuffle_trigger['obj'];
+            $method = $this->autoreshuffle_trigger['method'];
             $obj->$method($from_location);
         }
     }
@@ -362,6 +362,31 @@ class Tokens extends APP_GameClass {
         self::DbQuery($sql);
     }
 
+    /**Move all tokens from a location to another.
+     * @param from_locations array
+    !!! state is reset to 0 or specified value !!!
+    if "from_location" and "from_state" are null: move ALL cards to specific location
+     */
+    function moveAllTokensInSeveralLocationsTo($from_locations, $to_location, $from_state = null, $to_state = 0) {
+        self::checkLocation($to_location);
+        foreach ($from_locations as $key => $from_location) {
+            if ($from_location != null)
+                self::checkLocation($from_location);
+        }
+        $sql = "UPDATE " . $this->table . " ";
+        $sql .= "SET token_location='$to_location', token_state='$to_state' ";
+        if ($from_locations !== null) {
+            $sql .= "WHERE token_location in ('" . self::dbArrayParam($from_locations) . ")' ";
+            if ($from_state !== null)
+                $sql .= "AND token_state='$from_state' ";
+        }
+        self::DbQuery($sql);
+    }
+
+    function dbArrayParam($arrayp) {
+        return '"' . implode($arrayp, '","') . '"';
+    }
+
     /**
      * Move all tokens from a location to another location arg stays with the same value
      */
@@ -385,6 +410,25 @@ class Tokens extends APP_GameClass {
     function getTokenOnLocation($location) {
         $res = $this->getTokensOfTypeInLocation(null, $location);
         return array_shift($res);
+    }
+
+    function getTokensInLocations($from_locations) {
+        foreach ($from_locations as $key => $from_location) {
+            if ($from_location != null)
+                self::checkLocation($from_location);
+        }
+        $sql = $this->getSelectQuery();
+        if ($from_locations !== null) {
+            $sql .= " WHERE token_location in (" . self::dbArrayParam($from_locations) . ") ";
+        }
+        $dbres = self::DbQuery($sql);
+        $result = array();
+        $i = 0;
+        while ($row = mysql_fetch_assoc($dbres)) {
+            $result[$row['key']] = $row;
+            $i++;
+        }
+        return $result;
     }
 
     /**
@@ -423,13 +467,13 @@ class Tokens extends APP_GameClass {
         if ($order_by !== null)
             $sql .= " ORDER BY $order_by";
         $dbres = self::DbQuery($sql);
-        $result = array ();
+        $result = array();
         $i = 0;
-        while ( $row = mysql_fetch_assoc($dbres) ) {
+        while ($row = mysql_fetch_assoc($dbres)) {
             if ($order_by !== null) {
-                $result [$i] = $row;
+                $result[$i] = $row;
             } else {
-                $result [$row ['key']] = $row;
+                $result[$row['key']] = $row;
             }
             $i++;
         }
@@ -445,14 +489,14 @@ class Tokens extends APP_GameClass {
         $res = $this->getTokenInfo($token_id);
         if ($res == null)
             return null;
-        return $res ['state'];
+        return $res['state'];
     }
 
     function getTokenLocation($token_id) {
         $res = $this->getTokenInfo($token_id);
         if ($res == null)
             return null;
-        return $res ['location'];
+        return $res['location'];
     }
 
     /**
@@ -472,13 +516,13 @@ class Tokens extends APP_GameClass {
     function getTokensInfo($tokens_array) {
         self::checkTokenKeyArray($tokens_array);
         if (count($tokens_array) == 0)
-            return array ();
+            return array();
         $sql = $this->getSelectQuery();
         $sql .= " WHERE token_key IN ('" . implode("','", $tokens_array) . "') ";
         $dbres = self::DbQuery($sql);
-        $result = array ();
-        while ( $row = mysql_fetch_assoc($dbres) ) {
-            $result [$row ['key']] = $row;
+        $result = array();
+        while ($row = mysql_fetch_assoc($dbres)) {
+            $result[$row['key']] = $row;
         }
         if (count($result) != count($tokens_array)) {
             self::error("getTokens: some cards have not been found:");
@@ -502,18 +546,18 @@ class Tokens extends APP_GameClass {
             $sql .= "AND token_state='$state' ";
         $dbres = self::DbQuery($sql);
         if ($row = mysql_fetch_assoc($dbres))
-            return $row ['cnt'];
+            return $row['cnt'];
         else
             return 0;
     }
 
     // Return an array "location" => number of cards
     function countTokensInLocations() {
-        $result = array ();
+        $result = array();
         $sql = "SELECT token_location, COUNT( token_key ) cnt FROM " . $this->table . " GROUP BY token_location ";
         $dbres = self::DbQuery($sql);
-        while ( $row = mysql_fetch_assoc($dbres) ) {
-            $result [$row ['token_location']] = $row ['cnt'];
+        while ($row = mysql_fetch_assoc($dbres)) {
+            $result[$row['token_location']] = $row['cnt'];
         }
         return $result;
     }
@@ -527,8 +571,8 @@ class Tokens extends APP_GameClass {
             $sql .= "WHERE token_location='$location' ";
         $sql .= "GROUP BY token_state ";
         $dbres = self::DbQuery($sql);
-        while ( $row = mysql_fetch_assoc($dbres) ) {
-            $result [$row ['token_state']] = $row ['cnt'];
+        while ($row = mysql_fetch_assoc($dbres)) {
+            $result[$row['token_state']] = $row['cnt'];
         }
         return $result;
     }
@@ -538,7 +582,7 @@ class Tokens extends APP_GameClass {
         if ($line === null)
             throw new feException("varsub: line cannot be null");
         if (strpos($line, "{") !== false) {
-            foreach ( $keymap as $key => $value ) {
+            foreach ($keymap as $key => $value) {
                 if (strpos($line, "{$key}") !== false) {
                     $line = preg_replace("/\{$key\}/", $value, $line);
                 }
@@ -562,18 +606,18 @@ class Tokens extends APP_GameClass {
     }
 
     function extractStateOperator(&$state) {
-        $op='';
+        $op = '';
         if ($state !== null) {
             $state = trim($state);
-            $matches = [ ];
+            $matches = [];
             $res = preg_match("/^(>=|>|<=|<|<>|!=|=|) *(-?[0-9]+)$/", $state, $matches, PREG_OFFSET_CAPTURE);
             if ($res == 1) {
-                $op = $matches [1] [0];
-                $rest = $matches [2] [0];
+                $op = $matches[1][0];
+                $rest = $matches[2][0];
                 $state = $rest;
             }
         }
-        if ( !$op)
+        if (!$op)
             $op = '=';
         return $op;
     }
@@ -584,7 +628,7 @@ class Tokens extends APP_GameClass {
         if ($state !== null && preg_match("/^-?[0-9]+$/", $state) != 1) {
             // $bt = debug_backtrace();
             // trigger_error("bt ".print_r($bt[2],true)) ;
-            throw new feException("state must be integer number");//.ord($state[0])
+            throw new feException("state must be integer number"); //.ord($state[0])
         }
     }
 
@@ -595,13 +639,13 @@ class Tokens extends APP_GameClass {
             throw new feException("token_arr is not a list of token ids $res: $debug");
         }
     }
-    
+
 
     final function checkKey($key, $like = false) {
         if ($key == null)
             throw new feException("key cannot be null");
         if (!is_string($key))
-                throw new feException("key is not a string");
+            throw new feException("key is not a string");
         $extra = "";
         if ($like)
             $extra = "%";
@@ -639,13 +683,13 @@ class Tokens extends APP_GameClass {
             if ($token_arr === null)
                 throw new feException("token_arr cannot be null");
             $debug = var_export($token_arr, true);
-            if ( !is_array($token_arr)) {
+            if (!is_array($token_arr)) {
                 throw new feException("token_arr is not an array: $debug");
             }
             if (count($token_arr) == 0)
                 return 0;
             $type = -1;
-            foreach ( $token_arr as $key => $info ) {
+            foreach ($token_arr as $key => $info) {
                 $typeone = $this->checkTokenIdOrInfo($info);
                 if (is_numeric($key)) {
                     if ($typeone == 2)
@@ -656,17 +700,17 @@ class Tokens extends APP_GameClass {
                 else if ($type != $typeone)
                     throw new feException("token_arr data has mixed types $type != $typeone: $debug");
                 if ($typeone == 2) {
-                    $k = $info ['key'];
+                    $k = $info['key'];
                     if ($key != $k) {
                         throw new feException("token_arr data key info mismatch $key != $k: $debug");
                     }
                 }
                 if ($key === 'key' || $key === 'location' || $key === 'state') {
                     throw new feException("token_arr data is not right array: $key $debug");
-                }                      
+                }
             }
             return $type;
-        } catch ( feException $e ) {
+        } catch (feException $e) {
             if ($bThrow)
                 throw $e;
             return -1;
@@ -686,7 +730,7 @@ class Tokens extends APP_GameClass {
                 $this->checkKey($info);
                 return 1;
             }
-        } catch ( feException $e ) {
+        } catch (feException $e) {
             if ($bThrow)
                 throw $e;
             return -1;
@@ -704,37 +748,37 @@ class Tokens extends APP_GameClass {
      * @return string[] - token id list
      */
     function toTokenKeyList($tokens) {
-        if ( !$tokens)
-            return [ ];
+        if (!$tokens)
+            return [];
         $kind = $this->checkTokenIdOrInfo($tokens, false);
         switch ($kind) {
-            case 1 : // key
-                return [ $tokens ];
-            case 2 : // info
-                return [ $tokens ['key'] ];
+            case 1: // key
+                return [$tokens];
+            case 2: // info
+                return [$tokens['key']];
         }
         $kind = $this->checkListOrTokenArray($tokens);
         switch ($kind) {
-            case 0 :
-                return [ ];
-            case 1 :
+            case 0:
+                return [];
+            case 1:
                 return $tokens;
-            case 2 :
+            case 2:
                 return array_keys($tokens);
-            case 3 :
-                $keys = [ ];
-                foreach ( $tokens as $info ) {
-                    $keys [] = $info ['key'];
+            case 3:
+                $keys = [];
+                foreach ($tokens as $info) {
+                    $keys[] = $info['key'];
                 }
                 return $keys;
-            default :
+            default:
                 $debug = var_export($tokens, true);
                 throw new feException("tokens structure is not supported: $debug");
         }
     }
 
 
-     function getSelectQuery() {
+    function getSelectQuery() {
         $sql = "SELECT token_key AS \"key\", token_location AS \"location\", token_state AS \"state\"";
         if (count($this->custom_fields)) {
             $sql .= ", ";
