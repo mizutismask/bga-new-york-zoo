@@ -275,7 +275,16 @@ class NewYorkZoo extends EuroGame {
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
-    ////////////    
+    //////////// 
+    
+    function getPatchFromSquare($square){
+        return self::getUniqueValueFromDB("SELECT token_key FROM fence_squares WHERE square = '$square'");
+    }
+
+    function isHouse($targetName) {
+        return str_starts_with($targetName, "house_");
+    }
+
     function transformMask($mask) {
         $mask = preg_replace('/11/', '21', $mask, 1);
         if (strpos($mask, '2') === false) {
@@ -581,7 +590,12 @@ class NewYorkZoo extends EuroGame {
 
         $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
         $this->dbSetTokenLocation($token["key"], $to, null, '${player_name} places a ${token_name}', []);
-       
+
+        if(!$this->isHouse($to)){
+            $patch = $this->getPatchFromSquare($to);
+            $this->dbUpdateFenceType($patch, $animalType);
+        }
+
 
         if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
             self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
@@ -594,6 +608,13 @@ class NewYorkZoo extends EuroGame {
         } else {
             $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
         }
+    }
+
+    function dbUpdateTable(String $table, String $field, String $newValue, String $pkfield, String $key) {
+        $this->DbQuery("UPDATE $table SET $field = '$newValue' WHERE $pkfield = '$key'");
+    }
+    function dbUpdateFenceType(String $key, String $newValue) {
+        $this->dbUpdateTable("fence", "animal_type", $newValue, "token_key", $key);
     }
 
     function action_dismissAnimal() {
@@ -625,9 +646,9 @@ class NewYorkZoo extends EuroGame {
 
         $index = array_search($animalType, $this->animalTypes);
         $animalName = $index === false ? null : $this->animals[$index];
-        if ($constant) {
+       /* if ($constant) {
             return strtoupper($animalName);
-        }
+        }*/
         return $animalName;
     }
 
@@ -849,16 +870,16 @@ class NewYorkZoo extends EuroGame {
         $args["animalType1"] = "";
         $args["animalType2"] = "";
         if ($first) {
-            $anmlType = $this->getAnimalName($first);
+            $anmlType = $this->getAnimalName($first, true);
             $args["animalType1"] = $anmlType;
-            $targets = $this->arg_possibleTargetsForAnimal($order, $this->getAnimalName($first, true));
+            $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
             $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
         }
         if ($second) {
-            $anmlType = $this->getAnimalName($second);
+            $anmlType = $this->getAnimalName($second, true);
             $args["animalType2"] = $anmlType;
-            $targets = $this->arg_possibleTargetsForAnimal($order, $this->getAnimalName($second, true));
+            $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
             $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
         }
@@ -878,11 +899,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function getSquaresInFencesAccepting($playerOrder, $animal) {
-        $sql = "SELECT square 
-        FROM fence_squares 
-        JOIN fence on fence.token_key = fence_squares.token_key 
-        WHERE player_order=$playerOrder 
-        AND animal_type in('NONE', '$animal')";
+        $sql = "SELECT square FROM fence_squares JOIN fence on fence.token_key = fence_squares.token_key WHERE player_order=$playerOrder AND animal_type in('none', '$animal')";
         $allSquares = self::getObjectListFromDB($sql, true);
 
         $allSquaresParam = $this->dbArrayParam($allSquares);

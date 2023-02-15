@@ -44,7 +44,7 @@
   CREATE TABLE IF NOT EXISTS `fence` (
  `player_order` int(1) NOT NULL,
  `token_key` varchar(32) NOT NULL,
- `animal_type` enum('NONE','MEERKAT','FLAMINGO','KANGAROO','PENGUIN','FOX') NOT NULL DEFAULT 'NONE',
+ `animal_type` enum('none','meerkat','flamingo','kangaroo','penguin','fox') NOT NULL DEFAULT 'none',
  `animals_added` int(1) NOT NULL DEFAULT 0,
  PRIMARY KEY (`token_key`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
