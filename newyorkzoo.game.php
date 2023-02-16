@@ -628,7 +628,10 @@ class NewYorkZoo extends EuroGame {
                 $animalType = $this->emptyFence($patch);
                 if ($this->getFreeHouses($this->getMostlyActivePlayerOrder())) {
                     //offers to keep one animal
-                    self::setGameStateValue(GS_ANIMAL_TO_KEEP, $this->getAnimalType($animalType));
+                    self::setGameStateValue(
+                        GS_ANIMAL_TO_KEEP,
+                        $this->getAnimalType($animalType)
+                    );
                 } else {
                 }
             }
@@ -846,19 +849,20 @@ class NewYorkZoo extends EuroGame {
     }
 
     function arg_canGetAnimals($order) {
-        $freeHouses = $this->getFreeHouses($order);
-
         $from = [];
         $nextZones = $this->getNextActionZones();
         foreach ($nextZones as $nz) {
             //actionStripZones
             $zoneType = $this->actionStripZones[$nz]["type"];
-            if ($zoneType == ANIMAL && $freeHouses)
+            if (
+                $zoneType == ANIMAL &&
+                ($this->arg_possibleTargetsForAnimal($order, $this->actionStripZones[$nz]["animals"][0])
+                    || $this->arg_possibleTargetsForAnimal($order, $this->actionStripZones[$nz]["animals"][1]))
+            ) {
                 $from[] = $nz;
+            }
         }
-        //  $from[$this->actionStripZones[$nz]["animals"][0]]  =$this->getSquaresInFencesAccepting($this->actionStripZones[$nz]["animals"][0]);
-        // $from[$this->actionStripZones[$nz]["animals"][1]]  = $this->getSquaresInFencesAccepting($this->actionStripZones[$nz]["animals"][1]);
-        self::dump("*****************arg_canGetAnimals*", $from);
+         self::dump("*****************arg_canGetAnimals*", $from);
         return $from;
     }
 
@@ -1139,10 +1143,29 @@ class NewYorkZoo extends EuroGame {
     ///////////////////////////////////////////////////////////////////////////////////:
     ////////// Debug utils
     //////////
-    function fullFence($fenceKey) {
-        $squares=$this->getFenceSquares($fenceKey);
+    function fullFence($fenceKey, $forcedAnimalType = null, $leaveOneSpace = false) {
+        $squares = $this->getFenceSquares($fenceKey);
+        $type = $this->getFenceType($fenceKey);
+        $minus = 0;
         foreach ($squares as $square) {
-            $this->tokens->pickTokensForLocation(1, "limbo", $square);
+            $occupied = $this->tokens->getTokensInLocation($square);
+            $occupied = $this->filterAnimals($occupied);
+            if (!$occupied) {
+                if ($leaveOneSpace && $minus == 0) {
+                    $minus = 1;
+                } else {
+                    $filler = $this->tokens->getTokenOfTypeInLocation($type, "limbo");
+                    $this->dbSetTokenLocation($filler["key"], $square);
+                }
+            }
         }
+        if ($forcedAnimalType)
+            $this->dbUpdateFenceType($fenceKey, $forcedAnimalType);
+    }
+
+    function filterAnimals($tokens) {
+        return array_filter($tokens, function ($tok) {
+            return str_starts_with($tok, FOX) || str_starts_with($tok, PENGUIN) || str_starts_with($tok, MEERKAT) || str_starts_with($tok, FLAMINGO) || str_starts_with($tok, KANGAROO);
+        }, ARRAY_FILTER_USE_KEY);
     }
 }
