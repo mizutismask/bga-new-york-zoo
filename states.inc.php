@@ -121,16 +121,11 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} can place an animal from your full fence to a house'),
         "type" => "activeplayer",
         "args" => "arg_keep_animal",
-        "possibleactions" => ["dismiss", "keepAnimal"],
+        "possibleactions" => ["dismiss", "placeAnimal"],
         "transitions" => [
-            "next" => STATE_GAME_TURN_NEXT_PLAYER,
-            "last" => STATE_PLAYER_GAME_END,
-            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
-            TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
-            TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE
-        ] // 
+            TRANSITION_DISMISS => STATE_PLAYER_PLACE_ATTRACTION,
+        ] 
     ],
 
     STATE_PLAYER_PLACE_ATTRACTION => [

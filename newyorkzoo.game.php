@@ -305,8 +305,8 @@ class NewYorkZoo extends EuroGame {
         self::dump('******************getFenceSquares*', $squares);
         $occupied = $this->filterOccupiedSquares($squares);
         $tokens = $this->tokens->getTokensInLocations($occupied);
+        $tokens= $this->filterAnimals($tokens);
         $this->dbSetTokensLocation($tokens, "limbo", null, '${player_name} has a full fence', []);
-        //todo save type
         return $type;
     }
 
@@ -617,6 +617,8 @@ class NewYorkZoo extends EuroGame {
         $canGo  = $args["animals"][$animalType]["possibleTargets"];
         $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
 
+        $state = $this->gamestate->state();
+
         $animal = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
         $this->dbSetTokenLocation($animal["key"], $to, null, '${player_name} places a ${token_name}', []);
 
@@ -628,26 +630,30 @@ class NewYorkZoo extends EuroGame {
                 $animalType = $this->emptyFence($patch);
                 if ($this->getFreeHouses($this->getMostlyActivePlayerOrder())) {
                     //offers to keep one animal
-                    self::setGameStateValue(
-                        GS_ANIMAL_TO_KEEP,
-                        $this->getAnimalType($animalType)
-                    );
+                    self::setGameStateValue(GS_ANIMAL_TO_KEEP, $this->getAnimalType($animalType));
+                    $this->gamestate->nextState(TRANSITION_KEEP_ANIMAL);
+                    return;
                 } else {
                 }
             }
         }
-
-
-        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
-            self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
-        }
-        if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
-            self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
-        }
-        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
-            $this->gamestate->nextState('placeAnimal');
+        
+        if ($state['name'] == 'keepAnimalFromFullFence') {
+            self::setGameStateValue(GS_ANIMAL_TO_KEEP, 0);
+            $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
         } else {
-            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+            //animal zone
+            if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+                self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
+            }
+            if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+                self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
+            }
+            if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
+                $this->gamestate->nextState('placeAnimal');
+            } else {
+                $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+            }
         }
     }
 
@@ -862,7 +868,7 @@ class NewYorkZoo extends EuroGame {
                 $from[] = $nz;
             }
         }
-         self::dump("*****************arg_canGetAnimals*", $from);
+        self::dump("*****************arg_canGetAnimals*", $from);
         return $from;
     }
 
@@ -881,7 +887,7 @@ class NewYorkZoo extends EuroGame {
         $houseTokens = $this->tokens->getTokensInLocation("house_" . $playerOrder . "%");
         $housesWithToken = $this->getFieldValuesFromArray($houseTokens, "location", true);
         $allHouses = $this->getPlayerHouses($playerOrder);
-        $emptyHouses = array_diff($allHouses, $housesWithToken);
+        $emptyHouses = array_values(array_diff($allHouses, $housesWithToken));
         self::dump("*****************getFreeHouses ", $emptyHouses);
         return $emptyHouses;
     }
@@ -977,6 +983,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function arg_placeAttraction() {
+        $res = [];
         $player_id = $this->getActivePlayerId();
         $playerOrder = $this->getPlayerPosition($player_id);
         $patches = $this->tokens->getTokensInLocation("bonus_market");
@@ -1015,6 +1022,18 @@ class NewYorkZoo extends EuroGame {
             return $this->getTokensOfTypeInPatch($anmlType, $f);
         });
         return $validFences; //todo get ids only
+    }
+
+    function arg_keep_animal() {
+        $args = [];
+        $playerOrder = $this->getMostlyActivePlayerOrder();
+        $anml = self::getGameStateValue(GS_ANIMAL_TO_KEEP);
+        $animalName = $this->getAnimalName($anml);
+        $args["animalType1"] = $animalName;
+        $args["animals"][$animalName]["possibleTargets"] =  $this->getFreeHouses($playerOrder);
+        $args["animals"][$animalName]["canPlace"] =  true;
+        $args["canDismiss"] = true;
+        return $args;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1146,6 +1165,9 @@ class NewYorkZoo extends EuroGame {
     function fullFence($fenceKey, $forcedAnimalType = null, $leaveOneSpace = false) {
         $squares = $this->getFenceSquares($fenceKey);
         $type = $this->getFenceType($fenceKey);
+        if($type==="none"){
+            $type= $forcedAnimalType;
+        }
         $minus = 0;
         foreach ($squares as $square) {
             $occupied = $this->tokens->getTokensInLocation($square);

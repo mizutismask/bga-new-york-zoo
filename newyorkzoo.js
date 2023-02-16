@@ -1105,6 +1105,14 @@ define([
             },
 
             onUpdateActionButtons_placeAnimal: function (args) {
+                this.onUpdateActionButtons_commonPlaceAnimal(args);
+            },
+
+            onUpdateActionButtons_keepAnimalFromFullFence: function (args) {
+                this.onUpdateActionButtons_commonPlaceAnimal(args);
+            },
+
+            onUpdateActionButtons_commonPlaceAnimal: function (args) {
                 this.clientStateArgs.action = 'placeAnimal';
                 var possibleAnimals = [];
                 if (args.animalType1)
