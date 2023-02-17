@@ -302,7 +302,7 @@ class NewYorkZoo extends EuroGame {
     function emptyFence($fenceId) {
         $type = $this->getFenceType($fenceId);
         $squares = $this->getFenceSquares($fenceId);
-        self::dump('******************getFenceSquares*', $squares);
+        //self::dump('******************getFenceSquares*', $squares);
         $occupied = $this->filterOccupiedSquares($squares);
         $tokens = $this->tokens->getTokensInLocations($occupied);
         $tokens= $this->filterAnimals($tokens);
@@ -428,7 +428,7 @@ class NewYorkZoo extends EuroGame {
             }
             $nextZone = $this->getNextActionZoneNumber($nextZone);
         }
-        self::dump("************possible zones******************", $zones);
+        //self::dump("************possible zones******************", $zones);
         return $zones;
     }
 
@@ -740,6 +740,7 @@ class NewYorkZoo extends EuroGame {
         $order = $this->getPlayerPosition($player_id);
         $res = [];
         $patches = $this->arg_canBuyPatches($order);
+        self::dump('*************arg_playerTurn***patches***', $patches);
         $curbuttons = $this->tokens->getTokensInLocation("buttons_$order");
         $buttons = count($curbuttons);
         $canUseAny = false;
@@ -772,6 +773,35 @@ class NewYorkZoo extends EuroGame {
         $res['canGetAnimals'] = $this->arg_canGetAnimals($order); //$this->hasEmptyHouses(1)||$this->hasFenceAcceptinq();
 
 
+        return $res;
+    }
+
+    function arg_placeAttraction() {
+        $res = [];
+        $player_id = $this->getActivePlayerId();
+        $playerOrder = $this->getPlayerPosition($player_id);
+        $patches = array_keys($this->tokens->getTokensInLocation("bonus_market"));
+        self::dump('*************arg_placeAttraction***patches***', $patches);
+        $canUseAny = false;
+        $occupancy = $this->getOccupancyMatrix($playerOrder);
+        foreach ($patches as $patch) {
+            $moves = $this->arg_possibleMoves($patch, $playerOrder, null, $occupancy);
+            $canPlace = false;
+            foreach ($moves as $arr) {
+                if (count($arr) > 0) {
+                    $canPlace = true;
+                    break;
+                }
+            }
+            $res['patches'][$patch]['moves'] = $moves;
+            $res['patches'][$patch]['canPlace'] = $canPlace;
+            $canPay = true;
+            $canUse = $canPay && $canPlace;
+            $res['patches'][$patch]['canUse'] = $canPay && $canUse;
+            $canUseAny = $canUseAny || $canUse;
+        }
+
+        $res['canPatch'] = true; //$canUseAny;
         return $res;
     }
 
@@ -888,7 +918,7 @@ class NewYorkZoo extends EuroGame {
         $housesWithToken = $this->getFieldValuesFromArray($houseTokens, "location", true);
         $allHouses = $this->getPlayerHouses($playerOrder);
         $emptyHouses = array_values(array_diff($allHouses, $housesWithToken));
-        self::dump("*****************getFreeHouses ", $emptyHouses);
+        self::dump("*****************getFreeHouses ", implode(",",$emptyHouses));
         return $emptyHouses;
     }
 
@@ -974,44 +1004,14 @@ class NewYorkZoo extends EuroGame {
         $allSquaresParam = $this->dbArrayParam($squares);
         $sql = "SELECT token_location FROM token WHERE token_location in($allSquaresParam) AND token_key not like 'patch%'";
         $occupied = self::getObjectListFromDB($sql, true);
-        self::dump('***************filterOccupiedSquares****', $occupied);
+        //self::dump('***************filterOccupiedSquares****', $occupied);
         return $occupied;
     }
 
     function dbArrayParam($arrayp) {
         return '"' . implode($arrayp, '","') . '"';
     }
-
-    function arg_placeAttraction() {
-        $res = [];
-        $player_id = $this->getActivePlayerId();
-        $playerOrder = $this->getPlayerPosition($player_id);
-        $patches = $this->tokens->getTokensInLocation("bonus_market");
-
-        $canUseAny = false;
-        $occupancy = $this->getOccupancyMatrix($playerOrder);
-        foreach ($patches as $patch) {
-            $moves = $this->arg_possibleMoves($patch, $playerOrder, null, $occupancy);
-            $canPlace = false;
-            foreach ($moves as $arr) {
-                if (count($arr) > 0) {
-                    $canPlace = true;
-                    break;
-                }
-            }
-            $res['patches'][$patch]['moves'] = $moves;
-            $res['patches'][$patch]['canPlace'] = $canPlace;
-            $canPay = true;
-            $res['patches'][$patch]['canPay'] = $canPay;
-            $canUse = $canPay && $canPlace;
-            $res['patches'][$patch]['canUse'] = $canPay && $canUse;
-            $canUseAny = $canUseAny || $canUse;
-        }
-
-        $res['canPatch'] = true; //$canUseAny;
-        return $res;
-    }
-
+    
     function arg_chooseFences() {
         $player_id = $this->getActivePlayerId();
         $playerOrder = $this->getPlayerPosition($player_id);

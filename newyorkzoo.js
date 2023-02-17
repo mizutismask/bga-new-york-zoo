@@ -1039,6 +1039,14 @@ define([
             },
 
             onUpdateActionButtons_client_PickPatch: function (args) {
+                this.onUpdateActionButtons_commonClientPickPatch(args)
+            },
+
+            onUpdateActionButtons_placeAttraction: function (args) {
+                this.onUpdateActionButtons_commonClientPickPatch(args)
+            },
+
+            onUpdateActionButtons_commonClientPickPatch: function (args) {
                 //console.log('Calling  onUpdateActionButtons_client_PickPatch', args);
                 dojo.empty('generalactions');
                 dojo.query(".done_control,.control-node").removeClass('active_slot');
