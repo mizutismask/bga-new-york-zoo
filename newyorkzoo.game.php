@@ -278,6 +278,13 @@ class NewYorkZoo extends EuroGame {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
+    function getUniqueMasks($patches) {
+        $uniques = [];
+        foreach ($patches as $patchId) {
+            $uniques[$this->getRulesFor($patchId, "mask")] = $patchId;
+        }
+        return array_values($uniques);
+    }
 
     function getFenceType($fenceKey) {
         return self::getUniqueValueFromDB("SELECT animal_type FROM fence WHERE token_key = '$fenceKey'");
@@ -305,7 +312,7 @@ class NewYorkZoo extends EuroGame {
         //self::dump('******************getFenceSquares*', $squares);
         $occupied = $this->filterOccupiedSquares($squares);
         $tokens = $this->tokens->getTokensInLocations($occupied);
-        $tokens= $this->filterAnimals($tokens);
+        $tokens = $this->filterAnimals($tokens);
         $this->dbSetTokensLocation($tokens, "limbo", null, '${player_name} has a full fence', []);
         return $type;
     }
@@ -634,10 +641,12 @@ class NewYorkZoo extends EuroGame {
                     $this->gamestate->nextState(TRANSITION_KEEP_ANIMAL);
                     return;
                 } else {
+                    $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
+                    return;
                 }
             }
         }
-        
+
         if ($state['name'] == 'keepAnimalFromFullFence') {
             self::setGameStateValue(GS_ANIMAL_TO_KEEP, 0);
             $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
@@ -756,11 +765,9 @@ class NewYorkZoo extends EuroGame {
             }
             $res['patches'][$patch]['moves'] = $moves;
             $res['patches'][$patch]['canPlace'] = $canPlace;
-            $cost = $this->getRulesFor($patch, 'cost');
-            $canPay = $cost <= $buttons;
-            $res['patches'][$patch]['canPay'] = $canPay;
-            $canUse = $canPay && $canPlace;
-            $res['patches'][$patch]['canUse'] = $canPay && $canUse;
+            
+            $canUse =$canPlace;
+            $res['patches'][$patch]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
         // $advance = $this->dbGetAdvance($player_id);
@@ -781,6 +788,7 @@ class NewYorkZoo extends EuroGame {
         $player_id = $this->getActivePlayerId();
         $playerOrder = $this->getPlayerPosition($player_id);
         $patches = array_keys($this->tokens->getTokensInLocation("bonus_market"));
+        $patches = $this->getUniqueMasks($patches);
         self::dump('*************arg_placeAttraction***patches***', $patches);
         $canUseAny = false;
         $occupancy = $this->getOccupancyMatrix($playerOrder);
@@ -795,9 +803,9 @@ class NewYorkZoo extends EuroGame {
             }
             $res['patches'][$patch]['moves'] = $moves;
             $res['patches'][$patch]['canPlace'] = $canPlace;
-            $canPay = true;
-            $canUse = $canPay && $canPlace;
-            $res['patches'][$patch]['canUse'] = $canPay && $canUse;
+           
+            $canUse = $canPlace;
+            $res['patches'][$patch]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
 
@@ -918,7 +926,7 @@ class NewYorkZoo extends EuroGame {
         $housesWithToken = $this->getFieldValuesFromArray($houseTokens, "location", true);
         $allHouses = $this->getPlayerHouses($playerOrder);
         $emptyHouses = array_values(array_diff($allHouses, $housesWithToken));
-        self::dump("*****************getFreeHouses ", implode(",",$emptyHouses));
+        self::dump("*****************getFreeHouses ", implode(",", $emptyHouses));
         return $emptyHouses;
     }
 
@@ -1011,7 +1019,7 @@ class NewYorkZoo extends EuroGame {
     function dbArrayParam($arrayp) {
         return '"' . implode($arrayp, '","') . '"';
     }
-    
+
     function arg_chooseFences() {
         $player_id = $this->getActivePlayerId();
         $playerOrder = $this->getPlayerPosition($player_id);
@@ -1165,8 +1173,8 @@ class NewYorkZoo extends EuroGame {
     function fullFence($fenceKey, $forcedAnimalType = null, $leaveOneSpace = false) {
         $squares = $this->getFenceSquares($fenceKey);
         $type = $this->getFenceType($fenceKey);
-        if($type==="none"){
-            $type= $forcedAnimalType;
+        if ($type === "none") {
+            $type = $forcedAnimalType;
         }
         $minus = 0;
         foreach ($squares as $square) {

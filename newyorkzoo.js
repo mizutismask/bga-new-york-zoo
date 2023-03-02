@@ -339,8 +339,6 @@ class PatchManager {
                 gameui.showError(_("This is not your turn, turn on Practice Mode to practice placing"));
             } else if (!moves_info) {
                 gameui.showError(_('You cannot select this patch yet'));
-            } else if (!moves_info.canPay) {
-                gameui.showError(_('You cannot afford this patch'));
             } else if (!moves_info.canPlace) {
                 gameui.showError(_('You cannot place this patch on your quilt board, it would not fit'));
             } else {
@@ -1051,7 +1049,7 @@ define([
                 dojo.empty('generalactions');
                 dojo.query(".done_control,.control-node").removeClass('active_slot');
 
-
+                //todo différencier bonus et patch
 
                 var canBuy = Object.keys(args.patches);
                 canBuy.forEach((id) => {
