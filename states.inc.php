@@ -58,8 +58,8 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_PLAYER_CHOOSE_FENCE", 7);
     define("STATE_PLAYER_CHOOSE_BREEDING_FENCE", 8);
     define("STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE", 9);
+    define("STATE_PLAYER_POPULATE_NEW_FENCE", 10);
     define("STATE_END_GAME", 99);
-
 
     define("TRANSITION_NEXT_PLAYER", "next");
     define("TRANSITION_END_GAME", "endGame");
@@ -93,8 +93,20 @@ $machinestates = array(
         "transitions" => [
             "next" => STATE_GAME_TURN_NEXT_PLAYER,
             "last" => STATE_PLAYER_GAME_END,
-            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE,
         ] // 
+    ],
+
+    STATE_PLAYER_POPULATE_NEW_FENCE => [
+        "name" => "populateNewFence",
+        "description" => clienttranslate('${actplayer} can place until 2 animals on the new fence'),
+        "descriptionmyturn" => clienttranslate('${you} can place until 2 animals on the new fence (from houses or other fences)'),
+        "type" => "activeplayer",
+        "args" => "arg_populateNewFence",
+        "possibleactions" => ["dismiss", "placeAnimal"],
+        "transitions" => [
+            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+        ]
     ],
 
     STATE_PLAYER_PLACE_ANIMAL => [
@@ -125,7 +137,7 @@ $machinestates = array(
         "transitions" => [
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_PLAYER_PLACE_ATTRACTION,
-        ] 
+        ]
     ],
 
     STATE_PLAYER_PLACE_ATTRACTION => [

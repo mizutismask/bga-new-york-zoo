@@ -42,11 +42,13 @@
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
   CREATE TABLE IF NOT EXISTS `fence` (
+ `id` int NOT NULL AUTO_INCREMENT,
  `player_order` int(1) NOT NULL,
  `token_key` varchar(32) NOT NULL,
  `animal_type` enum('none','meerkat','flamingo','kangaroo','penguin','fox') NOT NULL DEFAULT 'none',
  `animals_added` int(1) NOT NULL DEFAULT 0,
- PRIMARY KEY (`token_key`)
+ PRIMARY KEY (`id`),
+ UNIQUE(`token_key`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
    CREATE TABLE IF NOT EXISTS `fence_squares` (

@@ -31,6 +31,7 @@ if (!defined('OFFSET')) {
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
     define("GS_BREEDING", "breeding");
     define("GS_ANIMAL_TO_KEEP", "animalToKeep");
+    define("GS_LAST_FENCE_PLACED", "lastFencePlaced");
 }
 
 class NewYorkZoo extends EuroGame {
@@ -50,10 +51,11 @@ class NewYorkZoo extends EuroGame {
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-            GS_ANIMAL_TO_PLACE => 10, //animalType from main action
-            GS_OTHER_ANIMAL_TO_PLACE => 11,  //from main action
+            GS_ANIMAL_TO_PLACE => 10, //animalType 1 from main action
+            GS_OTHER_ANIMAL_TO_PLACE => 11,  //animalType 2 from main action
             GS_BREEDING => 12,
             GS_ANIMAL_TO_KEEP => 13, //from full fence
+            GS_LAST_FENCE_PLACED => 14,
         ));
 
         $this->tokens = new Tokens();
@@ -278,6 +280,18 @@ class NewYorkZoo extends EuroGame {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
+    function filterAnimals($tokens) {
+        return array_filter($tokens, function ($tok) {
+            return str_starts_with($tok, FOX) || str_starts_with($tok, PENGUIN) || str_starts_with($tok, MEERKAT) || str_starts_with($tok, FLAMINGO) || str_starts_with($tok, KANGAROO);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    function filterAnimalType($tokens, $animalType) {
+        return array_filter($tokens, function ($tok) use ($animalType) {
+            return str_starts_with($tok, $animalType);
+        });
+    }
+
     function getUniqueMasks($patches) {
         $uniques = [];
         foreach ($patches as $patchId) {
@@ -527,7 +541,7 @@ class NewYorkZoo extends EuroGame {
         $this->saction_MoveNeutralToken($pos);
         $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
 
-        $this->gamestate->nextState('next');
+        $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
     }
 
     function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY) {
@@ -562,7 +576,8 @@ class NewYorkZoo extends EuroGame {
         $prefix = "square_${order}_";
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
         self::dump('*********occupiedByPiece**********', $occupiedByPiece);
-        $this->dbInsertFence($order, $token_id, $occupiedByPiece);
+        $fenceId = $this->dbInsertFence($order, $token_id, $occupiedByPiece);
+        self::setGameStateValue(GS_LAST_FENCE_PLACED, $fenceId);
     }
 
     function dbInsertFence($order, $token_id, $squares) {
@@ -576,6 +591,8 @@ class NewYorkZoo extends EuroGame {
         }
         $sql .= implode($values, ',');
         self::DbQuery($sql);
+
+        return self::getUniqueValueFromDB("SELECT max(id) FROM fence");
     }
 
     function saction_MoveNeutralToken($pos) {
@@ -684,6 +701,10 @@ class NewYorkZoo extends EuroGame {
         $this->dbUpdateTable("fence", "animals_added", $newValue, "token_key", $key);
     }
 
+    function dbGetFence(String $token_key) {
+        return self::getObjectFromDB("SELECT * FROM fence WHERE token_key='$token_key'");
+    }
+
     function action_dismissAnimal() {
         self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
         self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
@@ -765,8 +786,8 @@ class NewYorkZoo extends EuroGame {
             }
             $res['patches'][$patch]['moves'] = $moves;
             $res['patches'][$patch]['canPlace'] = $canPlace;
-            
-            $canUse =$canPlace;
+
+            $canUse = $canPlace;
             $res['patches'][$patch]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
@@ -803,7 +824,7 @@ class NewYorkZoo extends EuroGame {
             }
             $res['patches'][$patch]['moves'] = $moves;
             $res['patches'][$patch]['canPlace'] = $canPlace;
-           
+
             $canUse = $canPlace;
             $res['patches'][$patch]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
@@ -958,6 +979,40 @@ class NewYorkZoo extends EuroGame {
         }
     }
 
+    function arg_populateNewFence() {
+        $args = [];
+        $playerOrder = $this->getMostlyActivePlayerOrder();
+
+        $fenceId = $this->getGameStateValue(GS_LAST_FENCE_PLACED);
+        $fenceTokenKey = $this->getFenceTokenKey($fenceId);
+        $fence = $this->dbGetFence($fenceTokenKey);
+
+        $animalsInHouses = $this->tokens->getTokensInLocation("house_" . $playerOrder . "%");
+        $args["possibleAnimals"] =  array_keys($animalsInHouses);
+
+        //plus animals inside fences that have at least 2 animals
+        $onFences = $this->getAnimalsByFenceHavingMinimalAnimalCount($playerOrder, 2);
+        //minus 1 animal we cant leave alone
+        foreach ($onFences as $f => $animals) {
+            array_shift($animals);
+            $args["possibleAnimals"] = array_merge($args["possibleAnimals"], array_values($animals));
+        }
+
+        if ($fence["animal_type"] !== "none") { //mean we're placing a second animal, so we keep only those of the same type
+            //remove animals of the wrong type
+            $args["possibleAnimals"] = $this->filterAnimalType($args["possibleAnimals"], $fence["animal_type"]);
+        }
+
+        $args["possibleTargets"] =  $this->getFenceSquares($fenceTokenKey);
+
+        self::dump('*******************arg_populateNewFence', $args);
+        return $args;
+    }
+
+    function getFenceTokenKey($fenceTechId) {
+        return self::getUniqueValueFromDB("SELECT token_key FROM fence where id = $fenceTechId");
+    }
+
     function arg_placeAnimal() {
         $player_id = $this->getActivePlayerId();
         $order = $this->getPlayerPosition($player_id);
@@ -1015,6 +1070,24 @@ class NewYorkZoo extends EuroGame {
         //self::dump('***************filterOccupiedSquares****', $occupied);
         return $occupied;
     }
+    function getAnimalsByFence($playerOrder) {
+        $sql = "SELECT fence.token_key fence_key, token.token_key animal_key FROM token JOIN fence_squares on token.token_location = fence_squares.square JOIN fence on fence.token_key = fence_squares.token_key WHERE token.token_key not like 'patch%' AND token.token_location like 'square%' AND player_order= $playerOrder GROUP BY fence.token_key, token.token_key";
+        $animalsByFence =  self::getDoubleKeyCollectionFromDB($sql, true);
+        return $animalsByFence;
+    }
+
+    function getAnimalsByFenceHavingMinimalAnimalCount($playerOrder, $animalMin) {
+        $animalsByFence = $this->getAnimalsByFence($playerOrder);
+        $respectingMin = [];
+
+        foreach ($animalsByFence as $fence => $animals) {
+            if (count($animals) >= $animalMin) {
+                $respectingMin[$fence] = array_keys($animals);
+            }
+        }
+        return $respectingMin;
+    }
+
 
     function dbArrayParam($arrayp) {
         return '"' . implode($arrayp, '","') . '"';
@@ -1191,11 +1264,5 @@ class NewYorkZoo extends EuroGame {
         }
         if ($forcedAnimalType)
             $this->dbUpdateFenceType($fenceKey, $forcedAnimalType);
-    }
-
-    function filterAnimals($tokens) {
-        return array_filter($tokens, function ($tok) {
-            return str_starts_with($tok, FOX) || str_starts_with($tok, PENGUIN) || str_starts_with($tok, MEERKAT) || str_starts_with($tok, FLAMINGO) || str_starts_with($tok, KANGAROO);
-        }, ARRAY_FILTER_USE_KEY);
     }
 }
