@@ -328,6 +328,7 @@ class NewYorkZoo extends EuroGame {
         $tokens = $this->tokens->getTokensInLocations($occupied);
         $tokens = $this->filterAnimals($tokens);
         $this->dbSetTokensLocation($tokens, "limbo", null, '${player_name} has a full fence', []);
+        $this->dbUpdateFenceType($fenceId, "none");
         return $type;
     }
 
