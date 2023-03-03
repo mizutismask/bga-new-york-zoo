@@ -69,6 +69,8 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("TRANSITION_KEEP_ANIMAL", "keepAnimal");
     define("TRANSITION_PLACE_ATTRACTION", "placeAttraction");
     define("TRANSITION_CHOOSE_FENCE", "chooseFence");
+    define("TRANSITION_POPULATE_FENCE", "populateFence");
+    
 }
 
 $machinestates = array(
@@ -93,8 +95,9 @@ $machinestates = array(
         "transitions" => [
             "next" => STATE_GAME_TURN_NEXT_PLAYER,
             "last" => STATE_PLAYER_GAME_END,
-            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE,
-        ] // 
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
+            TRANSITION_POPULATE_FENCE => STATE_PLAYER_POPULATE_NEW_FENCE,
+        ]
     ],
 
     STATE_PLAYER_POPULATE_NEW_FENCE => [
@@ -105,7 +108,7 @@ $machinestates = array(
         "args" => "arg_populateNewFence",
         "possibleactions" => ["dismiss", "placeAnimal"],
         "transitions" => [
-            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            "next" => STATE_GAME_TURN_NEXT_PLAYER, TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE,
         ]
     ],
 

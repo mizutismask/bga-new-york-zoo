@@ -1357,7 +1357,7 @@ define([
                 var id = event.currentTarget.id;
                 console.log("onHouse", id);
 
-                if (gameui.curstate === "playerTurn") {
+                if (gameui.curstate === "client_PlaceAnimal") {
                     if (!gameui.isActiveSlot(id)) {
                         return;
                     }

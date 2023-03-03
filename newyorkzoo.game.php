@@ -541,7 +541,7 @@ class NewYorkZoo extends EuroGame {
         $this->saction_MoveNeutralToken($pos);
         $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
 
-        $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
+        $this->gamestate->nextState(TRANSITION_POPULATE_FENCE);
     }
 
     function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY) {
@@ -644,7 +644,7 @@ class NewYorkZoo extends EuroGame {
                 $this->userAssertTrue(self::_("Animal must go in the new fence"), array_search($to, $canGo) !== false);
                 //todo check good from
                 $animalId = $from;
-                $animalType = getPart($animalId, 1);
+                $animalType = getPart($animalId, 0);
                 break;
 
             default:
@@ -685,22 +685,40 @@ class NewYorkZoo extends EuroGame {
             }
         }
 
-        if ($state['name'] == 'keepAnimalFromFullFence') {
-            self::setGameStateValue(GS_ANIMAL_TO_KEEP, 0);
-            $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
-        } else {
-            //animal zone
-            if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
-                self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
-            }
-            if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
-                self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
-            }
-            if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
-                $this->gamestate->nextState('placeAnimal');
-            } else {
-                $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
-            }
+        switch ($state['name']) {
+            case 'keepAnimalFromFullFence':
+                self::setGameStateValue(GS_ANIMAL_TO_KEEP, 0);
+                $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
+                break;
+            case 'populateNewFence':
+                $squares = $this->getFenceSquares($patch);
+                $occupied = $this->filterOccupiedSquares($squares);
+                if (count($occupied) == 2) {
+                    $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+                } else {
+                    $args = $this->arg_populateNewFence();
+                    $hasAnimals  = $args["possibleAnimals"];
+                    if ($hasAnimals) {
+                        //stay in this state to place an other animal if possible
+                        $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
+                    } else {
+                        $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+                    }
+                }
+                break;
+            default:
+                //animal zone
+                if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+                    self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
+                }
+                if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+                    self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
+                }
+                if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
+                    $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
+                } else {
+                    $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+                }
         }
     }
 
