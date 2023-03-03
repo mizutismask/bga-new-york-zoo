@@ -1,3 +1,5 @@
+var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
+var debug = isDebug ? console.info.bind(window.console) : function () { };
 
 function joinId(first, second) {
 	return first + '_' + second;
@@ -28,7 +30,7 @@ function reloadCss() {
 	for (var cl in links) {
 		var link = links[cl];
 		if (link.rel === "stylesheet" && link.href.includes("99999")) {
-			var index = link.href.indexOf("?timestamp="); 
+			var index = link.href.indexOf("?timestamp=");
 			var href = link.href;
 			if (index >= 0) {
 				href = href.substring(0, index);
@@ -41,13 +43,13 @@ function reloadCss() {
 	}
 }
 
-define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declare) {
+define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, declare) {
 	return declare("bgagame.sharedparent", ebg.core.gamegui, {
-		constructor: function() {
+		constructor: function () {
 			console.log('sharedparent constructor');
 			this.defaultAnimationDuration = 500;
 		},
-		setup: function(gamedatas) {
+		setup: function (gamedatas) {
 			this.inherited(arguments);
 			console.log("Starting game setup parent");
 			this.gamedatas = gamedatas;
@@ -89,11 +91,11 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 
 		},
-		setupPlayer: function(player_id, playerInfo) {
+		setupPlayer: function (player_id, playerInfo) {
 			// does nothing here, override
 			console.log("player info " + player_id, playerInfo);
 		},
-		setupGameTokens: function() {
+		setupGameTokens: function () {
 			// does nothing here, override
 		},
 		// /////////////////////////////////////////////////
@@ -102,7 +104,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		// You can use this method to perform some user interface changes at this moment.
 		//
 
-		onEnteringState: function(stateName, args) {
+		onEnteringState: function (stateName, args) {
 			if (!this.on_client_state) {
 				// we can use it to preserve arguments for client states
 				this.clientStateArgs = {};
@@ -116,7 +118,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			var ret = null;
 			if (this[methodName] !== undefined) {
 				//console.log('Calling ' + methodName, args);
-				ret=this[methodName](args);
+				ret = this[methodName](args);
 			}
 			this.onEnteringState_common(stateName, args, ret);
 			if (this.pendingUpdate) {
@@ -126,19 +128,19 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 		},
 		// called after specific state method for onEnteringState but before triggered onUpdate
-		onEnteringState_common: function(stateName, args, ret) {
+		onEnteringState_common: function (stateName, args, ret) {
 			//to overrde
 		},
 		// onLeavingState: this method is called each time we are leaving a game state.
 		// You can use this method to perform some user interface changes at this moment.
 		//
-		onLeavingState: function(stateName) {
+		onLeavingState: function (stateName) {
 			this.curstate = null;
 		},
 		// onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
 		// action status bar (ie: the HTML links in the status bar).
 		//        
-		onUpdateActionButtons: function(stateName, args) {
+		onUpdateActionButtons: function (stateName, args) {
 			if (this.curstate != stateName) {
 				// delay firing this until onEnterState is called
 				//console.log("skip update "+this.gamedatas.gamestate.name,this.curstate,stateName);
@@ -153,14 +155,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				var methodName = "onUpdateActionButtons_" + stateName;
 				if (this[methodName] !== undefined) {
 					//	console.log('Calling ' + methodName, args);
-					ret=this[methodName](args);
+					ret = this[methodName](args);
 				}
 			}
 			this.onUpdateActionButtons_common(stateName, args, ret);
 		},
 		// called after specific state method for onEnteringState but before triggered onUpdate, 
 		// also called even curretn player is not active
-		onUpdateActionButtons_common: function(stateName, args, ret) {
+		onUpdateActionButtons_common: function (stateName, args, ret) {
 			//to overrde
 		},
 		// /////////////////////////////////////////////////
@@ -169,7 +171,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		 * This method can be used instead of addActionButton, to add a button which is an image (i.e. resource). Can be useful when player
 		 * need to make a choice of resources or tokens.
 		 */
-		addImageActionButton: function(id, div, handler, bcolor, tooltip) {
+		addImageActionButton: function (id, div, handler, bcolor, tooltip) {
 			if (typeof bcolor == "undefined") {
 				bcolor = "gray";
 			}
@@ -191,7 +193,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		 * Note: you should clean up handlers if user did not click on the element,
 		 * for example in onLeavingState you should call this.disconnectAllTemp();
 			*/
-		addActiveSlotQuery: function(query, handler) {
+		addActiveSlotQuery: function (query, handler) {
 			if (typeof handler == 'string')
 				handler = this[handler];
 			var superhandler = (event) => {
@@ -210,7 +212,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 	 * Note: you should clean up handlers if user did not click on the element,
 	 * for example in onLeavingState you should call this.disconnectAllTemp();
 		*/
-		addActiveSlot: function(node, handler) {
+		addActiveSlot: function (node, handler) {
 			if (typeof node == 'string')
 				node = $(node);
 			if (typeof handler == 'string')
@@ -223,19 +225,19 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			this.connectClickTemp(node, superhandler);
 		},
 
-		connectClickTemp: function(node, handler) {
+		connectClickTemp: function (node, handler) {
 			dojo.addClass(node, 'active_slot');
 			dojo.addClass(node, 'temp_click_handler');
 			this.connect(node, 'click', handler);
 		},
 
-		disconnectClickTemp: function(node) {
+		disconnectClickTemp: function (node) {
 			dojo.removeClass(node, 'active_slot');
 			dojo.removeClass(node, 'temp_click_handler');
 			this.disconnect(node, 'click');
 		},
 
-		disconnectAllTemp: function(query) {
+		disconnectAllTemp: function (query) {
 			if (typeof query == 'undefined')
 				query = ".temp_click_handler";
 			dojo.query(query).forEach((node) => {
@@ -247,13 +249,13 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		/**
 		 * Convenient method to get state name
 		 */
-		getStateName: function() {
+		getStateName: function () {
 			return this.gamedatas.gamestate.name;
 		},
-		getServerStateName: function() {
+		getServerStateName: function () {
 			return this.last_server_state.name;
 		},
-		getPlayerColor: function(id) {
+		getPlayerColor: function (id) {
 			for (var playerId in this.gamedatas.players) {
 				var playerInfo = this.gamedatas.players[playerId];
 				if (id == playerId) { return playerInfo.color; }
@@ -263,7 +265,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		/**
 		 * This method will remove all inline style added to element that affect positioning
 		 */
-		stripPosition: function(token) {
+		stripPosition: function (token) {
 			var token = $(token);
 			// console.log(token + " STRIPPING");
 			// remove any added positioning style
@@ -273,17 +275,17 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			token.style.removeProperty("position");
 			token.style.removeProperty("opacity");
 		},
-		stripTransition: function(token) {
+		stripTransition: function (token) {
 			$(token).style.removeProperty("transition");
 		},
-		setTransition: function(token, value) {
+		setTransition: function (token, value) {
 			$(token).style.transition = value;
 		},
 		/**
 		 * This method will attach mobile to a new_parent without destroying, unlike original attachToNewParent which destroys mobile and
 		 * all its connectors (onClick, etc)
 		 */
-		attachToNewParentNoDestroy: function(mobile_in, new_parent_in, relation, place_position) {
+		attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_position) {
 			//console.log("attaching ",mobile,new_parent,relation);
 			const mobile = $(mobile_in);
 			const new_parent = $(new_parent_in);
@@ -316,12 +318,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 
 			return box;
 		},
-		
+
 		/*
 		 * This method is similar to slideToObject but works on object which do not use inline style positioning. It also attaches object to
 		 * new parent immediately, so parent is correct during animation
 		 */
-		slideToObjectRelative: function(token, finalPlace, duration, delay, onEnd, relation) {
+		slideToObjectRelative: function (token, finalPlace, duration, delay, onEnd, relation) {
 			token = $(token);
 
 			this.delayedExec((duration) => {
@@ -339,12 +341,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				if (onEnd) onEnd(token);
 			}, duration, delay);
 		},
-		slideToObjectAbsolute: function(token, finalPlace, x, y, duration, delay, onEnd, relation,position) {
-			token = $(token);			
+		slideToObjectAbsolute: function (token, finalPlace, x, y, duration, delay, onEnd, relation, position) {
+			token = $(token);
 			this.delayedExec(() => {
 				token.style.transition = "none";
 				token.classList.add('moving_token');
-				
+
 				this.attachToNewParentNoDestroy(token, finalPlace, relation, position ? position : 'absolute');
 				token.offsetHeight; // re-flow
 				token.style.transition = "all " + duration + "ms ease-in-out";
@@ -354,12 +356,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				token.style.removeProperty("transition");
 				token.classList.remove('moving_token');
 				if (position) token.style.position = position;
-				if (onEnd) 
-				    onEnd(token);
+				if (onEnd)
+					onEnd(token);
 			}, duration, delay);
 		},
 
-		positionObjectDirectly: function(mobileObj, x, y) {
+		positionObjectDirectly: function (mobileObj, x, y) {
 			x = parseInt(x);
 			y = parseInt(y);
 			// do not remove this "dead" code it forces reflow
@@ -371,7 +373,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			});
 			mobileObj.offsetLeft; // force re-flow
 		},
-		delayedExec: function(onStart, onEnd, duration, delay) {
+		delayedExec: function (onStart, onEnd, duration, delay) {
 			if (typeof duration == "undefined") {
 				duration = this.defaultAnimationDuration;
 			}
@@ -383,7 +385,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				duration = Math.min(1, duration);
 			}
 			if (delay) {
-				setTimeout(function() {
+				setTimeout(function () {
 					onStart(duration);
 					if (onEnd) {
 						setTimeout(onEnd, duration);
@@ -397,7 +399,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 		},
 
-		ajaxcallwrapper: function(action, args, handler) {
+		ajaxcallwrapper: function (action, args, handler) {
 			if (!args) {
 				args = [];
 			}
@@ -410,7 +412,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		},
 
 		/** More convenient version of ajaxcall, do not to specify game name, and any of the handlers */
-		ajaxAction: function(action, args, func, err) {
+		ajaxAction: function (action, args, func, err) {
 			// console.log("ajax action " + action);
 			if (!args) {
 				args = [];
@@ -425,13 +427,13 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			if (!func) {
 				var self = this;
-				func = function(result) {
+				func = function (result) {
 					self.ajaxActionResultCallback(action, args, result);
 				};
 			}
 			if (!err) {
 				var self = this;
-				err = function(iserr, message) {
+				err = function (iserr, message) {
 					if (iserr) {
 						self.ajaxActionErrorCallback(action, args, message);
 					}
@@ -443,15 +445,15 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 					this, func, err);
 			}
 		},
-		ajaxActionResultCallback: function(action, args, result) {
+		ajaxActionResultCallback: function (action, args, result) {
 			//console.log('server ack');
 			this.disconnectAllTemp();
 		},
-		ajaxActionErrorCallback: function(action, args, message) {
+		ajaxActionErrorCallback: function (action, args, message) {
 			console.log('restoring server state, error: ' + message);
 			this.cancelLocalStateEffects();
 		},
-		ajaxClientStateHandler: function(event) {
+		ajaxClientStateHandler: function (event) {
 			dojo.stopEvent(event);
 			this.ajaxClientStateAction();
 		},
@@ -465,7 +467,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 
 		  Note: this call destroys this.clientStateArgs and replaces with empty object
 		 */
-		ajaxClientStateAction: function(action) {
+		ajaxClientStateAction: function (action) {
 			var args = this.clientStateArgs;
 
 			if (typeof action == 'undefined') {
@@ -478,14 +480,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				if (!doit) return;
 			}
 			this.clientStateArgs = {};
-			//console.log("sending " + action);
+			console.log("sending " + action);
 			if (typeof args.args == 'undefined') {
 				this.ajaxAction(action, args);
 			} else {
 				this.ajaxAction(action, args.args);
 			}
 		},
-		setClientStateAction: function(stateName, desc, delay, moreargs) {
+		setClientStateAction: function (stateName, desc, delay, moreargs) {
 			var args = {};
 			if (typeof this.gamedatas.gamestate.args != 'undefined') {
 				args = dojo.clone(this.gamedatas.gamestate.args);
@@ -509,14 +511,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				args: args
 			};
 			if (delay && delay > 0) {
-				setTimeout(dojo.hitch(this, function() {
+				setTimeout(dojo.hitch(this, function () {
 					this.setClientState(stateName, newargs);
 				}, delay));
 			} else {
 				this.setClientState(stateName, newargs);
 			}
 		},
-		cancelLocalStateEffects: function() {
+		cancelLocalStateEffects: function () {
 			this.clientStateArgs = {};
 			if (typeof this.gamedatas.gamestate.reflexion.initial != 'undefined') {
 				this.gamedatas_server.gamestate.reflexion.initial = this.gamedatas.gamestate.reflexion.initial;
@@ -529,7 +531,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				for (var i = 0; i < restoreList.length; i++) {
 					var token = restoreList[i];
 					var tokenInfo = this.gamedatas.tokens[token];
-					if (tokenInfo!==undefined)
+					if (tokenInfo !== undefined)
 						this.placeTokenWithTips(token, tokenInfo);
 					else if ($(token)) {
 						dojo.destroy(token);
@@ -544,7 +546,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		 * This is convenient function to be called when processing click events, it - remembers id of object - stops propagation - logs to
 		 * console - the if checkActive is set to true check if element has active_slot class
 		 */
-		onClickSanity: function(event, checkActive) {
+		onClickSanity: function (event, checkActive) {
 			// Stop this event propagation
 			var id = event.currentTarget.id;
 			this.original_id = id;
@@ -554,38 +556,46 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			if (checkActive && !(id.startsWith('button_')) && !this.checkActiveSlot(id)) { return null; }
 			return this.onClickSanityId(id);
 		},
-		onClickSanityId: function(id) {
+		onClickSanityId: function (id) {
 			if (!this.checkActivePlayer()) { return null; }
 			id = id.replace("tmp_", "");
 			id = id.replace("button_", "");
 			return id;
 		},
-		checkActivePlayer: function() {
+		checkActivePlayer: function () {
 			if (!this.isCurrentPlayerActive()) {
 				this.showMessage(__("lang_mainsite", "This is not your turn"), "error");
 				return false;
 			}
 			return true;
 		},
-		isActiveSlot: function(id) {
+		isActiveSlot: function (id) {
 			if (dojo.hasClass(id, 'active_slot')) { return true; }
 			if (dojo.hasClass(id, 'hidden_active_slot')) { return true; }
 
 			return false;
 		},
-		checkActiveSlot: function(id) {
+		childIsActiveSlot: function (id) {
+			if (!$(id) || !$(id).firstElementChild) { return false; }
+			const childId=$(id).firstElementChild.id;
+			if (dojo.hasClass(childId, 'active_slot')) { return true; }
+			if (dojo.hasClass(childId, 'hidden_active_slot')) { return true; }
+
+			return false;
+		},
+		checkActiveSlot: function (id) {
 			if (!this.isActiveSlot(id)) {
 				this.showMoveUnauthorized();
 				return false;
 			}
 			return true;
 		},
-		checkActivePlayerAndSlot: function(id) {
+		checkActivePlayerAndSlot: function (id) {
 			if (!this.checkActivePlayer()) { return false; }
 			if (!this.checkActiveSlot(id)) { return false; }
 			return true;
 		},
-		setMainTitle: function(text, position) {
+		setMainTitle: function (text, position) {
 			var main = $('pagemaintitletext');
 			if (position === 'before')
 				main.innerHTML = text + " " + main.innerHTML;
@@ -594,7 +604,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			else
 				main.innerHTML = text;
 		},
-		divYou: function() {
+		divYou: function () {
 			var color = "black";
 			var color_bg = "";
 			if (this.gamedatas.players[this.player_id]) {
@@ -608,7 +618,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			return you;
 		},
 
-		mergeArgs: function(moreargs) {
+		mergeArgs: function (moreargs) {
 			// take game args, add you, player_color and moreargs
 			var tpl = dojo.clone(this.gamedatas.gamestate.args);
 
@@ -630,7 +640,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			tpl.player_color = this.player_color;
 			return tpl;
 		},
-		setDescriptionOnMyTurn: function(text, moreargs) {
+		setDescriptionOnMyTurn: function (text, moreargs) {
 			this.gamedatas.gamestate.descriptionmyturn = text;
 			// this.updatePageTitle();
 			//console.log('in',   this.gamedatas.gamestate.args, moreargs);
@@ -660,7 +670,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				this.setMainTitle(title);
 			}
 		},
-		getTranslatable: function(key, args) {
+		getTranslatable: function (key, args) {
 			if (typeof args.i18n == 'undefined') {
 				return -1;
 			} else {
@@ -669,16 +679,16 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			return -1;
 		},
-		getTokenMainType: function(token) {
+		getTokenMainType: function (token) {
 			var tt = token.split('_');
 			var tokenType = tt[0];
 			return tokenType;
 		},
-		updateTooltip: function(token, attachTo) {
+		updateTooltip: function (token, attachTo) {
 			if (typeof attachTo == 'undefined') {
 				attachTo = token;
 			}
-			attachTo=$(attachTo);
+			attachTo = $(attachTo);
 			if (attachTo) {
 				// console.log("tooltips for "+token);
 				if (typeof token != 'string') {
@@ -688,7 +698,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				var tokenInfo = this.getTokenDisplayInfo(token);
 				// console.log(tokenInfo);
 				if (!tokenInfo) return;
-				
+
 				if (tokenInfo.title) {
 					$(token).title = this.getTr(tokenInfo.title);
 					return;
@@ -713,7 +723,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				}
 			}
 		},
-		getTooptipHtmlForToken: function(token) {
+		getTooptipHtmlForToken: function (token) {
 			if (typeof token != 'string') {
 				console.error("cannot calc tooltip" + token);
 				return null;
@@ -724,7 +734,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			return this.getTooptipHtmlForTokenInfo(tokenInfo);
 
 		},
-		getTooptipHtmlForTokenInfo: function(tokenInfo) {
+		getTooptipHtmlForTokenInfo: function (tokenInfo) {
 			var main = this.getTooptipHtml(tokenInfo.name, tokenInfo.tooltip, tokenInfo.imageTypes, "<hr/>");
 			var action = tokenInfo.tooltip_action;
 			if (action && main !== null) {
@@ -733,7 +743,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			return main;
 		},
 
-		getTooptipHtml: function(name, message, imgTypes, sep, dyn) {
+		getTooptipHtml: function (name, message, imgTypes, sep, dyn) {
 			if (name == null || message == "-") return "";
 			if (!message) message = "";
 			if (!dyn) dyn = "";
@@ -749,7 +759,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			return "<div class='" + containerType + "'><span class='tooltiptitle'>" + this.getTr(name) + "</span>" + sep + "<div>" + divImg +
 				"<div class='tooltipmessage tooltiptext'>" + this.getTr(message) + dyn + "</div></div></div>";
 		},
-		getTokenName: function(token) {
+		getTokenName: function (token) {
 			var tokenInfo = this.getTokenDisplayInfo(token);
 			if (tokenInfo) {
 				return this.getTr(tokenInfo.name);
@@ -757,7 +767,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				return "? " + token;
 			}
 		},
-		getTokenState: function(tokenO) {
+		getTokenState: function (tokenO) {
 			var token = tokenO;
 			var tokenInfo = this.gamedatas.tokens[token];
 			if (!tokenInfo && token) {
@@ -766,10 +776,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			if (tokenInfo)
 				return parseInt(tokenInfo.state);
-			console.trace("No state info for "+tokenO);
+			console.trace("No state info for " + tokenO);
 			return 0;//
 		},
-		getTr: function(name) {
+		getTr: function (name) {
 			if (typeof name == 'undefined') return null;
 			if (typeof name.log != 'undefined') {
 				name = this.format_string_recursive(name.log, name.args);
@@ -778,11 +788,11 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			return name;
 		},
-		getActionLine: function(text) {
+		getActionLine: function (text) {
 			return "<img class='imgtext' src='" + g_themeurl + "img/layout/help_click.png' alt='action' /> <span class='tooltiptext'>" +
 				text + "</span>";
 		},
-		getTokenDisplayInfo: function(token) {
+		getTokenDisplayInfo: function (token) {
 			if (typeof token != 'string') {
 				console.error("Invalid token " + token);
 				return null;
@@ -810,14 +820,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			tokenInfo.mainType = tokenMainType; // this is just first part of token
 			tokenInfo.key = tokenId; // this is original tokenId passed to this function
 			tokenInfo.imageTypes = token + " " + tokenMainType + " " + tokenInfo.type + " " + tokenKey + imageTypes;
-			
+
 			this.updateDisplayInfo(tokenInfo);
 			return tokenInfo;
 		},
-		updateDisplayInfo: function(tokenInfo) {
+		updateDisplayInfo: function (tokenInfo) {
 			// do nothing, override to generated tooltips for example
 		},
-		getRulesFor: function(card_id, field, optional) {
+		getRulesFor: function (card_id, field, optional) {
 			if (field === undefined) field = 'r';
 			if (optional === undefined) optional = false;
 			var key = card_id;
@@ -840,7 +850,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			return rule;
 		},
-		changeTokenStateTo: function(token, newState) {
+		changeTokenStateTo: function (token, newState) {
 			var node = $(token);
 			// console.log(token + "|=>" + newState);
 			if (!node) return;
@@ -859,7 +869,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			dojo.addClass(token, "state_" + newState);
 		},
-		placeTokenWithTips: function(token, tokenInfo, args) {
+		placeTokenWithTips: function (token, tokenInfo, args) {
 			if (!tokenInfo) {
 				tokenInfo = this.gamedatas.tokens[token];
 			}
@@ -869,7 +879,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		},
 
 		/** Return an array with location,inlinecoords and temp info. */
-		getPlaceRedirect: function(token, tokenInfo) {
+		getPlaceRedirect: function (token, tokenInfo) {
 			var location = tokenInfo.location;
 			var result = {
 				location: location,
@@ -882,11 +892,11 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			return result;
 		},
-		placeTokenLocal: function(token, place, state, args) {
+		placeTokenLocal: function (token, place, state, args) {
 			var tokenInfo = this.gamedatas.tokens[token];
-			if (tokenInfo===undefined) {
-				tokenInfo = {key: token};
-				this.gamedatas.tokens[token] = {key: token, location: 'destroy'};
+			if (tokenInfo === undefined) {
+				tokenInfo = { key: token };
+				this.gamedatas.tokens[token] = { key: token, location: 'destroy' };
 			}
 			tokenInfo.location = place;
 			if (state !== null && state !== undefined)
@@ -894,7 +904,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			this.on_client_state = true;
 			this.placeToken(token, tokenInfo, args);
 		},
-		incCounterLocal: function(counter_id, inc, place) {
+		incCounterLocal: function (counter_id, inc, place) {
 			var cur_value = this.gamedatas.counters[counter_id].counter_value;
 			var notif_args = {
 				counter_name: counter_id,
@@ -909,7 +919,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		/**
 		 * Using of this method also require tmp_obj and vapor_anim defined in css
 		 */
-		animEvaporResource: function(animNodeId, inc, div) {
+		animEvaporResource: function (animNodeId, inc, div) {
 			var value = inc > 0 ? "+" + inc : inc;
 			var mod = Math.abs(inc);
 			if (div && !div.startsWith("<")) {
@@ -929,7 +939,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				dojo.addClass(scoring_marker_id, "tmp_obj");
 				if (i == mod - 1) sNode.innerHTML = value;
 				this.placeOnObject(scoring_marker_id, animNodeId);// ?
-				setTimeout(dojo.hitch(this, function(local) {
+				setTimeout(dojo.hitch(this, function (local) {
 					// console.log("apply "+local);
 					dojo.addClass(local, "vapor_anim");
 					this.fadeOutAndDestroy(local, 1000, 0);
@@ -940,7 +950,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		/**
 		 * Using of this method require scorenumber_anim defined in css
 		 */
-		animSpinCounter: function(animNodeId, inc, playerId) {
+		animSpinCounter: function (animNodeId, inc, playerId) {
 			var value = inc > 0 ? "+" + inc : inc;
 			var classes = "scorenumber tmp_obj";
 			var jstpl_score = '<div class="${classes}" id="${id}">${value}</div>';
@@ -959,7 +969,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			this.fadeOutAndDestroy(scoring_marker_id, 2000, 300);
 			return scoring_marker_id;
 		},
-		animCounter: function(args) {
+		animCounter: function (args) {
 			// args.counter_name
 			// args.counter_value
 			// args.place
@@ -971,7 +981,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				this.animEvaporResource(anim_node, args.inc, tokenDiv);
 			}
 		},
-		animScore: function(args) {
+		animScore: function (args) {
 			var anim_node = args.place;
 			if (anim_node && $(anim_node) && !args.noa) {
 				// local animation
@@ -979,7 +989,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				this.animSpinCounter(anim_node, args.inc, args.player_id);
 			}
 		},
-		placeToken: function(token, tokenInfo, args) {
+		placeToken: function (token, tokenInfo, args) {
 			try {
 				if (!tokenInfo) {
 					tokenInfo = this.gamedatas.tokens[token];
@@ -1038,7 +1048,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				}
 				var animtime = this.defaultAnimationDuration;
 				if (noAnnimation) animtime = 0;
-					
+
 				if (placeInfo.x !== undefined || placeInfo.y !== undefined) {
 					this.slideToObjectAbsolute(token, place, placeInfo.x, placeInfo.y, animtime, 0, null, placeInfo.relation, placeInfo.position);
 				} else {
@@ -1074,10 +1084,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				// this.showMessage(token + " -> FAILED -> " + place + "\n" + e, "error");
 			}
 		},
-		onPlaceToken: function(tokenId) {
+		onPlaceToken: function (tokenId) {
 			// override to do something after object place (while animation running)
 		},
-		debugStateInfo: function() {
+		debugStateInfo: function () {
 			var iscurac = this.isCurrentPlayerActive();
 			var replayMode = false;
 			if (typeof g_replayFrom != "undefined") {
@@ -1087,12 +1097,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			var res = { iscurac: iscurac, instantaneousMode: instantaneousMode, replayMode: replayMode };
 			return res;
 		},
-		countOccurences: function(needle, heystack) {
+		countOccurences: function (needle, heystack) {
 			for (var count = -1, index = -2; index != -1; count++, index = heystack.indexOf(needle, index + 1))
 				;
 			return count;
 		},
-		createDivFromInfo: function(token, extraClasses, id) {
+		createDivFromInfo: function (token, extraClasses, id) {
 			var info = this.getTokenDisplayInfo(token);
 			if (info == null) {
 				console.error("Don't know how to create ", token);
@@ -1103,19 +1113,19 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			if (typeof id == 'undefined') id = info.key;
 			return this.createDiv(info.imageTypes + " " + extraClasses, id);
 		},
-		createSpanHtml: function(value, classes) {
+		createSpanHtml: function (value, classes) {
 			var node = dojo.create("span", { innerHTML: value });
 			if (classes)
 				dojo.addClass(node, classes);
 			return node.outerHTML;
 		},
-		createDiv: function(classes, id, value) {
+		createDiv: function (classes, id, value) {
 			if (typeof value == 'undefined') value = "";
 			var node = dojo.create("div", { class: classes, innerHTML: value });
 			if (id) node.id = id;
 			return node.outerHTML;
 		},
-		createToken: function(token, tokenInfo, place, connectFunc) {
+		createToken: function (token, tokenInfo, place, connectFunc) {
 			var info = this.getTokenDisplayInfo(token);
 			if (!info) {
 				console.error("Don't know how to create ", token, tokenInfo);
@@ -1144,13 +1154,13 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			return tokenNode;
 		},
-		updateMyCountersAll: function() {
+		updateMyCountersAll: function () {
 			if (this.gamedatas.gamestate.args && this.gamedatas.gamestate.args.counters) {
 				// console.log(this.gamedatas.gamestate.args.counters);
 				this.updateCountersSafe(this.gamedatas.gamestate.args.counters);
 			}
 		},
-		updateCountersSafe: function(counters) {
+		updateCountersSafe: function (counters) {
 			// console.log(counters);
 			var safeCounters = {};
 			for (var key in counters) {
@@ -1162,7 +1172,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			this.updateCounters(safeCounters);
 		},
-		divInlineTokens: function(token_ids, max, deep) {
+		divInlineTokens: function (token_ids, max, deep) {
 			var div = "";
 			if (typeof max == 'undefined') max = 10;
 			if (typeof token_ids == 'string') {
@@ -1175,7 +1185,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			return div;
 		},
-		divInlineToken: function(token_id, deep) {
+		divInlineToken: function (token_id, deep) {
 			if (token_id.startsWith("<div>")) return token_id;
 			var node = $(token_id);
 			if (!node) console.error("no div node for " + token_id);
@@ -1190,8 +1200,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			return div;
 		},
-		
-		divInlineTokenNode: function(token_id, deep) {
+
+		divInlineTokenNode: function (token_id, deep) {
 			var parent = document.createElement('div');
 			var clone;
 			if (token_id.startsWith("<div>")) {
@@ -1215,18 +1225,18 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			return clone;
 		},
 
-		queryIds: function(query) {
+		queryIds: function (query) {
 			var idlist = [];
 			dojo.query(query).forEach((node) => idlist.push(node.id));
 			return idlist;
 		},
-		
+
 		/** Move class to targetNode, removes from all others. If targetNode is null just removes all of this class. */
-		moveClass: function(className, targetNode) {
+		moveClass: function (className, targetNode) {
 			document.querySelectorAll('.' + className).forEach(item => item.classList.remove(className));
 			if (targetNode) $(targetNode).classList.add(className);
 		},
-		removeClass: function(className, rootNode) {
+		removeClass: function (className, rootNode) {
 			if (!rootNode)
 				rootNode = document;
 			else
@@ -1234,17 +1244,17 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			rootNode.querySelectorAll('.' + className).forEach(item => item.classList.remove(className));
 		},
 
-		queryFirst: function(query) {
+		queryFirst: function (query) {
 			return document.querySelector(query);
 		},
-		
-		queryFirstId: function(query, defaultValue) {
+
+		queryFirstId: function (query, defaultValue) {
 			var res = document.querySelector(query);
 			if (!res) return defaultValue;
 			return res.id;
 		},
-		
-		formatLogNode: function(clone, token_id) {
+
+		formatLogNode: function (clone, token_id) {
 			var name = this.getTokenName(token_id);
 			var logid = "log" + (this.globalid++) + "_" + token_id;
 			dojo.attr(clone, "id", logid);
@@ -1255,7 +1265,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			dojo.attr(clone, "aria-label", name);
 			return clone;
 		},
-		showError: function(log, args) {
+		showError: function (log, args) {
 			if (typeof args == 'undefined') {
 				args = {};
 			}
@@ -1265,14 +1275,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			console.error(message);
 			return;
 		},
-		addCancelButton: function(text) {
+		addCancelButton: function (text) {
 			if (!$('button_cancel')) {
 				if (!text) text = _("Cancel");
 				this.addActionButton('button_cancel', text, 'onCancel', null, null, 'red');
 			}
 			return $('button_cancel');
 		},
-		addDoneButton: function(text, callback) {
+		addDoneButton: function (text, callback) {
 			if ($('button_done')) {
 				dojo.destroy('button_done');
 			}
@@ -1287,7 +1297,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		/**
 		 * This is light weight undo support. You use local states, and this one erases it.
 		 */
-		onCancel: function(event) {
+		onCancel: function (event) {
 			if (event) dojo.stopEvent(event);
 			console.log("on cancel");
 			this.cancelLocalStateEffects();
@@ -1302,7 +1312,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 		 * Note: game notification names correspond to "notifyAllPlayers" and "notifyPlayer" calls in your sharedcode.game.php file.
 		 * 
 		 */
-		setupNotifications: function() {
+		setupNotifications: function () {
 			console.log('notifications subscriptions setup');
 			dojo.subscribe('tokenMoved', this, "notif_tokenMoved");
 			dojo.subscribe('tokenMovedAsync', this, "notif_tokenMoved"); // same as tokenMoved but no delay
@@ -1318,7 +1328,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			this.notifqueue.setSynchronous('tokenMoved', 550);
 			this.notifqueue.setSynchronous('animate', 1000);
 		},
-		notif_warning: function(notif) {
+		notif_warning: function (notif) {
 			if (this.instantaneousMode) return;
 			if (typeof g_replayFrom != "undefined") {
 				return;
@@ -1327,13 +1337,13 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			var message = this.format_string_recursive(notif.log, notif.args);
 			this.showMessage(message, 'info');
 		},
-		notif_playerLog: function(notif) {
+		notif_playerLog: function (notif) {
 			// pure log
 		},
-		notif_animate: function(notif) {
+		notif_animate: function (notif) {
 			// do nothing, just there to play animation from previous notifications
 		},
-		doMoveToken: function(token_id, place_id, new_state) {
+		doMoveToken: function (token_id, place_id, new_state) {
 			var token = token_id;
 			if (!this.gamedatas.tokens[token]) {
 				this.gamedatas.tokens[token] = {
@@ -1356,8 +1366,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			this.gamedatas_server.tokens[token] = dojo.clone(this.gamedatas.tokens[token]);
 			return this.gamedatas.tokens[token];
 		},
-		notif_tokenMoved: function(notif) {
-				console.log('notif_tokenMoved', notif);
+		notif_tokenMoved: function (notif) {
+			console.log('notif_tokenMoved', notif);
 			if (typeof notif.args.list != 'undefined') {
 				// move bunch of tokens
 				for (var i = 0; i < notif.args.list.length; i++) {
@@ -1376,7 +1386,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				this.placeTokenWithTips(notif.args.token_id, res, notif.args);
 			}
 		},
-		notif_log: function(notif) {
+		notif_log: function (notif) {
 			// this is for debugging php side
 			if (notif.log) {
 				console.log("log notif: " + this.format_string_recursive(notif.log, notif.args), notif.log, notif.args);
@@ -1387,7 +1397,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 			}
 			console.log(notif);
 		},
-		notif_counter: function(notif) {
+		notif_counter: function (notif) {
 			try {
 				var name = notif.args.counter_name;
 				var value;
@@ -1406,10 +1416,65 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function(dojo, declar
 				console.error("Cannot update " + notif.args.counter_name, notif, ex, ex.stack);
 			}
 		},
-		notif_score: function(notif) {
+		notif_score: function (notif) {
 			// console.log(notif);
 			this.scoreCtrl[notif.args.player_id].setValue(notif.args.player_score);
 			this.animScore(notif.args);
+		},
+
+		/*
+	 * Detect if spectator or replay
+	 */
+		isReadOnly() {
+			return this.isSpectator || typeof g_replayFrom != 'undefined' || g_archive_mode;
+		},
+
+		/*
+	* Add a timer on an action button :
+	* params:
+	*  - buttonId : id of the action button
+	*  - time : time before auto click
+	*  - pref : 0 is disabled (auto-click), 1 if normal timer, 2 if no timer and show normal button
+	*/
+
+		startActionTimer(buttonId, time, pref, autoclick = false) {
+			var button = $(buttonId);
+			var isReadOnly = this.isReadOnly();
+			if (button == null || isReadOnly || pref == 2) {
+				debug('Ignoring startActionTimer(' + buttonId + ')', 'readOnly=' + isReadOnly, 'prefValue=' + pref);
+				return;
+			}
+
+			// If confirm disabled, click on button
+			if (pref == 0) {
+				if (autoclick) button.click();
+				return;
+			}
+
+			this._actionTimerLabel = button.innerHTML;
+			this._actionTimerSeconds = time;
+			this._actionTimerFunction = () => {
+				var button = $(buttonId);
+				if (button == null) {
+					this.stopActionTimer();
+				} else if (this._actionTimerSeconds-- > 1) {
+					button.innerHTML = this._actionTimerLabel + ' (' + this._actionTimerSeconds + ')';
+				} else {
+					debug('Timer ' + buttonId + ' execute');
+					button.click();
+				}
+			};
+			this._actionTimerFunction();
+			this._actionTimerId = window.setInterval(this._actionTimerFunction, 1000);
+			debug('Timer #' + this._actionTimerId + ' ' + buttonId + ' start');
+		},
+
+		stopActionTimer() {
+			if (this._actionTimerId != null) {
+				debug('Timer #' + this._actionTimerId + ' stop');
+				window.clearInterval(this._actionTimerId);
+				delete this._actionTimerId;
+			}
 		},
 	});
 });
