@@ -52,6 +52,9 @@ class PatchManager {
         if (gameui.curstate === "client_PlaceAnimal") {
             gameui.clientStateArgs.to = dropNode.id;
             gameui.ajaxClientStateAction();
+        } else if (gameui.curstate === "populateNewFence") {
+            gameui.clientStateArgs.to = id;
+            //gameui.startActionTimer("place_animal", 3, 1);
         }
         else {
             if (dropNode == gameui.clientStateArgs.dropTarget) {
@@ -1036,6 +1039,29 @@ define([
                 }, 'blue', _('Get one or two animals and place them'));
             },
 
+            onUpdateActionButtons_populateNewFence: function (args) {
+                this.clientStateArgs.action = 'placeAnimal';
+                var possibleAnimals = Object.values(args.possibleAnimals);
+                possibleAnimals.forEach((id) => {
+                    dojo.addClass(id, 'active_slot');
+                });
+
+                var possibleTargets = Object.values(args.possibleTargets);
+                possibleTargets.forEach((id) => {
+                    console.log("args.canGetAnimals", id);
+                    dojo.addClass(id, 'active_slot');
+                });
+
+                gameui.addImageActionButton('place_animal', _("Confirm"), () => {//todo translate i18
+                    //this.setClientStateAction('client_PlaceAnimal');
+                    this.ajaxClientStateAction();
+                }, 'blue');
+
+                gameui.addImageActionButton('c', _('Dismiss'), () => {
+                    gameui.ajaxClientStateAction('dismiss')
+                }, 'blue');
+            },
+
             onUpdateActionButtons_client_PickPatch: function (args) {
                 this.onUpdateActionButtons_commonClientPickPatch(args)
             },
@@ -1329,17 +1355,26 @@ define([
             onHouse: function (event) {
                 dojo.stopEvent(event);
                 var id = event.currentTarget.id;
-                gameui.clientStateArgs.action = 'placeAnimal'
-                gameui.clientStateArgs.to = id;
-                if (!gameui.isActiveSlot(id)) {
-                    return;
+                console.log("onHouse", id);
+
+                if (gameui.curstate === "playerTurn") {
+                    if (!gameui.isActiveSlot(id)) {
+                        return;
+                    }
+                    gameui.clientStateArgs.action = 'placeAnimal'
+                    gameui.clientStateArgs.to = id;
+                    gameui.removeClass('original');
+                    gameui.removeClass('active_slot');
+
+                    gameui.ajaxClientStateAction();
                 }
-
-                gameui.removeClass('original');
-                gameui.removeClass('active_slot');
-
+                else if (gameui.curstate === "populateNewFence") {
+                    if (!gameui.childIsActiveSlot(id)) {
+                        return;
+                    }
+                    gameui.clientStateArgs.from = $(id).firstElementChild.id;
+                }
                 console.log("onHouse", gameui.clientStateArgs);
-                gameui.ajaxClientStateAction();
             },
 
             ///////////////////////////////////////////////////

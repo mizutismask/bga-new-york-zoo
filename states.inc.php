@@ -99,8 +99,8 @@ $machinestates = array(
 
     STATE_PLAYER_POPULATE_NEW_FENCE => [
         "name" => "populateNewFence",
-        "description" => clienttranslate('${actplayer} can place until 2 animals on the new fence'),
-        "descriptionmyturn" => clienttranslate('${you} can place until 2 animals on the new fence (from houses or other fences)'),
+        "description" => clienttranslate('${actplayer} can place one animal on the new fence'),
+        "descriptionmyturn" => clienttranslate('${you} can place one animal on your new fence (from houses or other fences)'),
         "type" => "activeplayer",
         "args" => "arg_populateNewFence",
         "possibleactions" => ["dismiss", "placeAnimal"],

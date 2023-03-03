@@ -635,16 +635,37 @@ class NewYorkZoo extends EuroGame {
 
     function action_placeAnimal($from, $to, $animalType, $animalId) {
         $this->checkAction('placeAnimal');
-        $this->userAssertTrue(self::_("Have to select a location for this animal"), $animalType !== false && $to !== false);
-        $args = $this->arg_placeAnimal();
-        $this->userAssertTrue(self::_("Wrong animal to place"), isset($args["animals"][$animalType]));
-        $canGo  = $args["animals"][$animalType]["possibleTargets"];
-        $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
+        $state = $this->gamestate->state();
+        switch ($state['name']) {
+            case 'populateNewFence':
+                $this->userAssertTrue(self::_("Have to select an animal and a location for this animal"), $from !== false && $to !== false);
+                $args = $this->arg_populateNewFence();
+                $canGo  = $args["possibleTargets"];
+                $this->userAssertTrue(self::_("Animal must go in the new fence"), array_search($to, $canGo) !== false);
+                //todo check good from
+                $animalId = $from;
+                $animalType = getPart($animalId, 1);
+                break;
+
+            default:
+                //animal strip zone
+                $this->userAssertTrue(self::_("Have to select a location for this animal"), $animalType !== false && $to !== false);
+                $args = $this->arg_placeAnimal();
+                $this->userAssertTrue(self::_("Wrong animal to place"), isset($args["animals"][$animalType]));
+                $canGo  = $args["animals"][$animalType]["possibleTargets"];
+                $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
+                $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
+                break;
+        }
+        self::dump('*******************animalId', $animalId, $state['name']);
+        $this->saction_placeAnimal($from, $to, $animalType, $animalId);
+    }
+
+    function saction_placeAnimal($from, $to, $animalType, $animalId) {
+
 
         $state = $this->gamestate->state();
-
-        $animal = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
-        $this->dbSetTokenLocation($animal["key"], $to, null, '${player_name} places a ${token_name}', []);
+        $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name}', []);
 
         if (!$this->isHouse($to)) {
             $patch = $this->getPatchFromSquare($to);

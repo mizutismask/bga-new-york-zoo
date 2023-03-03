@@ -61,7 +61,7 @@ class action_newyorkzoo extends APP_GameAction
     self::setAjaxMode();
     $from = self::getArg('from', AT_alphanum, false);
     $to = self::getArg('to', AT_alphanum, true);
-    $animalType = self::getArg('animalType', AT_alphanum, true);
+    $animalType = self::getArg('animalType', AT_alphanum, false);
     $animalId = self::getArg('animalId', AT_alphanum, false);
     $this->game->action_placeAnimal($from, $to, $animalType, $animalId);
     self::ajaxResponse();
