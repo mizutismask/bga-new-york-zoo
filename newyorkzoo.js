@@ -37,9 +37,9 @@ class PatchManager {
     };
 
     onSquare(event) {
-        console.log('onSquare', event, gameui.isCurrentPlayerActive(), gameui.isPracticeMode(), gameui.curstate);
-        event.preventDefault();
         var id = event.currentTarget.id;
+        console.log('onSquare', id, event, gameui.isCurrentPlayerActive(), gameui.isPracticeMode(), gameui.curstate);
+        event.preventDefault();
         if (!id) return;
         if (!gameui.isCurrentPlayerActive() && !gameui.isPracticeMode()) return;
         //		if (!gameui.isActiveSlot(id)) {
@@ -53,7 +53,11 @@ class PatchManager {
             gameui.clientStateArgs.to = dropNode.id;
             gameui.ajaxClientStateAction();
         } else if (gameui.curstate === "populateNewFence") {
-            gameui.clientStateArgs.to = id;
+            if (gameui.clientStateArgs.from) {
+                gameui.clientStateArgs.to = id;
+            } else {
+                gameui.clientStateArgs.from = id;
+            }
             //gameui.startActionTimer("place_animal", 3, 1);
         }
         else {

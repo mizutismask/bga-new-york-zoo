@@ -116,8 +116,9 @@
 .active_slot {
 	cursor: pointer;
 }
-.square.active_slot, .house.active_slot { 
-	 outline: #4af056 solid 2px; 
+.square.active_slot,
+.house.active_slot {
+	outline: #4af056 solid 2px;
 }
 
 .central {
@@ -167,7 +168,7 @@
 	align-items: flex-start;
 	width: 700px;
 	height: 569px;
-	text-align:center;
+	text-align: center;
 }
 
 .tableau.own {
@@ -232,7 +233,7 @@
 	background-position: calc(100% / var(--playerCountMinus1) * 4) 0%;
 }
 
-.player_name{
+.player_name {
 	position: absolute;
 	bottom: 8px;
 	z-index: 100;
@@ -296,7 +297,8 @@
 }
 
 /* flip speed goes here */
-.patch, .nyz_animal_action_zone {
+.patch,
+.nyz_animal_action_zone {
 	transition: 0.5s;
 	transform-style: preserve-3d;
 	grid-column: 1 / 1;
@@ -1065,6 +1067,7 @@
 	background-image: url(img/animals.png);
 	width: var(--cellWidth);
 	height: var(--cellWidth);
+	z-index: 1;
 }
 
 .flamingo {
