@@ -1066,6 +1066,19 @@ define([
                 }, 'blue');
             },
 
+            onUpdateActionButtons_placeAnimalFromHouse: function (args) {
+                this.clientStateArgs.action = 'placeAnimalFromHouse';
+                
+                gameui.addActionButton('yes', _("Yes"), () => {//todo translate i18
+                    this.ajaxClientStateAction();
+                }, null, null, 'blue');
+
+                gameui.addActionButton('c', _('No'), () => {
+                    gameui.ajaxClientStateAction('dismiss')
+                }, null, null, 'blue');
+            },
+
+
             onUpdateActionButtons_client_PickPatch: function (args) {
                 this.onUpdateActionButtons_commonClientPickPatch(args)
             },

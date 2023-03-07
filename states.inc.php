@@ -59,6 +59,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_PLAYER_CHOOSE_BREEDING_FENCE", 8);
     define("STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE", 9);
     define("STATE_PLAYER_POPULATE_NEW_FENCE", 10);
+    define("STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE", 11);
     define("STATE_END_GAME", 99);
 
     define("TRANSITION_NEXT_PLAYER", "next");
@@ -70,7 +71,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("TRANSITION_PLACE_ATTRACTION", "placeAttraction");
     define("TRANSITION_CHOOSE_FENCE", "chooseFence");
     define("TRANSITION_POPULATE_FENCE", "populateFence");
-    
+    define("TRANSITION_PLACE_FROM_HOUSE", "placeFromHouse");
 }
 
 $machinestates = array(
@@ -108,7 +109,7 @@ $machinestates = array(
         "args" => "arg_populateNewFence",
         "possibleactions" => ["dismiss", "placeAnimal"],
         "transitions" => [
-            "next" => STATE_GAME_TURN_NEXT_PLAYER, TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE,
+            "next" => STATE_GAME_TURN_NEXT_PLAYER, TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE, TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE
         ]
     ],
 
@@ -126,7 +127,22 @@ $machinestates = array(
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE
+            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE,
+            TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE
+        ] // 
+    ],
+
+    STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE => [
+        "name" => "placeAnimalFromHouse",
+        "description" => clienttranslate('${actplayer} can add an animal from the houses to the same fence'),
+        "descriptionmyturn" => clienttranslate('Do ${you} want to add another animal from one of your houses to the same fence ?'),
+        "type" => "activeplayer",
+        "possibleactions" => ["dismiss", "placeAnimalFromHouse"],
+        "transitions" => [
+            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
+            TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
+            TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
         ] // 
     ],
 
