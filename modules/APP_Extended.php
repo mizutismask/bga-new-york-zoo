@@ -310,6 +310,18 @@ abstract class APP_Extended extends Table {
     }
 
     // ------ DB ----------
+    function dbUpdatePlayer(int $playerId, String $field, int $newValue) {
+        $this->DbQuery("UPDATE player SET $field = $newValue WHERE player_id = $playerId");
+    }
+
+    function dbUpdatePlayersExceptOne(int $playerId, String $field, int $newValue) {
+        $this->DbQuery("UPDATE player SET $field = $newValue WHERE player_id != $playerId");
+    }
+
+    function dbGetPlayerFieldValue(int $playerId, String $field) {
+        return self::getUniqueValueFromDB("select $field from player WHERE player_id = $playerId");
+    }
+
     function dbGetScore($player_id) {
         return $this->getUniqueValueFromDB("SELECT player_score FROM player WHERE player_id='$player_id'");
     }
