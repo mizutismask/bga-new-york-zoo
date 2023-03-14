@@ -55,10 +55,16 @@ class PatchManager {
         } else if (gameui.curstate === "populateNewFence") {
             if (gameui.clientStateArgs.from) {
                 gameui.clientStateArgs.to = id;
+                gameui.ajaxClientStateAction();
             } else {
                 gameui.clientStateArgs.from = id;
             }
             //gameui.startActionTimer("place_animal", 3, 1);
+        }
+        else if (gameui.curstate === "chooseFence") {
+            dojo.toggleClass(dropNode.id, "animal-target-image");
+            gameui.clientStateArgs.squares = gameui.queryIds(".animal-target-image");
+            console.log("gameui.clientStateArgs.squares", gameui.clientStateArgs.squares);
         }
         else {
             if (dropNode == gameui.clientStateArgs.dropTarget) {
@@ -989,6 +995,7 @@ define([
                 this.removeClass('cannot_use');
                 this.removeClass('active_slot');
                 this.removeClass('practice_mode');
+                this.removeClass('animal-target-image');
             },
 
             onUpdateActionButtons: function (stateName, args) {
@@ -1058,7 +1065,8 @@ define([
 
                 gameui.addImageActionButton('place_animal', _("Confirm"), () => {//todo translate i18
                     //this.setClientStateAction('client_PlaceAnimal');
-                    this.ajaxClientStateAction();
+                    console.log("launching this.ajaxClientStateAction();");
+                    gameui.ajaxClientStateAction();
                 }, 'blue');
 
                 gameui.addImageActionButton('c', _('Dismiss'), () => {
@@ -1068,7 +1076,7 @@ define([
 
             onUpdateActionButtons_placeAnimalFromHouse: function (args) {
                 this.clientStateArgs.action = 'placeAnimalFromHouse';
-                
+
                 gameui.addActionButton('yes', _("Yes"), () => {//todo translate i18
                     this.ajaxClientStateAction();
                 }, null, null, 'blue');
@@ -1078,6 +1086,28 @@ define([
                 }, null, null, 'blue');
             },
 
+            onUpdateActionButtons_chooseFence: function (args) {
+                gameui.clientStateArgs.action = 'chooseFences';
+                gameui.clientStateArgs.squares = [];
+                console.log("squaresByFence", args);
+                var squaresByFence = Object.entries(args);
+                squaresByFence.forEach(([fence, squares]) => {
+                    squares.forEach((square) => {
+                        dojo.addClass(square, 'active_slot');
+                    });
+                });
+                gameui.addImageActionButton('breed', _("Confirm"), () => {
+                    this.setClientStateAction('chooseFences');
+                    gameui.clientStateArgs.squares = gameui.clientStateArgs.squares.join(" ");
+                    gameui.ajaxClientStateAction();
+                }, 'blue');
+
+                gameui.addImageActionButton('c', _('Dismiss'), () => {
+                    this.setClientStateAction('chooseFences');
+                    gameui.clientStateArgs.squares = "";
+                    gameui.ajaxClientStateAction();
+                }, 'red');
+            },
 
             onUpdateActionButtons_client_PickPatch: function (args) {
                 this.onUpdateActionButtons_commonClientPickPatch(args)
@@ -1115,12 +1145,12 @@ define([
                     controls = true;
                 } else if (sel) {
 
-                    this.setDescriptionOnMyTurn(_('Place the patch on a quilt board. You can drag and drop'));
+                    this.setDescriptionOnMyTurn(_('Place the fence on your zoo. You can drag and drop'));
                     controls = true;
                     this.pm.updateActiveSquares();
 
                 } else {
-                    this.setDescriptionOnMyTurn(_('Select a patch, then place it. You can drag and drop'));
+                    this.setDescriptionOnMyTurn(_('Select a fence, then place it. You can drag and drop'));
 
                 }
                 if (this.isPracticeMode()) {
@@ -1203,8 +1233,10 @@ define([
             // UTILS
 
             cancelLocalStateEffects: function () {
-                this.pm.cancelPickPatch();
-                this.pm.endPickPatch();
+                if (this.curstate == "client_PickPatch") {
+                    this.pm.cancelPickPatch();
+                    this.pm.endPickPatch();
+                }
                 this.inherited(arguments);
             },
             ajaxActionResultCallback: function (action, args, result) {

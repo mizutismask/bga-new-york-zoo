@@ -83,9 +83,8 @@ class action_newyorkzoo extends APP_GameAction
   public function chooseFences()
   {
     self::setAjaxMode();
-    $tokenIdsRaw = self::getArg("tokenIds", AT_alphanum, true);
+    $tokenIdsRaw = self::getArg("squares", AT_alphanum, true);
     $tokenIdsRaw = trim($tokenIdsRaw);
-
     if ($tokenIdsRaw == '')
       $tokenIds = array();
     else

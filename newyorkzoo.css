@@ -398,7 +398,7 @@
 	opacity: 0;
 }
 
-.target-image {
+.target-image, .animal-target-image{
 	background-image: url(img/tokens.png);
 	background-size: 18.2em auto;
 	width: 3em;
@@ -406,6 +406,10 @@
 	font-size: small;
 	background-position: 39.5% 100%;
 	filter: opacity(80%);
+}
+
+.square:empty.animal-target-image {
+	z-index: 101;
 }
 
 .patch > * {

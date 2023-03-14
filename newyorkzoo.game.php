@@ -34,6 +34,7 @@ if (!defined('OFFSET')) {
     define("GS_LAST_FENCE_PLACED", "lastFencePlaced");
     define("GS_FROM", "from");
     define("GS_TO", "to");
+    define("GS_BREED_TRIGGER", "breedTrigger");
 }
 
 class NewYorkZoo extends EuroGame {
@@ -60,6 +61,7 @@ class NewYorkZoo extends EuroGame {
             GS_LAST_FENCE_PLACED => 14,
             GS_FROM => 15,
             GS_TO => 16,
+            GS_BREED_TRIGGER => 17,
         ));
 
         $this->tokens = new Tokens();
@@ -108,6 +110,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_ANIMAL_TO_PLACE, 0);
             self::setGameStateInitialValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
             self::setGameStateInitialValue(GS_BREEDING, 0);
+            self::setGameStateInitialValue(GS_BREED_TRIGGER, 0);
 
             // Init game statistics
             // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -617,10 +620,10 @@ class NewYorkZoo extends EuroGame {
             $limit = $info['triggerZone'];
             if ($old < $limit && $new >= $limit) {
                 $animal = $info['animal'];
-                self::setGameStateInitialValue(GS_BREEDING, $this->getAnimalType($animal));
+                self::setGameStateValue(GS_BREEDING, $this->getAnimalType($animal));
                 break;
             } else {
-                self::setGameStateInitialValue(GS_BREEDING, 0);
+                self::setGameStateValue(GS_BREEDING, 0);
             }
         }
 
@@ -715,34 +718,62 @@ class NewYorkZoo extends EuroGame {
             }
         }
 
+        $nextState = "";
         switch ($state['name']) {
+            case 'chooseFence':
+                $nextState = TRANSITION_NEXT_BREEDER;
+                break;
             case 'keepAnimalFromFullFence':
-                $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
+                $nextState = TRANSITION_PLACE_ATTRACTION;
                 break;
             case 'populateNewFence':
                 $squares = $this->getFenceSquares($patch);
                 $occupied = $this->filterOccupiedSquares($squares);
                 if (count($occupied) == 2) {
-                    $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+                    $nextState = TRANSITION_NEXT_PLAYER;
                 } else {
                     $args = $this->arg_populateNewFence();
                     $hasAnimals  = $args["possibleAnimals"];
                     if ($hasAnimals) {
                         //stay in this state to place an other animal if possible
-                        $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
+                        $nextState = TRANSITION_PLACE_ANIMAL;
                     } else {
-                        $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+                        $nextState = TRANSITION_NEXT_PLAYER;
                     }
                 }
                 break;
             default:
                 //animal zone
                 if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
-                    $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
+                    $nextState = TRANSITION_PLACE_ANIMAL;
                 } else {
-                    $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+                    $nextState = TRANSITION_NEXT_PLAYER;
                 }
         }
+        if ($nextState == TRANSITION_NEXT_PLAYER && $this->isBreedingNeeded()) {
+            //before moving to the next player, we have to make breeding
+            $nextState = TRANSITION_NEXT_BREEDER;
+        }
+        $this->gamestate->nextState($nextState);
+    }
+    function isBreedingNeeded() {
+        $needed = self::getGameStateValue(GS_BREEDING);
+        $currentPlayerId = $this->getMostlyActivePlayerId();
+        if ($needed) {
+            $animalType = $this->getAnimalName($needed);
+            $needed = false;
+            $players = $this->getPlayersInOrder($currentPlayerId);
+            foreach ($players as $playerId =>  $player) {
+                $squaresByFence = $this->getFreeSquaresAvailableForBreeding($this->getPlayerPosition($playerId), $animalType);
+                $nb = count(array_keys($squaresByFence));
+                $this->dbUpdatePlayer($playerId, "player_breeding_remaining", $nb);
+                $needed = $needed || $nb > 0;
+            }
+        }
+        if ($needed) {
+            self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
+        }
+        return $needed;
     }
 
     function action_placeAnimalFromHouse() {
@@ -761,7 +792,7 @@ class NewYorkZoo extends EuroGame {
     function dbUpdateTable(String $table, String $field, String $newValue, String $pkfield, String $key) {
         $sql = "UPDATE $table SET $field = '$newValue'";
         if ($pkfield && $key) {
-            $sql .= "WHERE $pkfield = '$key'";
+            $sql .= " WHERE $pkfield = '$key'";
         }
         $this->DbQuery($sql);
     }
@@ -806,19 +837,46 @@ class NewYorkZoo extends EuroGame {
         }
     }
 
-    function action_chooseFences($tokenIds) {
+    function action_chooseFences($squaresIds) {
         $this->checkAction('chooseFences');
-        $this->userAssertTrue(self::_("Have to select at most 2 fences"), count($tokenIds) <= 0);
-        $args = $this->arg_chooseFences();
-        foreach ($tokenIds as $token) {
-            $this->userAssertTrue(self::_("This fence can't be placed anywhere"), array_search($token, $args) !== false);
+        $squaresCount = count($squaresIds);
+        $animalType = $this->getAnimalName(self::getGameStateValue(GS_BREEDING));
+        if ($squaresCount) {
+            $this->userAssertTrue(self::_("Have to select at most 2 fences"), $squaresCount <= 2);
+            $args = $this->arg_chooseFences();
+            $foundFences = [];
+            foreach ($squaresIds as $i => $square) {
+                $keyFound = false;
+                foreach ($args as $fenceKey => $squares) {
+                    if ($keyFound === false) {
+                        $keyFound = array_search($square, $squares);
+                        if ($keyFound !== false) {
+                            $foundFences[] = $fenceKey;
+                        }
+                    }
+                }
+                if ($keyFound === false) {
+                    $this->userAssertTrue(self::_("An animal can only be bred in a fence where there is two parents of the required specie."), $keyFound);
+                }
+            }
+            if (count($foundFences) == 2) {
+                $this->userAssertTrue(self::_("The two possible breedings must happen in different fences."), $foundFences[0] !== $foundFences[1]);
+            }
+
+            foreach ($squaresIds as $squareKey) {
+                $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
+                $this->dbSetTokenLocation($token["key"], $squareKey, null, '', []);
+            }
         }
-        $animalType = self::getGameStateValue(GS_BREEDING);
-        foreach ($tokenIds as $token) {
-            $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
-            $this->tokens->moveToken($token["key"], $tokenIds); //todo specify where exactly
-        }
-        self::setGameStateValue(GS_BREEDING, 0);
+        
+        self::notifyAllPlayers("msg", clienttranslate('${player_name} breeds ${number} ${animals}(s)'), array(
+            'player_name' => self::getActivePlayerName(),
+            'number' => $squaresCount,
+            'animals' => $animalType
+        ));
+
+        $this->dbUpdatePlayer($this->getMostlyActivePlayerId(), "player_breeding_remaining", 0);
+        $this->gamestate->nextState(TRANSITION_NEXT_BREEDER);
     }
 
     function getAnimalType($animalName) {
@@ -1065,11 +1123,6 @@ class NewYorkZoo extends EuroGame {
         return $houses;
     }
 
-    function getTokensOfTypeInPatch($anmlType, $patch) {
-        return [];
-    }
-
-
     function getFieldValuesFromArray($arr, $field, $unique = false) {
         $concatenated = array();
         foreach ($arr as $element) {
@@ -1176,7 +1229,7 @@ class NewYorkZoo extends EuroGame {
         $allSquaresParam = $this->dbArrayParam($squares);
         $sql = "SELECT token_location FROM token WHERE token_location in($allSquaresParam) AND token_key not like 'patch%'";
         $occupied = self::getObjectListFromDB($sql, true);
-        return array_diff($squares, $occupied);
+        return array_values(array_diff($squares, $occupied));
     }
 
     function filterOccupiedSquares($squares) {
@@ -1204,21 +1257,47 @@ class NewYorkZoo extends EuroGame {
         return $respectingMin;
     }
 
+    function getFencesInfo($playerOrder) {
+        $sql = "SELECT token_key, id, animal_type, animals_added FROM fence WHERE player_order= $playerOrder";
+        $fences = self::getCollectionFromDB($sql, false);
+        $animalsByFence = $this->getAnimalsByFence($playerOrder);
+        foreach ($fences as $fenceKey => &$fence) {
+            if (isset($animalsByFence[$fenceKey])) {
+                $fence["animals"] = $animalsByFence[$fenceKey];
+            } else {
+                $fence["animals"] = [];
+            }
+            $fence["squares"] = $this->getFenceSquares($fenceKey);
+            $fence["freeSquares"] = $this->filterFreeSquares($fence["squares"]);
+        }
+        //self::dump('*******************getFencesInfo', $fences);
+        return $fences;
+    }
+
+    function getFreeSquaresAvailableForBreeding($playerOrder, $animalType) {
+        $fences = $this->getFencesInfo($playerOrder);
+        $fences = array_filter($fences, function ($f) use ($animalType) {
+            return $f["animal_type"] == $animalType && count($f["animals"]) >= 2 && count($f["freeSquares"]) >= 0;
+        });
+        //self::dump('*******************fences', $fences);
+        $freeSquares = [];
+        foreach ($fences as $fenceKey => $fence) {
+            $freeSquares[$fenceKey] = $fence["freeSquares"];
+        }
+        self::dump('*******************freeSquares', $freeSquares);
+        return $freeSquares;
+    }
+
 
     function dbArrayParam($arrayp) {
         return '"' . implode($arrayp, '","') . '"';
     }
 
     function arg_chooseFences() {
-        $player_id = $this->getActivePlayerId();
-        $playerOrder = $this->getPlayerPosition($player_id);
-        $allFences = $this->tokens->getTokensOfTypeInLocation("patch", "square_" . $playerOrder);
-        $anmlType = self::getGameStateValue(GS_BREEDING);
-        //only keep those with 2 animals of the required type
-        $validFences = array_filter($allFences, function ($f) use ($anmlType) {
-            return $this->getTokensOfTypeInPatch($anmlType, $f);
-        });
-        return $validFences; //todo get ids only
+        $playerOrder = $this->getMostlyActivePlayerOrder();
+        $anmlType = $this->getAnimalName(self::getGameStateValue(GS_BREEDING));
+        $squares = $this->getFreeSquaresAvailableForBreeding($playerOrder, $anmlType);
+        return $squares;
     }
 
     function arg_keep_animal() {
@@ -1265,6 +1344,7 @@ class NewYorkZoo extends EuroGame {
 
     function st_playerTurn() {
         $this->dbResetAllFenceAnimalsAddedNumber(0);
+        self::setGameStateValue(GS_BREEDING, 0);
         $args = $this->arg_playerTurn();
         $canPatch = $args['canPatch'];
         //$this->warn("st_playerTurn canPatch='".$canPatch."' pl=$player_id ".toJson($args)."|");
@@ -1272,6 +1352,32 @@ class NewYorkZoo extends EuroGame {
             $this->notifyWithName('message', clienttranslate('${player_name} cannot buy any patches'));
             $this->sendNotifications(); // have to do it so it does not bundle too much
         }
+    }
+
+    function st_gameTurnNextBreeder() {
+        $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
+        $players = array_values($this->getPlayersInOrder($triggerPlayer));
+        $i = 0;
+        while ($i < count($players)) {
+            $p = $players[$i];
+            $playerId = $p["player_id"];
+            $breedingRemaining = $this->dbGetPlayerFieldValue(intval($playerId), "player_breeding_remaining");
+            //self::dump('*******************playerId', $playerId);
+            //self::dump('*******************breedingRemaining', $breedingRemaining);
+            //self::dump('*******************triggerPlayer', $triggerPlayer);
+            if (intval($breedingRemaining) > 0) {
+                if (intval($playerId) != $triggerPlayer) {
+                    $this->gamestate->changeActivePlayer($playerId);
+                }
+                $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
+                return;
+            }
+            $i++;
+        }
+        //everyone has bred
+        self::setGameStateValue(GS_BREEDING, 0);
+        $this->gamestate->changeActivePlayer($triggerPlayer);
+        $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
     }
 
 

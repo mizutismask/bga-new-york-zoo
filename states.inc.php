@@ -55,11 +55,12 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_PLAYER_GAME_END", 4);
     define("STATE_PLAYER_PLACE_ANIMAL", 5);
     define("STATE_PLAYER_PLACE_ATTRACTION", 6);
-    define("STATE_PLAYER_CHOOSE_FENCE", 7);
     define("STATE_PLAYER_CHOOSE_BREEDING_FENCE", 8);
     define("STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE", 9);
     define("STATE_PLAYER_POPULATE_NEW_FENCE", 10);
     define("STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE", 11);
+    define("STATE_GAME_TURN_NEXT_BREEDER", 12);
+
     define("STATE_END_GAME", 99);
 
     define("TRANSITION_NEXT_PLAYER", "next");
@@ -72,6 +73,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("TRANSITION_CHOOSE_FENCE", "chooseFence");
     define("TRANSITION_POPULATE_FENCE", "populateFence");
     define("TRANSITION_PLACE_FROM_HOUSE", "placeFromHouse");
+    define("TRANSITION_NEXT_BREEDER", "nextBreeder");
 }
 
 $machinestates = array(
@@ -109,7 +111,10 @@ $machinestates = array(
         "args" => "arg_populateNewFence",
         "possibleactions" => ["dismiss", "placeAnimal"],
         "transitions" => [
-            "next" => STATE_GAME_TURN_NEXT_PLAYER, TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE, TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE
+            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE,
+            TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER
         ]
     ],
 
@@ -127,7 +132,7 @@ $machinestates = array(
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER,
             TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE
         ] // 
     ],
@@ -143,6 +148,7 @@ $machinestates = array(
             TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER,
         ] // 
     ],
 
@@ -172,19 +178,23 @@ $machinestates = array(
             TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_FENCE
+            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE
         ] // 
     ],
 
     STATE_PLAYER_CHOOSE_BREEDING_FENCE => [
         "name" => "chooseFence",
         "description" => clienttranslate('${actplayer} can choose fences for breeding'),
-        "descriptionmyturn" => clienttranslate('${you} can choose at most two fences for breeding'),
-        "type" => "multipleactiveplayer",
+        "descriptionmyturn" => clienttranslate('${you} can choose at most one location within two different fences for breeding'),
+        "type" => "activeplayer",
         "args" => "arg_chooseFences",
-        "possibleactions" => ["chooseFences"],
+        "possibleactions" => ["chooseFences", "dismiss"],
         "transitions" => [
-            "next" => STATE_GAME_TURN_NEXT_PLAYER, //maybe check fences state
+            TRANSITION_NEXT_PLAYER => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER,
+            TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
+            TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE,
+            TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE
         ]
     ],
 
@@ -197,6 +207,17 @@ $machinestates = array(
             "next" => STATE_PLAYER_TURN, "loopback" => STATE_GAME_TURN_NEXT_PLAYER,
             "last" => STATE_END_GAME
         ], // STATE_PLAYER_GAME_END TODO remove after, its there to use undo during dev
+    ],
+
+    STATE_GAME_TURN_NEXT_BREEDER => [
+        "name" => "gameTurnNextBreeder", "description" => clienttranslate('Upkeep breeding...'),
+        "type" => "game", //
+        "action" => "st_gameTurnNextBreeder", //
+        "updateGameProgression" => false,
+        "transitions" => [
+            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE,
+            TRANSITION_NEXT_PLAYER => STATE_GAME_TURN_NEXT_PLAYER,
+        ],
     ],
 
     STATE_PLAYER_GAME_END => [ // active player state for debugging end of game
