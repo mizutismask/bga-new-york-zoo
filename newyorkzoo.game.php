@@ -34,7 +34,9 @@ if (!defined('OFFSET')) {
     define("GS_LAST_FENCE_PLACED", "lastFencePlaced");
     define("GS_FROM", "from");
     define("GS_TO", "to");
+    define("GS_BREED2_TO", "breed2To");
     define("GS_BREED_TRIGGER", "breedTrigger");
+    define("GS_RESOLVING_BREEDING", "resolvingBreeding");
 }
 
 class NewYorkZoo extends EuroGame {
@@ -61,7 +63,9 @@ class NewYorkZoo extends EuroGame {
             GS_LAST_FENCE_PLACED => 14,
             GS_FROM => 15,
             GS_TO => 16,
-            GS_BREED_TRIGGER => 17,
+            GS_BREED_TRIGGER => 17, //player who triggered breeding
+            GS_BREED2_TO => 18, //destination fence for 2nd breeding
+            GS_RESOLVING_BREEDING => 19, //0=no breeding, 1 or 2=order of the breeding being resolved
         ));
 
         $this->tokens = new Tokens();
@@ -111,6 +115,8 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
             self::setGameStateInitialValue(GS_BREEDING, 0);
             self::setGameStateInitialValue(GS_BREED_TRIGGER, 0);
+            self::setGameStateInitialValue(GS_BREED2_TO, 0);
+            self::setGameStateInitialValue(GS_RESOLVING_BREEDING, 0);
 
             // Init game statistics
             // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -127,7 +133,7 @@ class NewYorkZoo extends EuroGame {
             $this->error("Fatal error while creating game");
             $this->dump('err', $e);
         }
-
+        $this->dblBreeding(); //debug only
         /************ End of the game initialization *****/
     }
 
@@ -537,6 +543,8 @@ class NewYorkZoo extends EuroGame {
     
     */
     function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
+        self::dump("**************action_place*********************", $token_id);
+        self::dump("**************to*********************", $dropTarget);
         $this->checkAction('place');
 
         $player_id = $this->getActivePlayerId();
@@ -675,9 +683,9 @@ class NewYorkZoo extends EuroGame {
 
     function saction_placeAnimal($from, $to, $animalType, $animalId) {
 
-
         $state = $this->gamestate->state();
         $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name}', []);
+        $patch = $this->getPatchFromSquare($to);
 
         switch ($state['name']) {
             case 'keepAnimalFromFullFence':
@@ -692,9 +700,19 @@ class NewYorkZoo extends EuroGame {
                     self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
                 }
         }
+        if ($state['name'] === 'placeAnimalFromHouse' && $this->getGameStateValue(GS_BREED2_TO)) {
+            if (self::getGameStateValue(GS_RESOLVING_BREEDING) == 2) {
+                self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
+                self::setGameStateValue(GS_BREED2_TO, 0);
+            } else {
+                self::setGameStateValue(GS_RESOLVING_BREEDING, 2);
+                $this->dbIncFenceAnimalsAddedNumber($patch);
+                $this->gamestate->nextState(TRANSITION_PLACE_FROM_HOUSE);
+                return;
+            }
+        }
 
         if (!$this->isHouse($to)) {
-            $patch = $this->getPatchFromSquare($to);
             $this->dbUpdateFenceType($patch, $animalType);
             $this->dbIncFenceAnimalsAddedNumber($patch);
             if ($this->isFenceFull($patch)) {
@@ -750,6 +768,7 @@ class NewYorkZoo extends EuroGame {
                     $nextState = TRANSITION_NEXT_PLAYER;
                 }
         }
+
         if ($nextState == TRANSITION_NEXT_PLAYER && $this->isBreedingNeeded()) {
             //before moving to the next player, we have to make breeding
             $nextState = TRANSITION_NEXT_BREEDER;
@@ -772,6 +791,8 @@ class NewYorkZoo extends EuroGame {
         }
         if ($needed) {
             self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
+            self::setGameStateValue(GS_RESOLVING_BREEDING, 1);
+            $this->dbResetAllFenceAnimalsAddedNumber(0);
         }
         return $needed;
     }
@@ -781,8 +802,12 @@ class NewYorkZoo extends EuroGame {
         $from = self::getGameStateValue(GS_FROM); //animal type
         $animalType = $this->getAnimalName($from);
         $animal = $this->tokens->getTokenOfTypeInLocation($animalType, "house_" . $playerOrder . "%");
-
-        $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
+        $to = "";
+        if (self::getGameStateValue(GS_TO) && self::getGameStateValue(GS_RESOLVING_BREEDING) == 1) {
+            $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
+        } else if (self::getGameStateValue(GS_RESOLVING_BREEDING) == 2) {
+            $to = "patch_" . self::getGameStateValue(GS_BREED2_TO); //fence key number
+        }
         $squares = $this->getFenceSquares($to);
         $squares = $this->filterFreeSquares($squares);
         $toSquare = array_pop($squares);
@@ -822,14 +847,26 @@ class NewYorkZoo extends EuroGame {
         $state = $this->gamestate->state();
         switch ($state['name']) {
             case 'placeAnimalFromHouse':
-                self::setGameStateValue(GS_FROM, 0);
-                self::setGameStateValue(GS_TO, 0);
-                if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
-                    $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
+                switch (self::getGameStateValue(GS_RESOLVING_BREEDING)) {
+                    case 0:
+                        self::setGameStateValue(GS_FROM, 0);
+                        self::setGameStateValue(GS_TO, 0);
+                        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
+                            $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
+                        }
+                        break;
+                    case 1:
+                        self::setGameStateValue(GS_TO, 0);
+                        break;
+                    case 2:
+                        self::setGameStateValue(GS_FROM, 0);
+                        self::setGameStateValue(GS_BREED2_TO, 0);
+                        break;
                 }
                 break;
 
             default:
+                //animal action zone
                 self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
                 self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
                 $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
@@ -841,6 +878,7 @@ class NewYorkZoo extends EuroGame {
         $this->checkAction('chooseFences');
         $squaresCount = count($squaresIds);
         $animalType = $this->getAnimalName(self::getGameStateValue(GS_BREEDING));
+        $placeFromHouse = false;
         if ($squaresCount) {
             $this->userAssertTrue(self::_("Have to select at most 2 fences"), $squaresCount <= 2);
             $args = $this->arg_chooseFences();
@@ -863,20 +901,46 @@ class NewYorkZoo extends EuroGame {
                 $this->userAssertTrue(self::_("The two possible breedings must happen in different fences."), $foundFences[0] !== $foundFences[1]);
             }
 
-            foreach ($squaresIds as $squareKey) {
+
+            foreach ($squaresIds as $i => $squareKey) {
                 $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
                 $this->dbSetTokenLocation($token["key"], $squareKey, null, '', []);
+
+                $patch = $this->getPatchFromSquare($squareKey);
+                $this->dbIncFenceAnimalsAddedNumber($patch);
+
+                //we need to offer to place from house for each fence before checking if anyone is full
+                //so we can't just call splaceAnimal
+                if (!$this->isFenceFull($patch) && !$this->hasReachLimit($patch)) {
+                    $housesWithAskedAnml = $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType);
+                    if ($housesWithAskedAnml && $i == 0) {
+                        self::setGameStateValue(GS_FROM, $this->getAnimalType($animalType));
+                        self::setGameStateValue(GS_TO, getPart($this->dbGetFence($patch)["token_key"], 1));
+                        $placeFromHouse = true;
+                    }
+                    if (count($housesWithAskedAnml) > 1 && $i == 1) {
+                        self::setGameStateValue(GS_BREED2_TO, getPart($this->dbGetFence($patch)["token_key"], 1));
+                        $placeFromHouse = true;
+                    }
+                }
             }
         }
-        
+
         self::notifyAllPlayers("msg", clienttranslate('${player_name} breeds ${number} ${animals}(s)'), array(
             'player_name' => self::getActivePlayerName(),
             'number' => $squaresCount,
             'animals' => $animalType
         ));
 
-        $this->dbUpdatePlayer($this->getMostlyActivePlayerId(), "player_breeding_remaining", 0);
-        $this->gamestate->nextState(TRANSITION_NEXT_BREEDER);
+        $playerId = $this->getMostlyActivePlayerId();
+        $this->dbUpdatePlayer($playerId, "player_breeding_remaining", 0);
+        $this->dbUpdatePlayer($playerId, "player_has_bred", $squaresCount > 0);
+
+        if ($placeFromHouse) {
+            $this->gamestate->nextState(TRANSITION_PLACE_FROM_HOUSE); //todo add fence full check
+        } else {
+            $this->gamestate->nextState(TRANSITION_NEXT_BREEDER);
+        }
     }
 
     function getAnimalType($animalName) {
@@ -1215,7 +1279,7 @@ class NewYorkZoo extends EuroGame {
 
     function arg_possibleTargetsForAnimal($playerOrder, $animal) {
         $freeHouses = $this->getFreeHouses($playerOrder);
-        $fencesAcceptingAnml = $this->getSquaresInFencesAccepting($playerOrder, $animal); //todo
+        $fencesAcceptingAnml = $this->getSquaresInFencesAccepting($playerOrder, $animal);
         return array_merge($freeHouses, $fencesAcceptingAnml);
     }
 
@@ -1376,6 +1440,8 @@ class NewYorkZoo extends EuroGame {
         }
         //everyone has bred
         self::setGameStateValue(GS_BREEDING, 0);
+        self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
+        $this->dbUpdatePlayers("player_has_bred", 0);
         $this->gamestate->changeActivePlayer($triggerPlayer);
         $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
     }
@@ -1466,7 +1532,7 @@ class NewYorkZoo extends EuroGame {
     ///////////////////////////////////////////////////////////////////////////////////:
     ////////// Debug utils
     //////////
-    function fullFence($fenceKey, $forcedAnimalType = null, $leaveOneSpace = false) {
+    function fullFence($fenceKey, $forcedAnimalType = null, $leaveSpaces = 0) {
         $squares = $this->getFenceSquares($fenceKey);
         $type = $this->getFenceType($fenceKey);
         if ($type === "none") {
@@ -1477,8 +1543,8 @@ class NewYorkZoo extends EuroGame {
             $occupied = $this->tokens->getTokensInLocation($square);
             $occupied = $this->filterAnimals($occupied);
             if (!$occupied) {
-                if ($leaveOneSpace && $minus == 0) {
-                    $minus = 1;
+                if ($leaveSpaces && $minus < $leaveSpaces) {
+                    $minus++;
                 } else {
                     $filler = $this->tokens->getTokenOfTypeInLocation($type, "limbo");
                     $this->dbSetTokenLocation($filler["key"], $square);
@@ -1487,5 +1553,30 @@ class NewYorkZoo extends EuroGame {
         }
         if ($forcedAnimalType)
             $this->dbUpdateFenceType($fenceKey, $forcedAnimalType);
+    }
+
+    function dblBreeding($animalType = "meerkat") {
+        $playerOrder = $this->getMostlyActivePlayerOrder();
+
+        $turn = $this->arg_playerTurn();
+        $fences = $this->arg_canBuyPatches($playerOrder);
+        $patch1 = array_shift($fences);
+        $patch2 = array_shift($fences);
+
+        $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
+        $p1Move = array_shift($patchOneMoves);
+        $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
+
+        $turn = $this->arg_playerTurn();
+        $patch2Moves = $turn['patches'][$patch2]['moves']["0_0"];
+        $p2Move = array_shift($patch2Moves);
+        $this->saction_PlacePatch($playerOrder, $patch2, $p2Move, 0, 0);
+
+        $this->fullFence($patch1, $animalType, 2);
+        $this->fullFence($patch2, $animalType, 2);
+
+        $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
+        $this->dbSetTokenLocation($animalId, "house_" . $playerOrder . "_" . 3, null, '${player_name} places a ${token_name}', []);
+        $this->saction_MoveNeutralToken("action_zone_17");
     }
 }

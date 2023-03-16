@@ -149,6 +149,7 @@ $machinestates = array(
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
             TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER,
+            TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE, //when double breeding and double additional animal from houses
         ] // 
     ],
 
