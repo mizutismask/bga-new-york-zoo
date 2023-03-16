@@ -310,6 +310,10 @@ abstract class APP_Extended extends Table {
     }
 
     // ------ DB ----------
+    function dbUpdatePlayers(String $field, int $newValue) {
+        $this->DbQuery("UPDATE player SET $field = $newValue");
+    }
+
     function dbUpdatePlayer(int $playerId, String $field, int $newValue) {
         $this->DbQuery("UPDATE player SET $field = $newValue WHERE player_id = $playerId");
     }
