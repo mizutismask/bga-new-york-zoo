@@ -172,14 +172,14 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} can place a bonus attraction'),
         "type" => "activeplayer",
         "args" => "arg_placeAttraction",
-        "possibleactions" => ["dismiss", "placeAttraction"],
+        "possibleactions" => ["dismiss", "place"],
         "transitions" => [
-            "next" => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_NEXT_PLAYER => STATE_GAME_TURN_NEXT_PLAYER,
             "last" => STATE_PLAYER_GAME_END,
             TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE
+           // TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE
         ] // 
     ],
 

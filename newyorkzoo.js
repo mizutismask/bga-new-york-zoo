@@ -1114,7 +1114,30 @@ define([
             },
 
             onUpdateActionButtons_placeAttraction: function (args) {
-                this.onUpdateActionButtons_commonClientPickPatch(args)
+                this.clientStateArgs.action = 'place';
+                var canBuy = Object.keys(args.patches);
+                canBuy.forEach((id) => {
+                    var canUse = args.patches[id].canUse;
+                    dojo.addClass(id, 'active_slot');
+                    if (canUse == false)
+                        dojo.addClass(id, 'cannot_use');
+
+
+                });
+
+                var pickcolor = 'blue';
+                if (!args.canPatch)
+                    pickcolor = 'red';
+                gameui.addImageActionButton('b', _('Pick Patch'), () => {
+                    if (args.canPatch)
+                        this.setClientStateAction('client_PickPatch')
+                    else
+                        this.showError(_('No legal moves'));
+                }, pickcolor);
+
+                gameui.addActionButton('c', _('Dismiss'), () => {
+                    gameui.ajaxClientStateAction('dismiss')
+                }, null, null, 'blue');
             },
 
             onUpdateActionButtons_commonClientPickPatch: function (args) {

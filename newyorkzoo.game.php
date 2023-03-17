@@ -548,20 +548,25 @@ class NewYorkZoo extends EuroGame {
         $this->checkAction('place');
 
         $player_id = $this->getActivePlayerId();
+        $order = $this->getMostlyActivePlayerOrder();
         //$this->notifyWithName('message', clienttranslate('${player_name} plays pick and place action'));
-
-        $buts = $this->getRulesFor($token_id, 'cost');
-        $time = $this->getRulesFor($token_id, 'time');
-
-        $order = $this->getPlayerPosition($player_id);
-        $canBuy  = $this->arg_canBuyPatches($order);
-        $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
         $pos = $this->tokens->getTokenLocation($token_id);
-        //self::dump("**************pos*********************", $pos);
-        $this->saction_MoveNeutralToken($pos);
-        $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
 
-        $this->gamestate->nextState(TRANSITION_POPULATE_FENCE);
+        if ($this->gamestate->state()["name"] === "placeAttraction") {
+            $this->userAssertTrue(self::_("Should be a bonus attraction"), $pos === "bonus_market");
+            $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
+            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+        } else {
+            $order = $this->getPlayerPosition($player_id);
+            $canBuy  = $this->arg_canBuyPatches($order);
+            $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
+            
+            //self::dump("**************pos*********************", $pos);
+            $this->saction_MoveNeutralToken($pos);
+            $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
+
+            $this->gamestate->nextState(TRANSITION_POPULATE_FENCE);
+        }
     }
 
     function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY) {
@@ -665,6 +670,10 @@ class NewYorkZoo extends EuroGame {
                 //todo check good from
                 $animalId = $from;
                 $animalType = getPart($animalId, 0);
+                break;
+            case 'keepAnimalFromFullFence':
+                //nothing to verify but prevents to fall into default case
+                $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
                 break;
 
             default:
