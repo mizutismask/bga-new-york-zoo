@@ -329,16 +329,28 @@ class NewYorkZoo extends EuroGame {
         return self::getObjectListFromDB("SELECT square FROM fence_squares WHERE token_key = '$fenceKey'", true);
     }
 
-    function isFenceFull($fenceId) {
-        $squares = $this->getFenceSquares($fenceId);
+    function isFenceFull($fenceKey) {
+        $squares = $this->getFenceSquares($fenceKey);
         $empty = $this->filterFreeSquares($squares);
         self::dump('***********isFenceFull********', !$empty);
         return !$empty;
     }
 
+    function getFullFences($order) {
+        $fences = $this->dbGetFencesKeysByPlayer($order);
+        $full = [];
+        foreach ($fences as $fenceId) {
+            if ($this->isFenceFull($fenceId)) {
+                $full[] = $fenceId;
+            }
+        }
+        return $full;
+    }
+
     /** Empty fence and return animal type */
     function emptyFence($fenceId) {
         $type = $this->getFenceType($fenceId);
+        $this->systemAssertTrue("This fence does NOT exist.", $type);
         $squares = $this->getFenceSquares($fenceId);
         //self::dump('******************getFenceSquares*', $squares);
         $occupied = $this->filterOccupiedSquares($squares);
@@ -555,12 +567,27 @@ class NewYorkZoo extends EuroGame {
         if ($this->gamestate->state()["name"] === "placeAttraction") {
             $this->userAssertTrue(self::_("Should be a bonus attraction"), $pos === "bonus_market");
             $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
-            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+            $fullFences = $this->getFullFences($order);
+            if ($fullFences) {
+                $patch = array_shift($fullFences);
+                $animalType = $this->emptyFence($patch);
+                if ($this->getFreeHouses($this->getMostlyActivePlayerOrder())) {
+                    //offers to keep one animal
+                    self::setGameStateValue(GS_ANIMAL_TO_KEEP, $this->getAnimalType($animalType));
+                    $this->gamestate->nextState(TRANSITION_KEEP_ANIMAL);
+                    return;
+                } else {
+                    $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
+                    return;
+                }
+            } else {
+                $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+            }
         } else {
             $order = $this->getPlayerPosition($player_id);
             $canBuy  = $this->arg_canBuyPatches($order);
             $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
-            
+
             //self::dump("**************pos*********************", $pos);
             $this->saction_MoveNeutralToken($pos);
             $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
@@ -710,12 +737,13 @@ class NewYorkZoo extends EuroGame {
                 }
         }
         if ($state['name'] === 'placeAnimalFromHouse' && $this->getGameStateValue(GS_BREED2_TO)) {
+            $this->dbIncFenceAnimalsAddedNumber($patch);
             if (self::getGameStateValue(GS_RESOLVING_BREEDING) == 2) {
                 self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
                 self::setGameStateValue(GS_BREED2_TO, 0);
             } else {
                 self::setGameStateValue(GS_RESOLVING_BREEDING, 2);
-                $this->dbIncFenceAnimalsAddedNumber($patch);
+
                 $this->gamestate->nextState(TRANSITION_PLACE_FROM_HOUSE);
                 return;
             }
@@ -850,6 +878,10 @@ class NewYorkZoo extends EuroGame {
 
     function dbGetFence(String $token_key) {
         return self::getObjectFromDB("SELECT * FROM fence WHERE token_key='$token_key'");
+    }
+
+    function dbGetFencesKeysByPlayer(Int $order) {
+        return self::getObjectListFromDB("SELECT token_key FROM fence WHERE player_order='$order'", true);
     }
 
     function action_dismissAnimal() {
