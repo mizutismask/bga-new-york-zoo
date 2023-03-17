@@ -830,6 +830,9 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
             self::setGameStateValue(GS_RESOLVING_BREEDING, 1);
             $this->dbResetAllFenceAnimalsAddedNumber(0);
+            self::notifyAllPlayers("msg", clienttranslate('${animals} breeding time'), array(
+                'animals' => $animalType
+            ));
         }
         return $needed;
     }
@@ -886,6 +889,7 @@ class NewYorkZoo extends EuroGame {
 
     function action_dismissAnimal() {
         $state = $this->gamestate->state();
+
         switch ($state['name']) {
             case 'placeAnimalFromHouse':
                 switch (self::getGameStateValue(GS_RESOLVING_BREEDING)) {
@@ -903,6 +907,22 @@ class NewYorkZoo extends EuroGame {
                         self::setGameStateValue(GS_FROM, 0);
                         self::setGameStateValue(GS_BREED2_TO, 0);
                         break;
+                }
+
+                $order = $this->getMostlyActivePlayerOrder();
+                $fullFences = $this->getFullFences($order);
+                if ($fullFences) {
+                    $patch = array_shift($fullFences);
+                    $animalType = $this->emptyFence($patch);
+                    if ($this->getFreeHouses($this->getMostlyActivePlayerOrder())) {
+                        //offers to keep one animal
+                        self::setGameStateValue(GS_ANIMAL_TO_KEEP, $this->getAnimalType($animalType));
+                        $this->gamestate->nextState(TRANSITION_KEEP_ANIMAL);
+                        return;
+                    } else {
+                        $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
+                        return;
+                    }
                 }
                 break;
 
@@ -1462,8 +1482,9 @@ class NewYorkZoo extends EuroGame {
     function st_gameTurnNextBreeder() {
         $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
         $players = array_values($this->getPlayersInOrder($triggerPlayer));
+        $playerCount = count($players);
         $i = 0;
-        while ($i < count($players)) {
+        while ($i < $playerCount) {
             $p = $players[$i];
             $playerId = $p["player_id"];
             $breedingRemaining = $this->dbGetPlayerFieldValue(intval($playerId), "player_breeding_remaining");
@@ -1479,9 +1500,38 @@ class NewYorkZoo extends EuroGame {
             }
             $i++;
         }
+        //everyone has bred, see if bonus breeding needed
+        if ($playerCount === 2 || $playerCount === 3) {
+            $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
+        } else {
+            self::setGameStateValue(GS_BREEDING, 0);
+            self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
+            $this->dbUpdatePlayers("player_has_bred", 0);
+            $this->gamestate->changeActivePlayer($triggerPlayer);
+            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+        }
+    }
+
+    function st_gameNextBonusBreeder() {
+        $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
+        $players = array_values($this->getPlayersInOrder($triggerPlayer));
+        $i = 0;
+        while ($i < count($players)) {
+            $p = $players[$i];
+            $playerId = $p["player_id"];
+            $hasBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bred");
+            if ($hasBred == 1) {
+                if (intval($playerId) != $triggerPlayer) {
+                    $this->gamestate->changeActivePlayer($playerId);
+                }
+                $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
+                return;
+            }
+            $i++;
+        }
         //everyone has bred
         self::setGameStateValue(GS_BREEDING, 0);
-        self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
+        //self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
         $this->dbUpdatePlayers("player_has_bred", 0);
         $this->gamestate->changeActivePlayer($triggerPlayer);
         $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);

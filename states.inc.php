@@ -59,7 +59,9 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE", 9);
     define("STATE_PLAYER_POPULATE_NEW_FENCE", 10);
     define("STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE", 11);
-    define("STATE_GAME_TURN_NEXT_BREEDER", 12);
+    define("STATE_GAME_NEXT_BREEDER", 12);
+    define("STATE_PLAYER_BONUS_BREED", 13);
+    define("STATE_GAME_NEXT_BONUS_BREEDER", 14);
 
     define("STATE_END_GAME", 99);
 
@@ -74,6 +76,8 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("TRANSITION_POPULATE_FENCE", "populateFence");
     define("TRANSITION_PLACE_FROM_HOUSE", "placeFromHouse");
     define("TRANSITION_NEXT_BREEDER", "nextBreeder");
+    define("TRANSITION_NEXT_BONUS_BREEDER", "nextBonusBreeder");
+    define("TRANSITION_BONUS_BREED", "bonusBreed");
 }
 
 $machinestates = array(
@@ -114,7 +118,7 @@ $machinestates = array(
             "next" => STATE_GAME_TURN_NEXT_PLAYER,
             TRANSITION_PLACE_ANIMAL => STATE_PLAYER_POPULATE_NEW_FENCE,
             TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE,
-            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER
+            TRANSITION_NEXT_BREEDER => STATE_GAME_NEXT_BREEDER
         ]
     ],
 
@@ -132,7 +136,7 @@ $machinestates = array(
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_NEXT_BREEDER,
             TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE
         ] // 
     ],
@@ -148,7 +152,7 @@ $machinestates = array(
             TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_NEXT_BREEDER,
             TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE, //when double breeding and double additional animal from houses
         ] // 
     ],
@@ -179,8 +183,8 @@ $machinestates = array(
             TRANSITION_PLACE_ANIMAL => STATE_PLAYER_PLACE_ANIMAL,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE,//when dbl breeding and dbl full
-           // TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE
+            TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE, //when dbl breeding and dbl full
+            // TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE
         ] // 
     ],
 
@@ -193,7 +197,7 @@ $machinestates = array(
         "possibleactions" => ["chooseFences", "dismiss"],
         "transitions" => [
             TRANSITION_NEXT_PLAYER => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_NEXT_BREEDER => STATE_GAME_TURN_NEXT_BREEDER,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_NEXT_BREEDER,
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE,
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE
@@ -211,10 +215,21 @@ $machinestates = array(
         ], // STATE_PLAYER_GAME_END TODO remove after, its there to use undo during dev
     ],
 
-    STATE_GAME_TURN_NEXT_BREEDER => [
+    STATE_GAME_NEXT_BREEDER => [
         "name" => "gameTurnNextBreeder", "description" => clienttranslate('Upkeep breeding...'),
         "type" => "game", //
         "action" => "st_gameTurnNextBreeder", //
+        "updateGameProgression" => false,
+        "transitions" => [
+            TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE,
+            TRANSITION_NEXT_PLAYER => STATE_GAME_TURN_NEXT_PLAYER,
+        ],
+    ],
+
+    STATE_GAME_NEXT_BONUS_BREEDER => [
+        "name" => "gameNextBonusBreeder", "description" => clienttranslate('Upkeep bonus breeding...'),
+        "type" => "game", //
+        "action" => "st_gameNextBonusBreeder", //
         "updateGameProgression" => false,
         "transitions" => [
             TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE,
