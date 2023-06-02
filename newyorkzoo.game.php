@@ -86,6 +86,7 @@ class NewYorkZoo extends EuroGame {
     */
     protected function setupNewGame($players, $options = array()) {
         try {
+            //todo call inherited
             // Set the colors of the players with HTML color code
             // The default below is red/green/blue/orange/brown
             // The number of colors defined here must correspond to the maximum number of players allowed for the gams
@@ -764,7 +765,7 @@ class NewYorkZoo extends EuroGame {
                     return;
                 }
             } else {
-                if ($this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch)) {
+                if ($state['name']!=='populateNewFence'&& $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch)) {
                     self::setGameStateValue(GS_FROM, $this->getAnimalType($animalType));
                     self::setGameStateValue(GS_TO, getPart($this->dbGetFence($patch)["token_key"], 1));
                     $this->gamestate->nextState(TRANSITION_PLACE_FROM_HOUSE);
