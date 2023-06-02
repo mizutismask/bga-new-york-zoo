@@ -765,7 +765,7 @@ class NewYorkZoo extends EuroGame {
                     return;
                 }
             } else {
-                if ($state['name']!=='populateNewFence'&& $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch)) {
+                if ($state['name'] !== 'populateNewFence' && $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch)) {
                     self::setGameStateValue(GS_FROM, $this->getAnimalType($animalType));
                     self::setGameStateValue(GS_TO, getPart($this->dbGetFence($patch)["token_key"], 1));
                     $this->gamestate->nextState(TRANSITION_PLACE_FROM_HOUSE);

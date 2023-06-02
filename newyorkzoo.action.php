@@ -23,11 +23,9 @@
  */
 
 
-class action_newyorkzoo extends APP_GameAction
-{
+class action_newyorkzoo extends APP_GameAction {
   // Constructor: please do not modify
-  public function __default()
-  {
+  public function __default() {
     if (self::isArg('notifwindow')) {
       $this->view = "common_notifwindow";
       $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
@@ -37,8 +35,7 @@ class action_newyorkzoo extends APP_GameAction
     }
   }
 
-  public function place()
-  {
+  public function place() {
     self::setAjaxMode();
     $token = self::getArg('token', AT_alphanum, true);
     $rotateY = self::getArg('rotateY', AT_int, true);
@@ -48,16 +45,14 @@ class action_newyorkzoo extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function getAnimals()
-  {
+  public function getAnimals() {
     self::setAjaxMode();
     $actionZone = self::getArg('actionZone', AT_alphanum, true);
     $this->game->action_getAnimals($actionZone);
     self::ajaxResponse();
   }
 
-  public function placeAnimal()
-  {
+  public function placeAnimal() {
     self::setAjaxMode();
     $from = self::getArg('from', AT_alphanum, false);
     $to = self::getArg('to', AT_alphanum, true);
@@ -73,15 +68,13 @@ class action_newyorkzoo extends APP_GameAction
     self::ajaxResponse();
   }
 
-  public function dismiss()
-  {
+  public function dismiss() {
     self::setAjaxMode();
     $this->game->action_dismissAnimal();
     self::ajaxResponse();
   }
 
-  public function chooseFences()
-  {
+  public function chooseFences() {
     self::setAjaxMode();
     $tokenIdsRaw = self::getArg("squares", AT_alphanum, true);
     $tokenIdsRaw = trim($tokenIdsRaw);
