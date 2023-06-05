@@ -53,12 +53,9 @@ class PatchManager {
             gameui.clientStateArgs.to = dropNode.id;
             gameui.ajaxClientStateAction();
         } else if (gameui.curstate === 'populateNewFence') {
-            if (gameui.clientStateArgs.from) {
+            $(id).classList.toggle("selected");
                 gameui.clientStateArgs.to = id;
                 gameui.ajaxClientStateAction();
-            } else {
-                gameui.clientStateArgs.from = id;
-            }
             //gameui.startActionTimer("place_animal", 3, 1);
         } else if (gameui.curstate === 'chooseFence') {
             dojo.toggleClass(dropNode.id, 'animal-target-image');
@@ -762,6 +759,10 @@ define([
                 }*/
             this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
             this.connectClass('house', 'onclick', 'onHouse');
+            
+            document.querySelectorAll(`.tableau_${gameui.player_no} .pieces .animal`).forEach((item) => {
+                item.addEventListener('click', (event) => this.onAnimal(event), false);
+            });
 
             dojo.query('.timetracker').forEach((node) => {
                 this.updateTooltip(node.id);
@@ -1393,10 +1394,10 @@ define([
                 return result;
             }
             if (location.startsWith('house')) {
-                if (!$(token)) {
+              /*  if (!$(token)) {
                     console.log('create token in house ', token, location, tokenInfo);
                     this.createToken(token, tokenInfo, location);
-                }
+                }*/
                 return result;
             }
             if (location.startsWith('supply_buttons') || location.startsWith('buttons')) {
@@ -1421,6 +1422,7 @@ define([
                 result.y = top;
                 result.location = 'pieces_' + getPart(location, 1);
                 if ($(token)) $(token).style.removeProperty('transform');
+                //result.onclick = this.onAnimal;
             }
             /* if (location.startsWith('action_zone')) {
                      result.inlinecoords = true;
@@ -1485,6 +1487,22 @@ define([
                 gameui.clientStateArgs.from = $(id).firstElementChild.id;
             }
             console.log('onHouse', gameui.clientStateArgs);
+        },
+
+        onAnimal: function (event) {
+            dojo.stopEvent(event);
+            var id = event.currentTarget.id;
+
+            switch (gameui.curstate) {
+                case 'populateNewFence':
+                    $(id).classList.toggle("selected");
+                    gameui.clientStateArgs.from = id;
+                    break;
+            
+                default:
+                    break;
+            } 
+            console.log('onAnimal', gameui.clientStateArgs);
         },
 
         ///////////////////////////////////////////////////

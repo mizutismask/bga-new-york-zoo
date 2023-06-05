@@ -375,23 +375,23 @@ $this->token_types = [
     'tooltip' => clienttranslate("Counter for remaining empty spaces. The first player who fill his board wins the game."),
   ],
   'flamingo' => [
-    'type' => FLAMINGO,
+    'type' => FLAMINGO. " animal",
     'name' => clienttranslate("Flamingo"),
   ],
   'meerkat' => [
-    'type' => MEERKAT,
+    'type' => MEERKAT. " animal",
     'name' => clienttranslate("Meerkat"),
   ],
   'fox' => [
-    'type' => FOX,
+    'type' => FOX. " animal",
     'name' => clienttranslate("Fox"),
   ],
   'penguin' => [
-    'type' => PENGUIN,
+    'type' => PENGUIN. " animal",
     'name' => clienttranslate("Penguin"),
   ],
   'kangaroo' => [
-    'type' => KANGAROO,
+    'type' => KANGAROO. " animal",
     'name' => clienttranslate("Kangaroo"),
   ],
 
