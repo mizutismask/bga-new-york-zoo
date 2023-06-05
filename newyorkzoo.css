@@ -168,7 +168,7 @@
     align-items: flex-start;
     width: 700px;
     height: 569px;
-    text-align: center;
+    
 }
 
 .tableau.own {
@@ -241,6 +241,7 @@
     left: 0px;
     color: #d1cece;
     font-weight: bold;
+    text-align: center;
 }
 
 .pieces {
