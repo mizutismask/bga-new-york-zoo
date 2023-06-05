@@ -527,6 +527,9 @@
     background-position: 19% 100%;
 }
 
+.done-image{
+    background: #4cc967 !important;
+}
 .done-image,
 .cancel-image {
     background-image: none;
@@ -541,7 +544,7 @@
 
 .done-image::after {
     content: '\2705';
-    font-size: 28px;
+    font-size: 25px;
 }
 .cancel-image {
     background-color: #e1caca;
