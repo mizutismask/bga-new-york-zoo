@@ -1050,6 +1050,7 @@ class NewYorkZoo extends EuroGame {
         $curbuttons = $this->tokens->getTokensInLocation("buttons_$order");
         $buttons = count($curbuttons);
         $canUseAny = false;
+        $canPopulate = !empty($this->getAnimalsByFenceHavingMinimalAnimalCount($order, 2)) || count($this->getFreeHouses($order))!=count($this->getPlayerHouses($order));
         $occupancy = $this->getOccupancyMatrix($order);
         foreach ($patches as $patch) {
             $moves = $this->arg_possibleMoves($patch, $order, null, $occupancy);
@@ -1063,7 +1064,7 @@ class NewYorkZoo extends EuroGame {
             $res['patches'][$patch]['moves'] = $moves;
             $res['patches'][$patch]['canPlace'] = $canPlace;
 
-            $canUse = $canPlace;
+            $canUse = $canPlace && $canPopulate;
             $res['patches'][$patch]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
@@ -1072,7 +1073,7 @@ class NewYorkZoo extends EuroGame {
         $res += ['advance' => $advance];
         $res += ['buttons' => $buttons];
 
-        $res['canPatch'] = true; //$canUseAny;
+        $res['canPatch'] = $canUseAny && $canPopulate;
         $res['maxMoves'] = $this->arg_elephantMove();
         $res['canGetAnimals'] = $this->arg_canGetAnimals($order); //$this->hasEmptyHouses(1)||$this->hasFenceAcceptinq();
 
