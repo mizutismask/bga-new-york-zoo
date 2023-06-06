@@ -1276,6 +1276,7 @@ class NewYorkZoo extends EuroGame {
     function arg_populateNewFence() {
         $args = [];
         $playerOrder = $this->getMostlyActivePlayerOrder();
+        $firstAnimal=true;
 
         $fenceId = $this->getGameStateValue(GS_LAST_FENCE_PLACED);
         $fenceTokenKey = $this->getFenceTokenKey($fenceId);
@@ -1294,11 +1295,12 @@ class NewYorkZoo extends EuroGame {
 
         if ($fence["animal_type"] !== "none") { //mean we're placing a second animal, so we keep only those of the same type
             //remove animals of the wrong type
+            $firstAnimal=false;
             $args["possibleAnimals"] = $this->filterAnimalType($args["possibleAnimals"], $fence["animal_type"]);
         }
 
         $args["possibleTargets"] =  $this->getFenceSquares($fenceTokenKey);
-
+        $args["canDismiss"] = !$firstAnimal;
         self::dump('*******************arg_populateNewFence', $args);
         return $args;
     }
@@ -1307,6 +1309,9 @@ class NewYorkZoo extends EuroGame {
         return self::getUniqueValueFromDB("SELECT token_key FROM fence where id = $fenceTechId");
     }
 
+    /**
+     * Place animals after taking them.
+     */
     function arg_placeAnimal() {
         $player_id = $this->getActivePlayerId();
         $order = $this->getPlayerPosition($player_id);

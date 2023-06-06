@@ -53,9 +53,9 @@ class PatchManager {
             gameui.clientStateArgs.to = dropNode.id;
             gameui.ajaxClientStateAction();
         } else if (gameui.curstate === 'populateNewFence') {
-            $(id).classList.toggle("selected");
-                gameui.clientStateArgs.to = id;
-                gameui.ajaxClientStateAction();
+            $(id).classList.toggle('selected');
+            gameui.clientStateArgs.to = id;
+            gameui.ajaxClientStateAction();
             //gameui.startActionTimer("place_animal", 3, 1);
         } else if (gameui.curstate === 'chooseFence') {
             dojo.toggleClass(dropNode.id, 'animal-target-image');
@@ -703,7 +703,7 @@ define([
                 var location = tokenInfo.location;
                 if (location.startsWith('action_zone') && mat.w > mat.h) {
                     //rotate to minimize board width needed
-                    dojo.addClass(token, 'minimized');
+                    // dojo.addClass(token, 'minimized');
                 }
                 dojo.setAttr(token, {
                     'data-order': this.getTokenState(token),
@@ -759,7 +759,7 @@ define([
                 }*/
             this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
             this.connectClass('house', 'onclick', 'onHouse');
-            
+
             document.querySelectorAll(`.tableau_${gameui.player_no} .pieces .animal`).forEach((item) => {
                 item.addEventListener('click', (event) => this.onAnimal(event), false);
             });
@@ -1076,15 +1076,16 @@ define([
                 },
                 'blue'
             );
-
-            gameui.addImageActionButton(
-                'c',
-                _('Dismiss'),
-                () => {
-                    gameui.ajaxClientStateAction('dismiss');
-                },
-                'blue'
-            );
+            if (args.canDismiss) {
+                gameui.addImageActionButton(
+                    'c',
+                    _('Dismiss'),
+                    () => {
+                        gameui.ajaxClientStateAction('dismiss');
+                    },
+                    'blue'
+                );
+            }
         },
 
         onUpdateActionButtons_placeAnimalFromHouse: function (args) {
@@ -1394,7 +1395,7 @@ define([
                 return result;
             }
             if (location.startsWith('house')) {
-              /*  if (!$(token)) {
+                /*  if (!$(token)) {
                     console.log('create token in house ', token, location, tokenInfo);
                     this.createToken(token, tokenInfo, location);
                 }*/
@@ -1495,13 +1496,13 @@ define([
 
             switch (gameui.curstate) {
                 case 'populateNewFence':
-                    $(id).classList.toggle("selected");
+                    $(id).classList.toggle('selected');
                     gameui.clientStateArgs.from = id;
                     break;
-            
+
                 default:
                     break;
-            } 
+            }
             console.log('onAnimal', gameui.clientStateArgs);
         },
 
