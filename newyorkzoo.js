@@ -978,6 +978,20 @@ define([
             this.inherited(arguments);
         },
 
+        onEnteringState_chooseFence(args) {
+            if (args['bonusBreeding']) {
+                if (this.isCurrentPlayerActive()) {
+                    this.setDescriptionOnMyTurn(
+                        _('Bonus breeding : ${you} can choose a fence that has not already breed this turn')
+                    );
+                } else {
+                    this.setDescriptionOnOthersTurn(
+                        _('Bonus breeding : ${actplayer} can choose a fence that has not already breed this turn')
+                    );
+                }
+            }
+        },
+
         onLeavingState: function (stateName) {
             this.inherited(arguments);
             if (!this.on_client_state) {
@@ -1119,7 +1133,8 @@ define([
             gameui.clientStateArgs.action = 'chooseFences';
             gameui.clientStateArgs.squares = [];
             console.log('squaresByFence', args);
-            var squaresByFence = Object.entries(args);
+            var squaresByFence = Object.entries(args['squares']);
+
             squaresByFence.forEach(([fence, squares]) => {
                 squares.forEach((square) => {
                     dojo.addClass(square, 'active_slot');

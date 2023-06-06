@@ -30,6 +30,7 @@ if (!defined('OFFSET')) {
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
     define("GS_BREEDING", "breeding");
+    define("GS_BONUS_BREEDING", "bonusBreeding");
     define("GS_ANIMAL_TO_KEEP", "animalToKeep");
     define("GS_LAST_FENCE_PLACED", "lastFencePlaced");
     define("GS_FROM", "from");
@@ -66,6 +67,7 @@ class NewYorkZoo extends EuroGame {
             GS_BREED_TRIGGER => 17, //player who triggered breeding
             GS_BREED2_TO => 18, //destination fence for 2nd breeding
             GS_RESOLVING_BREEDING => 19, //0=no breeding, 1 or 2=order of the breeding being resolved
+            GS_BONUS_BREEDING => 20, //boolean
         ));
 
         $this->tokens = new Tokens();
@@ -118,6 +120,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_BREED_TRIGGER, 0);
             self::setGameStateInitialValue(GS_BREED2_TO, 0);
             self::setGameStateInitialValue(GS_RESOLVING_BREEDING, 0);
+            self::setGameStateInitialValue(GS_BONUS_BREEDING, 0);
 
             // Init game statistics
             // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -947,7 +950,7 @@ class NewYorkZoo extends EuroGame {
             $foundFences = [];
             foreach ($squaresIds as $i => $square) {
                 $keyFound = false;
-                foreach ($args as $fenceKey => $squares) {
+                foreach ($args["squares"] as $fenceKey => $squares) {
                     if ($keyFound === false) {
                         $keyFound = array_search($square, $squares);
                         if ($keyFound !== false) {
@@ -1050,7 +1053,7 @@ class NewYorkZoo extends EuroGame {
         $curbuttons = $this->tokens->getTokensInLocation("buttons_$order");
         $buttons = count($curbuttons);
         $canUseAny = false;
-        $canPopulate = !empty($this->getAnimalsByFenceHavingMinimalAnimalCount($order, 2)) || count($this->getFreeHouses($order))!=count($this->getPlayerHouses($order));
+        $canPopulate = !empty($this->getAnimalsByFenceHavingMinimalAnimalCount($order, 2)) || count($this->getFreeHouses($order)) != count($this->getPlayerHouses($order));
         $occupancy = $this->getOccupancyMatrix($order);
         foreach ($patches as $patch) {
             $moves = $this->arg_possibleMoves($patch, $order, null, $occupancy);
@@ -1276,7 +1279,7 @@ class NewYorkZoo extends EuroGame {
     function arg_populateNewFence() {
         $args = [];
         $playerOrder = $this->getMostlyActivePlayerOrder();
-        $firstAnimal=true;
+        $firstAnimal = true;
 
         $fenceId = $this->getGameStateValue(GS_LAST_FENCE_PLACED);
         $fenceTokenKey = $this->getFenceTokenKey($fenceId);
@@ -1295,7 +1298,7 @@ class NewYorkZoo extends EuroGame {
 
         if ($fence["animal_type"] !== "none") { //mean we're placing a second animal, so we keep only those of the same type
             //remove animals of the wrong type
-            $firstAnimal=false;
+            $firstAnimal = false;
             $args["possibleAnimals"] = $this->filterAnimalType($args["possibleAnimals"], $fence["animal_type"]);
         }
 
@@ -1426,10 +1429,12 @@ class NewYorkZoo extends EuroGame {
     }
 
     function arg_chooseFences() {
+        $args = [];
         $playerOrder = $this->getMostlyActivePlayerOrder();
         $anmlType = $this->getAnimalName(self::getGameStateValue(GS_BREEDING));
-        $squares = $this->getFreeSquaresAvailableForBreeding($playerOrder, $anmlType);
-        return $squares;
+        $args["squares"] = $this->getFreeSquaresAvailableForBreeding($playerOrder, $anmlType);
+        $args["bonusBreeding"] = self::getGameStateValue(GS_BONUS_BREEDING);
+        return $args;
     }
 
     function arg_keep_animal() {
@@ -1477,6 +1482,7 @@ class NewYorkZoo extends EuroGame {
     function st_playerTurn() {
         $this->dbResetAllFenceAnimalsAddedNumber(0);
         self::setGameStateValue(GS_BREEDING, 0);
+        self::setGameStateValue(GS_BONUS_BREEDING, 0);
         $args = $this->arg_playerTurn();
         $canPatch = $args['canPatch'];
         //$this->warn("st_playerTurn canPatch='".$canPatch."' pl=$player_id ".toJson($args)."|");
@@ -1509,6 +1515,7 @@ class NewYorkZoo extends EuroGame {
         }
         //everyone has bred, see if bonus breeding needed
         if ($playerCount === 2 || $playerCount === 3) {
+            self::setGameStateValue(GS_BONUS_BREEDING, 1);
             $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
         } else {
             self::setGameStateValue(GS_BREEDING, 0);
@@ -1538,6 +1545,7 @@ class NewYorkZoo extends EuroGame {
         }
         //everyone has bred
         self::setGameStateValue(GS_BREEDING, 0);
+        self::setGameStateValue(GS_BONUS_BREEDING, 0);
         //self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
         $this->dbUpdatePlayers("player_has_bred", 0);
         $this->gamestate->changeActivePlayer($triggerPlayer);
