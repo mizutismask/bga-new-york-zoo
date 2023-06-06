@@ -262,6 +262,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 			}
 			return '000000';
 		},
+		
 		/**
 		 * This method will remove all inline style added to element that affect positioning
 		 */
@@ -469,7 +470,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 		 */
 		ajaxClientStateAction: function (action) {
 			var args = this.clientStateArgs;
-
+			console.log("ajaxClientStateAction " , this.clientStateArgs, action);
 			if (typeof action == 'undefined') {
 				action = args.action;
 			}
@@ -618,6 +619,20 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 			return you;
 		},
 
+		divActivePlayer: function (args) {
+			var color = "black";
+			var color_bg = "";
+			if (this.gamedatas.players[args.actplayerId]) {
+				color = this.gamedatas.players[args.actplayerId].color;
+			}
+			if (this.gamedatas.players[args.actplayerId] && this.gamedatas.players[args.actplayerId].color_back) {
+				color_bg = "background-color:#" + this.gamedatas.players[args.actplayerId].color_back + ";"; 
+
+			}
+			var elt = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + __("lang_mainsite", args.actplayer) + "</span>";
+			return elt;
+		},
+
 		mergeArgs: function (moreargs) {
 			// take game args, add you, player_color and moreargs
 			var tpl = dojo.clone(this.gamedatas.gamestate.args);
@@ -640,8 +655,22 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 			tpl.player_color = this.player_color;
 			return tpl;
 		},
-		setDescriptionOnMyTurn: function (text, moreargs) {
-			this.gamedatas.gamestate.descriptionmyturn = text;
+		setDescriptionOnMyTurn: function (text, moreargs) { 
+			this.setDescriptionOnAnyTurn(text, "descriptionmyturn", moreargs);
+		},
+		setDescriptionOnOthersTurn: function (text, moreargs) { 
+			if (!moreargs) {
+				moreargs = [];
+			}
+			if (!moreargs.hasOwnProperty("actplayer")) {
+				moreargs.actplayer = this.gamedatas.players[this.gamedatas.gamestate.active_player].name;
+				moreargs.actplayerId =this.gamedatas.players[this.gamedatas.gamestate.active_player].id;
+			}
+			this.setDescriptionOnAnyTurn(text, "description", moreargs);
+		},
+
+		setDescriptionOnAnyTurn: function (text, descriptionType, moreargs) {
+			this.gamedatas.gamestate[descriptionType] = text;
 			// this.updatePageTitle();
 			//console.log('in',   this.gamedatas.gamestate.args, moreargs);
 			var tpl = dojo.clone(this.gamedatas.gamestate.args);
@@ -659,8 +688,15 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 			// console.log('tpl', tpl);
 			var title = "";
 			if (text !== null) {
-				tpl.you = this.divYou();
-			}
+                tpl.you = this.divYou();
+                if (
+                    descriptionType === 'description' &&
+                    moreargs &&
+                    moreargs.hasOwnProperty('actplayer') &&
+                    moreargs.actplayerId != this.player_id
+                )
+                    tpl.actplayer = this.divActivePlayer(moreargs);
+            }
 			if (text !== null) {
 				title = this.format_string_recursive(text, tpl);
 			}
@@ -669,6 +705,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 			} else {
 				this.setMainTitle(title);
 			}
+		
 		},
 		getTranslatable: function (key, args) {
 			if (typeof args.i18n == 'undefined') {
@@ -1003,7 +1040,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 				if (args.noa) {
 					noAnnimation = true;
 				}
-				// console.log(token + ": " + " -place-> " + place + " " + tokenInfo.state);
+				 console.log(token + ": " + " -place-> " + place + " " + tokenInfo.state);
 				var tokenNode = $(token);
 				if (place == "destroy") {
 					if (tokenNode) {
