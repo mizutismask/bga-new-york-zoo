@@ -1433,7 +1433,7 @@ class NewYorkZoo extends EuroGame {
         $playerOrder = $this->getMostlyActivePlayerOrder();
         $anmlType = $this->getAnimalName(self::getGameStateValue(GS_BREEDING));
         $args["squares"] = $this->getFreeSquaresAvailableForBreeding($playerOrder, $anmlType);
-        $args["bonusBreeding"] = self::getGameStateValue(GS_BONUS_BREEDING);
+        $args["bonusBreeding"] = intval(self::getGameStateValue(GS_BONUS_BREEDING))!=0;
         return $args;
     }
 
