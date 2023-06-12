@@ -306,6 +306,12 @@
     grid-row: 1 / 1;
 }
 
+.patch {
+	transform-origin: calc(var(--cellWidth) / 2) calc(var(--cellWidth) / 2);
+	height: min-content;
+    width: min-content;	
+}
+
 .patch-face {
     top: 0;
     left: 0;
