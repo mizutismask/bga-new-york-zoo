@@ -699,10 +699,10 @@ class NewYorkZoo extends EuroGame {
         $canGo  = $this->arg_canGetAnimals($order);
         $this->userAssertTrue(self::_("Cannot place those animals anywhere"), array_search($animalZone, $canGo) !== false);
 
-        $animal1 = $this->getAnimalType($this->actionStripZones[$animalZone]['animals'][0]);
-        $animal2 = $this->getAnimalType($this->actionStripZones[$animalZone]['animals'][1]);
-        self::setGameStateValue(GS_ANIMAL_TO_PLACE, $animal1);
-        self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, $animal2);
+        $animal1 = $this->actionStripZones[$animalZone]['animals'][0];
+        $animal2 = $this->actionStripZones[$animalZone]['animals'][1];
+        self::setGameStateValue(GS_ANIMAL_TO_PLACE, $this->getAnimalType($animal1));
+        self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, $this->getAnimalType($animal2));
         $this->insertGetAnimalsContextLog($animal1, $animal2);
 
         $this->saction_MoveNeutralToken($animalZone);
@@ -967,18 +967,23 @@ class NewYorkZoo extends EuroGame {
                     $notBreeding[] = $player;
                 }
             }
-            self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
-            self::setGameStateValue(GS_RESOLVING_BREEDING, 1);
-            $this->dbInsertContextLog(BREEDING, $this->getAnimalType($animalType));
-            $this->dbResetAllFenceAnimalsAddedNumber(0);
+            
             self::notifyAllPlayers("msg", clienttranslate('Breeding time for ${animals}'), array(
                 'animals' => $animalType
             ));
-            foreach ($notBreeding as $player) {
-                $this->notifyAllPlayers("msg", clienttranslate('${player_name} has no fence where to breed ${animals}'), array(
-                    'animals' => $animalType,
-                    "player_name" =>$player["player_name"],
-                ));
+            if ($needed) {
+                self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
+                self::setGameStateValue(GS_RESOLVING_BREEDING, 1);
+                $this->dbInsertContextLog(BREEDING, $animalType);
+                $this->dbResetAllFenceAnimalsAddedNumber(0);
+                foreach ($notBreeding as $player) {
+                    $this->notifyAllPlayers("msg", clienttranslate('${player_name} has no fence where to breed ${animals}'), array(
+                        'animals' => $animalType,
+                        "player_name" => $player["player_name"],
+                    ));
+                }
+            } else {
+                $this->notifyAllPlayers("msg", clienttranslate('No one has any fence where to breed ${animals}'), array('animals' => $animalType));
             }
         }
         return $needed;
@@ -992,14 +997,14 @@ class NewYorkZoo extends EuroGame {
         $to = "";
         //self::dump('*******************GS_TO ', self::getGameStateValue(GS_TO));
         //self::dump('*******************GS_RESOLVING_BREEDING ', self::getGameStateValue(GS_RESOLVING_BREEDING));
-       // self::dump('*******************GS_BREED2_TO ', self::getGameStateValue(GS_BREED2_TO));
+        // self::dump('*******************GS_BREED2_TO ', self::getGameStateValue(GS_BREED2_TO));
         if (self::getGameStateValue(GS_TO) && (self::getGameStateValue(GS_RESOLVING_BREEDING) == 1 || self::getGameStateValue(GS_BONUS_BREEDING) == 1)) {
             $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
             self::dump('*******************action_placeAnimalFromHouse 1 ', $to);
         } else if (self::getGameStateValue(GS_RESOLVING_BREEDING) == 2) {
             $to = "patch_" . self::getGameStateValue(GS_BREED2_TO); //fence key number
             self::dump('*******************action_placeAnimalFromHouse 2 ', $to);
-        }else{
+        } else {
             $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
         }
         $squares = $this->getFenceSquares($to);
