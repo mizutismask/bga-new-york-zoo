@@ -992,18 +992,20 @@ class NewYorkZoo extends EuroGame {
         $to = "";
         //self::dump('*******************GS_TO ', self::getGameStateValue(GS_TO));
         //self::dump('*******************GS_RESOLVING_BREEDING ', self::getGameStateValue(GS_RESOLVING_BREEDING));
-        //self::dump('*******************GS_BREED2_TO ', self::getGameStateValue(GS_BREED2_TO));
+       // self::dump('*******************GS_BREED2_TO ', self::getGameStateValue(GS_BREED2_TO));
         if (self::getGameStateValue(GS_TO) && (self::getGameStateValue(GS_RESOLVING_BREEDING) == 1 || self::getGameStateValue(GS_BONUS_BREEDING) == 1)) {
             $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
             self::dump('*******************action_placeAnimalFromHouse 1 ', $to);
         } else if (self::getGameStateValue(GS_RESOLVING_BREEDING) == 2) {
             $to = "patch_" . self::getGameStateValue(GS_BREED2_TO); //fence key number
             self::dump('*******************action_placeAnimalFromHouse 2 ', $to);
+        }else{
+            $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
         }
         $squares = $this->getFenceSquares($to);
         $squares = $this->filterFreeSquares($squares);
         $toSquare = array_pop($squares);
-        //self::dump('*******************action_placeAnimalFromHouse to ', $patch);
+        //self::dump('*******************action_placeAnimalFromHouse to ', $to);
         $this->saction_placeAnimal(null, $toSquare, $animalType, $animal["key"]);
     }
 
