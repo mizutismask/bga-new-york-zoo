@@ -758,7 +758,7 @@ class NewYorkZoo extends EuroGame {
         $state = $this->gamestate->state();
         $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name}', []);
         $patch = $this->getPatchFromSquare($to);
-        
+
         switch ($state['name']) {
             case 'keepAnimalFromFullFence':
                 self::setGameStateValue(GS_ANIMAL_TO_KEEP, 0);
@@ -861,7 +861,7 @@ class NewYorkZoo extends EuroGame {
         $context = $this->dbGetLastContextToResolve();
         if ($context && $context["action"] == $action) {
             $this->dbResolveContextLog($context["id"]);
-            self::dump('*******************Last context resolved', $context);
+            self::dump('*******************Context just resolved', $context);
         } else {
             self::dump('*******************Last context not as expected', $action);
         }
@@ -957,11 +957,15 @@ class NewYorkZoo extends EuroGame {
             $animalType = $this->getAnimalName($needed);
             $needed = false;
             $players = $this->getPlayersInOrder($currentPlayerId);
+            $notBreeding = [];
             foreach ($players as $playerId =>  $player) {
                 $squaresByFence = $this->getFreeSquaresAvailableForBreeding($this->getPlayerPosition($playerId), $animalType);
                 $nb = count(array_keys($squaresByFence));
                 $this->dbUpdatePlayer($playerId, "player_breeding_remaining", $nb);
                 $needed = $needed || $nb > 0;
+                if ($nb == 0) {
+                    $notBreeding[] = $player;
+                }
             }
             self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
             self::setGameStateValue(GS_RESOLVING_BREEDING, 1);
@@ -970,6 +974,11 @@ class NewYorkZoo extends EuroGame {
             self::notifyAllPlayers("msg", clienttranslate('Breeding time for ${animals}'), array(
                 'animals' => $animalType
             ));
+            foreach ($notBreeding as $player) {
+                $this->notifyWithName("msg", clienttranslate('${player_name} has no fence where to breed ${animals}'), array(
+                    'animals' => $animalType
+                ));
+            }
         }
         return $needed;
     }
@@ -1769,20 +1778,27 @@ class NewYorkZoo extends EuroGame {
         $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
         $players = array_values($this->getPlayersInOrder($triggerPlayer));
         $i = 0;
+        self::dump('*****************getPlayersInOrder**', $players);
         while ($i < count($players)) {
             $p = $players[$i];
             $playerId = $p["player_id"];
             $playerOrder = $p["player_no"];
             $hasBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bred");
             $hasBonusBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bonus_bred");
+            self::dump('*****************hasBred**', $hasBred);
+            self::dump('****************hasBonusBred**', $hasBonusBred);
             if (!$hasBonusBred) {
-                if ($hasBred == 1 && !empty($this->getFreeSquaresAvailableForBonusBreeding($playerOrder))) {
+                self::dump('*****************NOT hasBonusBred**', $p);
+                if ($hasBred && !empty($this->getFreeSquaresAvailableForBonusBreeding($playerOrder))) {
+                    self::dump('*****************CAN BonusBred**', $playerId);
                     if (intval($playerId) != $triggerPlayer) {
                         $this->gamestate->changeActivePlayer($playerId);
+                        self::dump('*****************changeActivePlayer**', $playerId);
                     }
                     $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
                     return;
                 } else {
+                    $this->dbUpdatePlayer($playerId, "player_has_bonus_bred", 1);
                     self::notifyAllPlayers("msg", clienttranslate('${player_name} can not use the bonus breeding'), array(
                         'player_name' => self::getPlayerName($playerId),
                     ));
