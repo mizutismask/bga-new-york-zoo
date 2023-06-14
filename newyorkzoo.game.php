@@ -1648,7 +1648,7 @@ class NewYorkZoo extends EuroGame {
     function getFreeSquaresAvailableForBonusBreeding($playerOrder) {
         $fences = $this->getFencesInfo($playerOrder);
         $fences = array_filter($fences, function ($f) {
-            return $f["animals_added"] == 0 && count($f["freeSquares"]) >= 0; //todo check there is 2 parents
+            return $f["animals_added"] == 0 && count($f["freeSquares"]) >= 0 && count($f["animals"]) >= 2;
         });
         $freeSquares = [];
         foreach ($fences as $fenceKey => $fence) {
