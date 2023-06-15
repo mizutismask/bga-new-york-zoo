@@ -30,6 +30,7 @@ if (!defined('OFFSET')) {
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
     define("GS_BREEDING", "breeding");
+    define("GS_BREEDING_2_LONG_MOVE", "breeding2LongMove");
     define("GS_BONUS_BREEDING", "bonusBreeding");
     define("GS_ANIMAL_TO_KEEP", "animalToKeep");
     define("GS_LAST_FENCE_PLACED", "lastFencePlaced");
@@ -80,6 +81,7 @@ class NewYorkZoo extends EuroGame {
             GS_BREED2_TO => 18, //destination fence for 2nd breeding
             GS_RESOLVING_BREEDING => 19, //0=no breeding, 1 or 2=order of the breeding being resolved
             GS_BONUS_BREEDING => 20, //boolean
+            GS_BREEDING_2_LONG_MOVE => 21, //when fences spaces are empty, a 4 move can cross 2 birth lines
         ));
 
         $this->tokens = new Tokens();
@@ -129,6 +131,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_ANIMAL_TO_PLACE, 0);
             self::setGameStateInitialValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
             self::setGameStateInitialValue(GS_BREEDING, 0);
+            self::setGameStateInitialValue(GS_BREEDING_2_LONG_MOVE, 0);
             self::setGameStateInitialValue(GS_BREED_TRIGGER, 0);
             self::setGameStateInitialValue(GS_BREED2_TO, 0);
             self::setGameStateInitialValue(GS_RESOLVING_BREEDING, 0);
@@ -675,15 +678,21 @@ class NewYorkZoo extends EuroGame {
         $spaces = array_search($pos, $this->getNextActionZones()) + 1;
 
         $this->dbSetTokenLocation('token_neutral', $pos, null, '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
-        //breeding ?
+        //breedings ?
+        $i = 0;
+        self::setGameStateValue(GS_BREEDING, 0);
+        self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
+
         foreach ($this->birthZones as $info) {
             $limit = $info['triggerZone'];
             if ($old < $limit && $new >= $limit) {
                 $animal = $info['animal'];
-                self::setGameStateValue(GS_BREEDING, $this->getAnimalType($animal));
-                break;
-            } else {
-                self::setGameStateValue(GS_BREEDING, 0);
+                if ($i == 0) {
+                    self::setGameStateValue(GS_BREEDING, $this->getAnimalType($animal));
+                } else {
+                    self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, $this->getAnimalType($animal));
+                }
+                $i++;
             }
         }
 
@@ -951,7 +960,18 @@ class NewYorkZoo extends EuroGame {
         return $nextState;
     }
     function isBreedingNeeded() {
-        $needed = self::getGameStateValue(GS_BREEDING);
+        $normalBreeding  = $this->isAnyBreedingNeeded(self::getGameStateValue(GS_BREEDING));
+        $longMoveBreeding  = $this->isAnyBreedingNeeded(self::getGameStateValue(GS_BREEDING_2_LONG_MOVE));
+        if (!$normalBreeding && $longMoveBreeding) {
+            //slide the long move breeding value into normal breeding to follow the same path of actions resolving
+            self::setGameStateValue(GS_BREEDING, self::getGameStateValue(GS_BREEDING_2_LONG_MOVE));
+            self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
+        }
+        return $normalBreeding || $longMoveBreeding;
+    }
+
+    function isAnyBreedingNeeded($animalToBreed) {
+        $needed = $animalToBreed;
         $currentPlayerId = $this->getMostlyActivePlayerId();
         if ($needed) {
             $animalType = $this->getAnimalName($needed);
@@ -967,7 +987,7 @@ class NewYorkZoo extends EuroGame {
                     $notBreeding[] = $player;
                 }
             }
-            
+
             self::notifyAllPlayers("msg", clienttranslate('Breeding time for ${animals}'), array(
                 'animals' => $animalType
             ));
@@ -1010,7 +1030,9 @@ class NewYorkZoo extends EuroGame {
         $squares = $this->getFenceSquares($to);
         $squares = $this->filterFreeSquares($squares);
         $toSquare = array_pop($squares);
-        //self::dump('*******************action_placeAnimalFromHouse to ', $to);
+        self::dump('*******************action_placeAnimalFromHouse frorm ', $from);
+        self::dump('*******************action_placeAnimalFromHouse animal ', $animal);
+        self::dump('*******************action_placeAnimalFromHouse to ', $to);
         $this->saction_placeAnimal(null, $toSquare, $animalType, $animal["key"]);
     }
 
@@ -1095,7 +1117,10 @@ class NewYorkZoo extends EuroGame {
                     }
                 }
                 break;
-
+            case "populateNewFence":
+                $this->resolveLastContextIfAction(ACTION_POPULATE_FENCE);
+                $this->changeNextStateFromContext();
+                break;
             default:
                 //animal action zone
                 self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
@@ -1266,7 +1291,7 @@ class NewYorkZoo extends EuroGame {
             foreach ($this->animals as $type) {
                 $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "square_" . $order));
             }
-            $animalCount += $this->tokens->countTokensInLocation($type, "house_" . $player_id);
+            $animalCount += $this->tokens->countTokensInLocation("house_" . $player_id);
             $this->dbSetAuxScore($player_id, $animalCount);
         }
     }
@@ -1775,6 +1800,7 @@ class NewYorkZoo extends EuroGame {
             $this->dbInsertContextLog(BONUS_BREEDING);
             self::notifyAllPlayers("msg", clienttranslate('Bonus breeding time'), []);
             $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
+            // $this->gamestate->changeActivePlayer($triggerPlayer);
         } else {
             $this->dbUpdatePlayers("player_has_bred", 0);
             $this->gamestate->changeActivePlayer($triggerPlayer);
@@ -1784,6 +1810,7 @@ class NewYorkZoo extends EuroGame {
 
     function st_gameNextBonusBreeder() {
         $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
+        $this->gamestate->changeActivePlayer($triggerPlayer);
         $players = array_values($this->getPlayersInOrder($triggerPlayer));
         $i = 0;
         self::dump('*****************getPlayersInOrder**', $players);
