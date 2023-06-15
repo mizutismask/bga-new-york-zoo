@@ -1631,8 +1631,12 @@ define([
         notif_breedingTime(notif) {
             let animal = notif.args.animal;
             const notifDiv = $("breeding_time_" + this.playerOrder);
-            notifDiv.classList.add("notif-" + animal, "animated");
-           // setTimeout(() => notifDiv.classList.remove("animated"),1000);
+            let classes = [("notif-" + animal), "animated"];
+            if (Object.values(notif.args.cantBreed).indexOf(this.player_id+"") !== -1) {
+                classes.push("disabled");
+            }
+            notifDiv.classList.add(...classes);
+            setTimeout(() => notifDiv.classList.remove("animated", "disabled"), 1000);
         }
     });
 });

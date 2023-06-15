@@ -870,6 +870,9 @@
     animation: rotate-scale-up 1s linear both;
     display: block;
 }
+.breeding-notif.animated.disabled {
+    filter: grayscale(.8);
+}
 .breeding-notif.notif-flamingo {
     background-position: 0%;
 }
