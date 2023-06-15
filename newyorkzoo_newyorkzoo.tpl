@@ -83,6 +83,9 @@
 				<!--</div> -->
 			</div>
 			<span class="player_name">{PLAYER_NAME}</span>
+			<div id="breeding_time_{ORDER}_wrapper" class="breeding_time_wrapper">
+				<div id="breeding_time_{ORDER}" class="breeding-notif breeding_time_{ORDER}"></div>
+			</div>
 		</div>
 
 		<!-- END player_board -->

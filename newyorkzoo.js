@@ -617,6 +617,9 @@ define([
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
+            
+            this.playerOrder = gamedatas.players[this.player_id].no;
+
             console.log('Ending game setup');
         },
 
@@ -1597,6 +1600,12 @@ define([
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             //
+            var _this = this;
+            var notifs = [['breedingTime', 1000]];
+            notifs.forEach(function (notif) {
+                dojo.subscribe(notif[0], _this, 'notif_' + notif[0]);
+                _this.notifqueue.setSynchronous(notif[0], notif[1]);
+            });
         },
 
         // TODO: from this point and below, you can write your game notifications handling methods
@@ -1618,5 +1627,12 @@ define([
         notif_eofnet: function (notif) {
             this.adjustScrollMap();
         },
+
+        notif_breedingTime(notif) {
+            let animal = notif.args.animal;
+            const notifDiv = $("breeding_time_" + this.playerOrder);
+            notifDiv.classList.add("notif-" + animal, "animated");
+           // setTimeout(() => notifDiv.classList.remove("animated"),1000);
+        }
     });
 });

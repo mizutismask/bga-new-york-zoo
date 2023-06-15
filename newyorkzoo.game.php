@@ -988,8 +988,8 @@ class NewYorkZoo extends EuroGame {
                 }
             }
 
-            self::notifyAllPlayers("msg", clienttranslate('Breeding time for ${animals}'), array(
-                'animals' => $animalType
+            self::notifyAllPlayers("breedingTime", clienttranslate('Breeding time for ${animal}'), array(
+                'animal' => $animalType
             ));
             if ($needed) {
                 self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
@@ -1798,7 +1798,7 @@ class NewYorkZoo extends EuroGame {
         if ($playerCount === 2 || $playerCount === 3) {
             self::setGameStateValue(GS_BONUS_BREEDING, 1);
             $this->dbInsertContextLog(BONUS_BREEDING);
-            self::notifyAllPlayers("msg", clienttranslate('Bonus breeding time'), []);
+            self::notifyAllPlayers("breedingTime", clienttranslate('Bonus breeding time'), ["bonus"=>true]);
             $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
             // $this->gamestate->changeActivePlayer($triggerPlayer);
         } else {
