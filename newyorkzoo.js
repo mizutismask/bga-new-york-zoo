@@ -1028,12 +1028,15 @@ define([
 
         onUpdateActionButtons_playerTurn: function (args) {
             this.clientStateArgs.action = 'place';
-            var canBuy = Object.keys(args.patches);
-            canBuy.forEach((id) => {
-                var canUse = args.patches[id].canUse;
-                dojo.addClass(id, 'active_slot');
-                if (canUse == false) dojo.addClass(id, 'cannot_use');
-            });
+
+            if (args.hasOwnProperty('patches')) {
+                var canBuy = Object.keys(args.patches);
+                canBuy.forEach((id) => {
+                    var canUse = args.patches[id].canUse;
+                    dojo.addClass(id, 'active_slot');
+                    if (canUse == false) dojo.addClass(id, 'cannot_use');
+                });
+            }
 
             args.canGetAnimals.forEach((id) => {
                 console.log('args.canGetAnimals', id);
