@@ -1846,6 +1846,7 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_BONUS_BREEDING, 0);
         $this->resolveLastContextIfAction(BONUS_BREEDING);
         //self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
+        $this->dbUpdatePlayers("player_has_bred", 0);
         $this->dbUpdatePlayers("player_has_bonus_bred", 0);
         $this->gamestate->changeActivePlayer($triggerPlayer);
         $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
