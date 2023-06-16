@@ -617,8 +617,8 @@ define([
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
-            
             this.playerOrder = gamedatas.players[this.player_id].no;
+            $(`bonus_breeding_time_${this.playerOrder}`).innerHTML = _("Bonus breeding");
 
             console.log('Ending game setup');
         },
@@ -1629,14 +1629,23 @@ define([
         },
 
         notif_breedingTime(notif) {
-            let animal = notif.args.animal;
-            const notifDiv = $("breeding_time_" + this.playerOrder);
-            let classes = [("notif-" + animal), "animated"];
-            if (Object.values(notif.args.cantBreed).indexOf(this.player_id+"") !== -1) {
-                classes.push("disabled");
+            let notifDiv = $('breeding_time_' + this.playerOrder);
+            const bonus = notif.args.bonus;
+            let classes = ['animated'];
+            let animal = '';
+            if (bonus) {
+                classes.push('bonus');
+                notifDiv = $('bonus_breeding_time_' + this.playerOrder);
+            } else {
+                animal = notif.args.animal;
+                classes.push('notif-' + animal);
+                if (Object.values(notif.args.cantBreed).indexOf(this.player_id + '') !== -1) {
+                    classes.push('disabled');
+                }
             }
+            console.log("classes",classes);
             notifDiv.classList.add(...classes);
-            setTimeout(() => notifDiv.classList.remove("animated", "disabled"), 1000);
-        }
+            setTimeout(() => notifDiv.classList.remove('animated', 'disabled', 'bonus', 'notif-' + animal), 1000);
+        },
     });
 });

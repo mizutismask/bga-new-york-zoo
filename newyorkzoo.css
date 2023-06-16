@@ -866,9 +866,26 @@
 }
 .breeding-notif.animated {
     z-index:1000;
-    -webkit-animation: rotate-scale-up 0.65s linear both;
+    -webkit-animation: rotate-scale-up 1s linear both;
     animation: rotate-scale-up 1s linear both;
     display: block;
+}
+.breeding-notif.bonus {
+    background-image: none;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: x-large;
+    text-align: center;
+    color: navajowhite;
+    text-shadow: 3px 2px 0 #4d2f2f;
+}
+.breeding-notif.bonus.animated {
+    z-index:1000;
+    -webkit-animation: rotate-scale-up 1s linear both;
+    animation: rotate-scale-up 1s linear both;
+    display: flex;
 }
 .breeding-notif.animated.disabled {
     filter: grayscale(.8);

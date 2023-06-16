@@ -85,6 +85,7 @@
 			<span class="player_name">{PLAYER_NAME}</span>
 			<div id="breeding_time_{ORDER}_wrapper" class="breeding_time_wrapper">
 				<div id="breeding_time_{ORDER}" class="breeding-notif breeding_time_{ORDER}"></div>
+				<div id="bonus_breeding_time_{ORDER}" class="breeding-notif bonus"></div>
 			</div>
 		</div>
 

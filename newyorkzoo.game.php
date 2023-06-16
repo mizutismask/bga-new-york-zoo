@@ -991,6 +991,7 @@ class NewYorkZoo extends EuroGame {
             self::notifyAllPlayers("breedingTime", clienttranslate('Breeding time for ${animal}'), array(
                 'animal' => $animalType,
                 'cantBreed' => array_map(fn ($p) => $p["player_id"], $notBreeding),
+                'bonus' => false,
             ));
             if ($needed) {
                 self::setGameStateValue(GS_BREED_TRIGGER, $currentPlayerId);
