@@ -28,22 +28,18 @@
 require_once(APP_BASE_PATH . "view/common/game.view.php");
 define("CELL_WIDTH", 43);
 
-class view_newyorkzoo_newyorkzoo extends game_view
-{
-  function getGameName()
-  {
+class view_newyorkzoo_newyorkzoo extends game_view {
+  function getGameName() {
     return "newyorkzoo";
   }
 
-  function getTemplateName()
-  {
+  function getTemplateName() {
     return self::getGameName() . "_" . self::getGameName();
   }
 
 
 
-  function processPlayerBlock($player_id, $player, $player_count)
-  {
+  function processPlayerBlock($player_id, $player, $player_count) {
     $order = $player['player_no'];
     $name = $player['player_name'];
     global $g_user;
@@ -80,8 +76,7 @@ class view_newyorkzoo_newyorkzoo extends game_view
     ));
   }
 
-  function build_page($viewArgs)
-  {
+  function build_page($viewArgs) {
     // Get players & players number
     $players = $this->game->loadPlayersBasicInfos();
     $players_nbr = count($players);
@@ -95,12 +90,24 @@ class view_newyorkzoo_newyorkzoo extends game_view
     $this->tpl['PCOLOR'] = 'ffffff'; // spectator
     $current_player = $g_user->get_id();
 
+    $this->page->begin_block($template, "handMarket");
+
+    foreach ($players as $player_info) {
+      if (isset($players[$current_player])) { // may be not set if spectator
+        $this->page->insert_block("handMarket", array(
+          "PLAYER_ID" => $player_info['player_id'],
+          "OTHER_CLASSES"=> $player_info['player_id'] != $current_player? "opponent":"",
+        ));
+      }
+    }
+
     $this->page->begin_block($template, "patch");
     $this->page->begin_block($template, "patchcss");
     $CARDS_W = 1000;
     $CARDS_H = 1500;
     $COLS = 5;
     $CELL = CELL_WIDTH;
+
 
     foreach ($this->game->token_types as $id => &$info) {
       if (startsWith($id, 'patch')) {

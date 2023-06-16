@@ -71,6 +71,7 @@ class NewYorkZoo extends EuroGame {
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
+            FAST_GAME => 100, //2 players only
             GS_ANIMAL_TO_PLACE => 10, //animalType 1 from main action
             GS_OTHER_ANIMAL_TO_PLACE => 11,  //animalType 2 from main action
             GS_BREEDING => 12,
@@ -227,12 +228,26 @@ class NewYorkZoo extends EuroGame {
         }
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
-        if ($players_nbr == 2) {
+        if ($players_nbr == 2 && $this->isFastGame()) {
             $locations = $this->getPolyominoesLocationsOnBoard();
+            $removed = [];
             foreach ($locations as $loc) {
                 $patch = $this->tokens->getTokenOnTop(ACTION_ZONE_PREFIX . $loc, true, "patch");
                 $this->tokens->moveToken($patch["key"], "limbo");
-                //todo distribuer équitablement par couleur
+                $removed[] = $patch;
+            }
+            //deal evenly the removed patches by color
+            foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
+                $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
+                $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
+                self::dump('*******************color', $color);
+                self::dump('*******************removedColoredPatch', $removedColoredPatch);
+                for ($i = 0; $i < 3; $i++) {
+                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0]);
+                }
+                for ($i = 3; $i < 6; $i++) {
+                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1]);
+                }
             }
         }
         //place fake filler token at the top left corner
@@ -492,7 +507,7 @@ class NewYorkZoo extends EuroGame {
             $patches = $this->tokens->getTokensOfTypeInLocation('patch', ACTION_ZONE_PREFIX . $nextZone);
             if ($this->actionStripZones[ACTION_ZONE_PREFIX . $nextZone]['type'] == PATCH && !$patches) {
                 //empty patch zones do not count
-                self::dump("************no patch at******************", ACTION_ZONE_PREFIX . $nextZone);
+                //self::dump("************no patch at******************", ACTION_ZONE_PREFIX . $nextZone);
             } else {
                 $zones[] = ACTION_ZONE_PREFIX . $nextZone;
                 $moveCount++;
@@ -539,7 +554,7 @@ class NewYorkZoo extends EuroGame {
         $rotor = "${rotateZ}_$rotateY";
         return $rotor;
     }
-    
+
     /********** OPTIONS */
 
     public function isFastGame() {
@@ -1348,11 +1363,9 @@ class NewYorkZoo extends EuroGame {
         return $res;
     }
 
-    function arg_placeAttraction() {
+    function arg_possibleMovesByPatch($patches, $player_id) {
         $res = [];
-        $player_id = $this->getActivePlayerId();
         $playerOrder = $this->getPlayerPosition($player_id);
-        $patches = array_keys($this->tokens->getTokensInLocation("bonus_market"));
         $patches = $this->getUniqueMasks($patches);
         self::dump('*************arg_placeAttraction***patches***', $patches);
         $canUseAny = false;
@@ -1377,6 +1390,24 @@ class NewYorkZoo extends EuroGame {
         $res['canPatch'] = true; //$canUseAny;
         return $res;
     }
+
+    function arg_placeAttraction() {
+        $res = $this->arg_possibleMovesByPatch(array_keys($this->tokens->getTokensInLocation("bonus_market")), $this->getActivePlayerId());
+        return $res;
+    }
+
+    function arg_placeStartFences() {
+        $res = [];
+        $players = $this->loadPlayersBasicInfos();
+        foreach ($players as $player_id => $player_info) {
+            $res[$player_id] = $this->arg_possibleMovesByPatch(
+                array_keys($this->tokens->getTokensInLocation("hand_" . $player_id)),
+                $player_id
+            );
+        }
+        return $res;
+    }
+
 
     function arg_occupancyData($order) {
         $tokens = $this->tokens->getTokensOfTypeInLocation("patch", "square_${order}%");
@@ -1742,6 +1773,15 @@ class NewYorkZoo extends EuroGame {
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
+
+    function st_gameTurnStart() {
+        if ($this->isFastGame()) {
+            $this->gamestate->nextState(TRANSITION_PLACE_START_FENCES);
+        } else {
+            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+        }
+    }
+
     function st_gameTurnNextPlayer() {
         $endOfGame = false;
         $players = $this->loadPlayersBasicInfos();

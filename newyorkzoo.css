@@ -493,6 +493,14 @@
     filter: invert(100%) sepia() saturate(100000%);
 }
 
+.hand_market{
+    display: flex;justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.hand_market.opponent{
+    display: none;
+}
 .original .patch-face {
     opacity: 0.2;
 }

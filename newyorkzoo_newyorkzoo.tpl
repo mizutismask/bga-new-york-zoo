@@ -55,6 +55,10 @@
 	<div class="moveright"></div>
 </div>
 
+<!-- BEGIN handMarket -->
+<div id="hand_{PLAYER_ID}" class="hand_market market {OTHER_CLASSES}"></div>
+<!-- END handMarket -->
+
 <div id="central" class="central">
 
 		
@@ -95,6 +99,9 @@
 	
 </div>
 <div id="circle_market" class="circle_market"></div>
+
+
+
 <div id="bonus_market" class="bonus_market"></div>
 <div id="limbo" class="limbo">
 	<div id="rotate_control_template" class="rotate-image control-image"></div>

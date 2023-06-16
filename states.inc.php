@@ -50,11 +50,12 @@
 
 //    !! It is not a good idea to modify this file when a game is running !!
 if (!defined('STATE_END_GAME')) { // guard since this included multiple times
-    define("STATE_PLAYER_TURN", 2);
-    define("STATE_GAME_TURN_NEXT_PLAYER", 3);
-    define("STATE_PLAYER_GAME_END", 4);
-    define("STATE_PLAYER_PLACE_ANIMAL", 5);
-    define("STATE_PLAYER_PLACE_ATTRACTION", 6);
+    define("STATE_GAME_START", 2);
+    define("STATE_PLAYER_TURN", 3);
+    define("STATE_GAME_TURN_NEXT_PLAYER", 4);
+    define("STATE_PLAYER_GAME_END", 5);
+    define("STATE_PLAYER_PLACE_ANIMAL", 6);
+    define("STATE_PLAYER_PLACE_ATTRACTION", 7);
     define("STATE_PLAYER_CHOOSE_BREEDING_FENCE", 8);
     define("STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE", 9);
     define("STATE_PLAYER_POPULATE_NEW_FENCE", 10);
@@ -62,6 +63,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("STATE_GAME_NEXT_BREEDER", 12);
     define("STATE_PLAYER_BONUS_BREED", 13);
     define("STATE_GAME_NEXT_BONUS_BREEDER", 14);
+    define("STATE_PLAYER_PLACE_START_FENCES", 15);
 
     define("STATE_END_GAME", 99);
 
@@ -78,6 +80,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("TRANSITION_NEXT_BREEDER", "nextBreeder");
     define("TRANSITION_NEXT_BONUS_BREEDER", "nextBonusBreeder");
     define("TRANSITION_BONUS_BREED", "bonusBreed");
+    define("TRANSITION_PLACE_START_FENCES", "placeStartFences");
 }
 
 $machinestates = array(
@@ -90,6 +93,17 @@ $machinestates = array(
         "action" => "stGameSetup",
         "transitions" => array("" => 2)
     ),
+
+    STATE_GAME_START => [
+        "name" => "gameTurnStart", "description" => clienttranslate('Setup fences...'),
+        "type" => "game", 
+        "action" => "st_gameTurnStart", //
+        "updateGameProgression" => false,
+        "transitions" => [
+            TRANSITION_NEXT_PLAYER => STATE_PLAYER_TURN,
+            TRANSITION_PLACE_START_FENCES=>STATE_PLAYER_PLACE_START_FENCES,
+        ],
+    ],
 
     STATE_PLAYER_TURN => [ // main active player state 
         "name" => "playerTurn",
@@ -205,6 +219,18 @@ $machinestates = array(
             TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE,
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE
         ]
+    ],
+
+    STATE_PLAYER_PLACE_START_FENCES => [
+        "name" => "placeStartFences",
+        "description" => clienttranslate('Everyone has to place some fences before starting'),
+        "descriptionmyturn" => clienttranslate('${you} have to place some fences before starting'),
+        "type" => "multipleactiveplayer",
+        "args" => "arg_placeStartFences",
+        "possibleactions" => ["place"],
+        "transitions" => [
+            "" => STATE_PLAYER_TURN,
+        ] 
     ],
 
     STATE_GAME_TURN_NEXT_PLAYER => [ // next player state

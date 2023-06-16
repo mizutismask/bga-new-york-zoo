@@ -995,6 +995,13 @@ define([
             }
         },
 
+        onEnteringState_placeStartFences(args) {
+           /* if (!$("hand" + this.player_id)) {
+                dojo.place(this.createDiv("hand_market", "hand"+this.player_id), "circle_market", "after");
+            }
+            console.log(args[this.player_id]);*/
+        },
+
         onLeavingState: function (stateName) {
             this.inherited(arguments);
             if (!this.on_client_state) {
