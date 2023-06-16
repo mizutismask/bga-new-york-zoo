@@ -1,5 +1,4 @@
 <?php
-
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
@@ -23,6 +22,7 @@
  * !! It is not a good idea to modify this file when a game is running !!
  *
  */
+require_once("modules/constants.inc.php");
 
 $game_options = array(
 
@@ -50,5 +50,26 @@ $game_options = array(
                         ),
                 'default' => 1
             ),
+*/
+    FAST_GAME => array(
+        'name' => totranslate('Fast game (2 players only)'),
+        'values' => array(
+            ACTIVATED => array('name' => totranslate('Yes'), 'tmdisplay' => totranslate('Fast game'), 'description' => totranslate('Place some large fences in your zoo before starting the game')),
+            DEACTIVATED => array('name' => totranslate('No')),
+        ),
+        'default' => DEACTIVATED,
+        'displaycondition' => [
+            [
+                'type' => 'minplayers',
+                'value' => 2,
+                'message' => totranslate('Fast game is available for 2 players only.')
+            ],
+            [
+                'type' => 'maxplayers',
+                'value' => 2,
+                'message' => totranslate('Fast game is available for 2 players only.')
+            ],
+        ],
+    ),
 
-    */);
+);

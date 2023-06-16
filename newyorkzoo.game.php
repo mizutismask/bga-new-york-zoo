@@ -22,6 +22,7 @@ require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 require_once('modules/tokens.php');
 require_once('modules/EuroGame.php');
 require_once('modules/PwMatrix.php');
+require_once("modules/constants.inc.php");
 
 if (!defined('OFFSET')) {
     define("OFFSET", 5);
@@ -537,6 +538,12 @@ class NewYorkZoo extends EuroGame {
         $rotateZ = $zdir * 90;
         $rotor = "${rotateZ}_$rotateY";
         return $rotor;
+    }
+    
+    /********** OPTIONS */
+
+    public function isFastGame() {
+        return $this->getGameStateValue(FAST_GAME) == ACTIVATED;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1963,6 +1970,7 @@ class NewYorkZoo extends EuroGame {
             $this->dbUpdateFenceType($fenceKey, $forcedAnimalType);
     }
 
+    /** Setup a double breeding situation */
     function dblBreeding($animalType = "meerkat") {
         $playerOrder = $this->getMostlyActivePlayerOrder();
 
