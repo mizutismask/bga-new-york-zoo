@@ -328,9 +328,9 @@ class PatchManager {
             if (!gameui.isCurrentPlayerActive()) {
                 gameui.showError(_('This is not your turn, turn on Practice Mode to practice placing'));
             } else if (!moves_info) {
-                gameui.showError(_('You cannot select this patch yet'));
+                gameui.showError(_('You cannot select this fence yet'));
             } else if (!moves_info.canPlace) {
-                gameui.showError(_('You cannot place this patch on your quilt board, it would not fit'));
+                gameui.showError(_('You cannot place this fence on your zoo, it would not fit'));
             } else {
                 has_error = false;
             }
@@ -996,12 +996,20 @@ define([
         },
 
         onEnteringState_placeStartFences(args) {
-           /* if (!$("hand" + this.player_id)) {
-                dojo.place(this.createDiv("hand_market", "hand"+this.player_id), "circle_market", "after");
-            }
-            console.log(args[this.player_id]);*/
+            //gamedatas.gamestate.args
+            //stateName == 'placeStartFences' ? args[this.player_id] : args
+           // this.gamedatas.gamestate.args = this.gamedatas.gamestate.args[this.player_id];
+            /* if (!$("hand" + this.player_id)) {
+                 dojo.place(this.createDiv("hand_market", "hand"+this.player_id), "circle_market", "after");
+             }
+             console.log(args[this.player_id]);*/
         },
 
+        processStateArgs(stateName, args) {
+            console.log('before processStateArgs: ', args,);
+			return stateName == 'placeStartFences' ? args[this.player_id] : args;
+        },
+        
         onLeavingState: function (stateName) {
             this.inherited(arguments);
             if (!this.on_client_state) {
@@ -1022,12 +1030,13 @@ define([
             this.inherited(arguments);
         },
         onUpdateActionButtons_common: function (stateName, args, ret) {
-            if (stateName == 'playerTurn') {
+            if (stateName == 'playerTurn' || stateName == 'placeStartFences') {
                 gameui.addImageActionButton(
                     'practice',
                     _('Practice Mode'),
                     () => {
                         $('ebd-body').classList.add('practice_mode');
+                        //this.onUpdateActionButtons_client_PickPatch(stateName == 'placeStartFences'?args[this.player_id]:args);
                         this.onUpdateActionButtons_client_PickPatch(args);
                     },
                     undefined,
@@ -1178,6 +1187,7 @@ define([
 
         onUpdateActionButtons_client_PickPatch: function (args) {
             this.onUpdateActionButtons_commonClientPickPatch(args);
+             //this.onUpdateActionButtons_commonClientPickPatch(stateName == 'placeStartFences'?args[this.player_id]:args);
         },
 
         onUpdateActionButtons_placeAttraction: function (args) {
@@ -1214,10 +1224,13 @@ define([
         },
 
         onUpdateActionButtons_commonClientPickPatch: function (args) {
-            //console.log('Calling  onUpdateActionButtons_client_PickPatch', args);
+            console.log('Calling  onUpdateActionButtons_client_PickPatch', args);
             dojo.empty('generalactions');
             dojo.query('.done_control,.control-node').removeClass('active_slot');
 
+         /* if (this.gamedatas.gamestate.name == 'placeStartFences') {
+                args = args[this.player_id];
+}*/
             //todo différencier bonus et patch
 
             var canBuy = Object.keys(args.patches);

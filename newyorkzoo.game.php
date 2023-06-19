@@ -1776,6 +1776,7 @@ class NewYorkZoo extends EuroGame {
 
     function st_gameTurnStart() {
         if ($this->isFastGame()) {
+            $this->gamestate->setAllPlayersMultiactive();
             $this->gamestate->nextState(TRANSITION_PLACE_START_FENCES);
         } else {
             $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);

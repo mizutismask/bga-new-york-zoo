@@ -111,7 +111,11 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 			}
 
 			console.log('onEnteringState: ' + stateName, args, this.debugStateInfo());
-			if (args && args.args) args = args.args;
+            if (args && args.args) {
+                this.gamedatas.gamestate.args = this.processStateArgs(stateName, args.args);
+                args = this.gamedatas.gamestate.args;
+                console.log('processStateArgs: ', this.gamedatas.gamestate.args);
+            }
 			this.curstate = stateName;
 			// Call appropriate method
 			var methodName = "onEnteringState_" + stateName;
@@ -131,6 +135,17 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 		onEnteringState_common: function (stateName, args, ret) {
 			//to overrde
 		},
+
+		/**
+		 * Offers a way to modify state args before it’s used.
+		 * @param {string} stateName 
+		 * @param {array} args 
+		 * @returns args if method not overriden.
+		 */
+		processStateArgs(stateName, args) {
+			return args;
+		},
+
 		// onLeavingState: this method is called each time we are leaving a game state.
 		// You can use this method to perform some user interface changes at this moment.
 		//
