@@ -618,7 +618,7 @@ define([
             this.setupNotifications();
 
             this.playerOrder = gamedatas.players[this.player_id].no;
-            $(`bonus_breeding_time_${this.playerOrder}`).innerHTML = _("Bonus breeding");
+            $(`bonus_breeding_time_${this.playerOrder}`).innerHTML = _('Bonus breeding');
 
             console.log('Ending game setup');
         },
@@ -998,7 +998,7 @@ define([
         onEnteringState_placeStartFences(args) {
             //gamedatas.gamestate.args
             //stateName == 'placeStartFences' ? args[this.player_id] : args
-           // this.gamedatas.gamestate.args = this.gamedatas.gamestate.args[this.player_id];
+            // this.gamedatas.gamestate.args = this.gamedatas.gamestate.args[this.player_id];
             /* if (!$("hand" + this.player_id)) {
                  dojo.place(this.createDiv("hand_market", "hand"+this.player_id), "circle_market", "after");
              }
@@ -1006,10 +1006,10 @@ define([
         },
 
         processStateArgs(stateName, args) {
-            console.log('before processStateArgs: ', args,);
-			return stateName == 'placeStartFences' ? args[this.player_id] : args;
+            console.log('before processStateArgs: ', args);
+            return stateName == 'placeStartFences' ? args[this.player_id] : args;
         },
-        
+
         onLeavingState: function (stateName) {
             this.inherited(arguments);
             if (!this.on_client_state) {
@@ -1187,7 +1187,6 @@ define([
 
         onUpdateActionButtons_client_PickPatch: function (args) {
             this.onUpdateActionButtons_commonClientPickPatch(args);
-             //this.onUpdateActionButtons_commonClientPickPatch(stateName == 'placeStartFences'?args[this.player_id]:args);
         },
 
         onUpdateActionButtons_placeAttraction: function (args) {
@@ -1228,12 +1227,13 @@ define([
             dojo.empty('generalactions');
             dojo.query('.done_control,.control-node').removeClass('active_slot');
 
-         /* if (this.gamedatas.gamestate.name == 'placeStartFences') {
-                args = args[this.player_id];
-}*/
+            this.clientStateArgs.action = 'place';
+            if (this.gamedatas.gamestate.name == 'placeStartFences') {
+                this.clientStateArgs.action = 'placeStartFence';
+            }
             //todo différencier bonus et patch
-
-            var canBuy = Object.keys(args.patches);
+            console.log('args.patches', args['patches']);
+            var canBuy = Object.keys(args['patches']);
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
@@ -1663,7 +1663,7 @@ define([
                     classes.push('disabled');
                 }
             }
-            console.log("classes",classes);
+            console.log('classes', classes);
             notifDiv.classList.add(...classes);
             setTimeout(() => notifDiv.classList.remove('animated', 'disabled', 'bonus', 'notif-' + animal), 1000);
         },

@@ -595,6 +595,25 @@ class NewYorkZoo extends EuroGame {
     }
     
     */
+
+    function action_placeStartFence($token_id, $dropTarget, $rotateZ, $rotateY) {
+        self::dump("**************action_placeStartFence*********************", $token_id);
+        self::dump("**************to*********************", $dropTarget);
+        $this->checkAction('placeStartFence');
+
+        $player_id = $this->getMostlyActivePlayerId();
+        $order = $this->getMostlyActivePlayerOrder();
+
+        $canBuy  = $this->arg_placeStartFences()[$player_id];
+        $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
+        $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
+
+        //stays in the same state to place other fences or desactivate players until they are all finished
+        if($this->tokens->countTokensInLocation("hand_".$player_id)==0){
+            $this->gamestate->setPlayerNonMultiactive( $player_id, "" );
+        }
+    }
+
     function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
         self::dump("**************action_place*********************", $token_id);
         self::dump("**************to*********************", $dropTarget);
@@ -628,7 +647,7 @@ class NewYorkZoo extends EuroGame {
         } else {
             $order = $this->getPlayerPosition($player_id);
             $canBuy  = $this->arg_canBuyPatches($order);
-            $this->userAssertTrue(self::_("Cannot buy this patch Yet"), array_search($token_id, $canBuy) !== false);
+            $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
 
             //self::dump("**************pos*********************", $pos);
             $this->saction_MoveNeutralToken($pos);

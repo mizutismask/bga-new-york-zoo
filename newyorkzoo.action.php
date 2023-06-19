@@ -45,6 +45,16 @@ class action_newyorkzoo extends APP_GameAction {
     self::ajaxResponse();
   }
 
+  public function placeStartFence() {
+    self::setAjaxMode();
+    $token = self::getArg('token', AT_alphanum, true);
+    $rotateY = self::getArg('rotateY', AT_int, true);
+    $rotateZ = self::getArg('rotateZ', AT_int, true);
+    $dropTarget = self::getArg('dropTarget', AT_alphanum, true);
+    $this->game->action_placeStartFence($token, $dropTarget, $rotateZ, $rotateY);
+    self::ajaxResponse();
+  }
+
   public function getAnimals() {
     self::setAjaxMode();
     $actionZone = self::getArg('actionZone', AT_alphanum, true);
