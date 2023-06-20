@@ -412,8 +412,13 @@ class PatchManager {
         dojo.destroy(targetNode.id + '_temp');
         console.log('restoreOriginalPatch', $(targetNode));
         if (!targetNode.id.startsWith('patch_0')) {
+            let dest = 'market';
+            if (targetNode.dataset?.startFence=="true") {
+                dest = 'hand_' + (gameui.player_id);
+                gameui.stripPosition(targetNode);
+            }
             //var order = parseInt(targetNode.getAttribute('data-order'));
-            dojo.place(targetNode.id, 'market');
+            dojo.place(targetNode.id, dest);
             gameui.adjustScrollMap();
         } else {
             dojo.place(targetNode, 'tableau_' + gameui.player_no);
@@ -707,6 +712,9 @@ define([
                 if (location.startsWith('action_zone') && mat.w > mat.h) {
                     //rotate to minimize board width needed
                     // dojo.addClass(token, 'minimized');
+                }
+                if (location == 'hand_' + this.player_id) {
+                    dojo.setAttr(token, 'data-start-fence', 'true');
                 }
                 dojo.setAttr(token, {
                     'data-order': this.getTokenState(token),
@@ -1352,7 +1360,7 @@ define([
         },
         ajaxActionResultCallback: function (action, args, result) {
             this.inherited(arguments);
-            if (action == 'place') this.pm.cancelPickPatch();
+            if (action == 'place' || action == 'placeStartFence') this.pm.cancelPickPatch();
         },
         onPlaceToken: function (tokenId) {
             // updating counters
