@@ -722,6 +722,9 @@ define([
                     'data-dy': dy,
                     'data-rz': rotateZ,
                 });
+                if (mat.color == "bonus") {
+                    dojo.setAttr(token, 'data-mask', mat.mask);
+                }
             } else if (token == 'token_neutral') {
                 var dx = CELL_WIDTH;
                 var dy = CELL_WIDTH * 2;
@@ -1206,6 +1209,7 @@ define([
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
             });
 
+            this.addAttractionCount(args);
             var pickcolor = 'blue';
             if (!args.canPatch) pickcolor = 'red';
             gameui.addImageActionButton(
@@ -1228,6 +1232,16 @@ define([
                 null,
                 'blue'
             );
+        },
+
+        addAttractionCount(args) {
+            for (const id of Object.keys(args.patches)) {
+                div = $(id);
+                if (!div.hasAttribute('copies')) {
+                    var mask= this.getRulesFor(id, "mask");
+                    div.dataset.copies = dojo.query(`.bonus_market [data-mask="${mask}"]`).length;
+                }
+            }
         },
 
         onUpdateActionButtons_commonClientPickPatch: function (args) {
