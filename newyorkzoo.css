@@ -971,6 +971,10 @@
     gap: 11px;
 }
 
+.bonus_market .patch:not(.active_slot){
+    display: none;
+}
+
 .bonus_market .state_1 {
     order: -1;
 }
