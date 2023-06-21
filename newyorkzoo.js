@@ -213,7 +213,7 @@ class PatchManager {
     }
 
     dragEnd() {
-        //		console.log("drag end");
+        		console.log('drag end');
         var shadowNode = $('dragShadow');
         if (!shadowNode) return;
         if (gameui.clientStateArgs.dropTarget) {
@@ -227,7 +227,7 @@ class PatchManager {
 
         if (!gameui.clientStateArgs.dropTarget) {
             // cancel
-            //console.log("end cancel");
+            console.log('end cancel');
             this.cancelPickPatch();
         } else {
             var state = this.getRotateState();
@@ -619,8 +619,9 @@ define([
             }
 
             // TODO: Set up your game interface here, according to "gamedatas"
-
+            
             this.inherited(arguments);
+            this.addAttractionCount();
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -1211,7 +1212,6 @@ define([
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
             });
 
-            this.addAttractionCount(args);
             var pickcolor = 'blue';
             if (!args.canPatch) pickcolor = 'red';
             gameui.addImageActionButton(
@@ -1236,14 +1236,16 @@ define([
             );
         },
 
-        addAttractionCount(args) {
-            for (const id of Object.keys(args.patches)) {
-                div = $(id);
+        addAttractionCount() {
+            const uniqueMasks = new Set(dojo.query(".bonus_market .patch").map(div => {return div.dataset.mask}));
+            dojo.query(".bonus_market .patch").forEach(div => {
                 if (!div.hasAttribute('copies')) {
-                    var mask= this.getRulesFor(id, "mask");
+                    var mask = this.getRulesFor(div.id, "mask");
                     div.dataset.copies = dojo.query(`.bonus_market [data-mask="${mask}"]`).length;
+                    div.dataset.copy = "true";
                 }
-            }
+            });
+            uniqueMasks.forEach(m => this.queryFirst(`.bonus_market .patch[data-mask="${m}"]`).dataset.copy = "false");
         },
 
         onUpdateActionButtons_commonClientPickPatch: function (args) {
@@ -1376,7 +1378,14 @@ define([
         },
         ajaxActionResultCallback: function (action, args, result) {
             this.inherited(arguments);
+            console.log('ajax callback');
             if (action == 'place' || action == 'placeStartFence') this.pm.cancelPickPatch();
+            if (action == 'placeStartFence') {
+                this.pm.endPickPatch();
+                this.onLeavingState(this.gamedatas.state);
+
+            };
+            
         },
         onPlaceToken: function (tokenId) {
             // updating counters
@@ -1654,7 +1663,7 @@ define([
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             //
             var _this = this;
-            var notifs = [['breedingTime', 1000]];
+            var notifs = [['breedingTime', 1000],["placeStartFenceArgs",1]];
             notifs.forEach(function (notif) {
                 dojo.subscribe(notif[0], _this, 'notif_' + notif[0]);
                 _this.notifqueue.setSynchronous(notif[0], notif[1]);
@@ -1700,5 +1709,9 @@ define([
             notifDiv.classList.add(...classes);
             setTimeout(() => notifDiv.classList.remove('animated', 'disabled', 'bonus', 'notif-' + animal), 1000);
         },
+
+        notif_placeStartFenceArgs(notif) {
+            this.onEnteringState("placeStartFences", notif.args);//updates possible moves
+        }
     });
 });

@@ -237,15 +237,15 @@ class NewYorkZoo extends EuroGame {
                 $removed[] = $patch;
             }
             //deal evenly the removed patches by color
-            $stateP1=1;
-            $stateP2=1;
+            $stateP1 = 1;
+            $stateP2 = 1;
             foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
                 $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
                 $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
                 //self::dump('*******************removedColoredPatch', $removedColoredPatch);
                 for ($i = 0; $i < 3; $i++) {
-                  $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
-                  $stateP1++;
+                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
+                    $stateP1++;
                 }
                 for ($i = 3; $i < 6; $i++) {
                     $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1], $stateP2);
@@ -612,8 +612,13 @@ class NewYorkZoo extends EuroGame {
         $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
 
         //stays in the same state to place other fences or desactivate players until they are all finished
-        if($this->tokens->countTokensInLocation("hand_".$player_id)==0){
-            $this->gamestate->setPlayerNonMultiactive( $player_id, "" );
+        if ($this->tokens->countTokensInLocation("hand_" . $player_id) == 0) {
+            $this->gamestate->setPlayerNonMultiactive($player_id, "");
+        } else {
+            //notify next possible moves
+            $fakeStartFenceStateArgs = [];
+            $fakeStartFenceStateArgs["args"] = $this->arg_placeStartFences();
+            $this->notifyPlayer($player_id, "placeStartFenceArgs", "", $fakeStartFenceStateArgs);
         }
     }
 
@@ -1743,7 +1748,7 @@ class NewYorkZoo extends EuroGame {
     function getFreeSquaresAvailableForBonusBreeding($playerOrder) {
         $fences = $this->getFencesInfo($playerOrder);
         $fences = array_filter($fences, function ($f) {
-            return $f["animals_added"] == 0 && count($f["freeSquares"]) >= 0; //&& count($f["animals"]) >= 2;
+            return $f["animals_added"] == 0 && count($f["freeSquares"]) >= 0 && count($f["animals"]) >= 2;
         });
         $freeSquares = [];
         foreach ($fences as $fenceKey => $fence) {

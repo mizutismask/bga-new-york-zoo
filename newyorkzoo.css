@@ -971,11 +971,11 @@
     gap: 11px;
 }
 
-.bonus_market .patch:not(.active_slot){
+.bonus_market [data-copy="true"]{
    display: none;
 }
 
-.bonus_market .patch.active_slot::after{
+.bonus_market [data-copy="false"]::after{
     content: attr(data-copies);
     position: absolute;
     right: 2px;
