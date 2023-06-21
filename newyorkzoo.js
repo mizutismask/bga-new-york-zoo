@@ -179,7 +179,7 @@ class PatchManager {
     }
 
     dragStart(event) {
-        //console.log("drag started ", event.target);
+        console.log("drag started ", event.target);
         if (!event.target.id) return;
         //event.preventDefault();// does not with with prevent defaults
         //event.stopPropagation();
@@ -205,6 +205,7 @@ class PatchManager {
             var node = $(tokenId);
             var order = parseInt(node.getAttribute('data-order'));
             gameui.placeTokenLocal(tokenId, 'market', order, { noa: true });
+            // gameui.placeTokenLocal(tokenId, "hand_"+gameui.player_id, order, { noa: true })
         }, 100);
         //console.log("drag shadow", this.mobileNode.style);
         event.dataTransfer.setData('text/plain', tokenId); // not sure if needed
@@ -318,7 +319,7 @@ class PatchManager {
         targetNode = $(targetNode);
         this.practiceMode = gameui.isPracticeMode();
         var location = targetNode.parentNode.id;
-        //console.log("begin "+targetNode.id);
+        console.log("begin "+targetNode.id);
 
         if (!this.practiceMode) {
             var has_error = true;
@@ -375,6 +376,7 @@ class PatchManager {
             }
             this.applyRotate(this.mobileNode);
             targetNode.style.transition = 'none';
+            console.log("moved to pieces");
             gameui.attachToNewParentNoDestroy(targetNode, 'pieces_' + gameui.player_no);
             targetNode.style.removeProperty('transition');
             gameui.moveClass('selected', targetNode);
@@ -1425,6 +1427,15 @@ define([
                 inlinecoords: false,
             };
 
+            if (location.startsWith('hand')) {
+                var state = parseInt(tokenInfo.state);
+                console.log("state",state);
+                //result.position = 'absolute';
+                var tokenNode = $(token);
+                if (!tokenNode) return result; // ???
+                dojo.style(tokenNode, 'order', state);
+                return result;
+            }
             if (location.startsWith('market')) {
                 var state = parseInt(tokenInfo.state);
                 result.position = 'absolute';

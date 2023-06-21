@@ -237,16 +237,19 @@ class NewYorkZoo extends EuroGame {
                 $removed[] = $patch;
             }
             //deal evenly the removed patches by color
+            $stateP1=1;
+            $stateP2=1;
             foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
                 $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
                 $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
-                self::dump('*******************color', $color);
-                self::dump('*******************removedColoredPatch', $removedColoredPatch);
+                //self::dump('*******************removedColoredPatch', $removedColoredPatch);
                 for ($i = 0; $i < 3; $i++) {
-                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0]);
+                  $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
+                  $stateP1++;
                 }
                 for ($i = 3; $i < 6; $i++) {
-                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1]);
+                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1], $stateP2);
+                    $stateP2++;
                 }
             }
         }
