@@ -58,11 +58,11 @@ class PwMatrix extends APP_Object {
             $deg_z = getPart($rotor, 0);
             $deg_y = getPart($rotor, 1);
             $piecematrix = $this->pieceMatrix($mask, $deg_z, $deg_y);
-            $pic = $this->dumpMatrix($piecematrix, "$mask $deg_z $deg_y", true);
-            if (count($data) == 1) {
+            //$pic = $this->dumpMatrix($piecematrix, "$mask $deg_z $deg_y", true);
+           /* if (count($data) == 1) {
                 $this->game->dump("pic***************************************************", $pic);
                 $this->warn($pic);
-            }
+            }*/
             $res = $this->unionMatrix($res, $piecematrix, $y, $x);
         }
         return $res;
@@ -283,7 +283,7 @@ class PwMatrix extends APP_Object {
                 }
             }
         }
-        $this->dumpMatrix($poly, 'poly');
+       // $this->dumpMatrix($poly, 'poly');
         $start_y = array_key_first($poly);
         $start_x = array_key_first($poly[$start_y]);
         $coords[] = [$start_x, $start_y];
