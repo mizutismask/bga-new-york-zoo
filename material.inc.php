@@ -126,12 +126,17 @@ $this->boards = [
 
 /* Action board */
 $topY = 2.42;
-$topYLine2 = 70.56;
+$topYLine2 = 69.8;
 $smallWidth = 6.42;
 $mediumWidth = 7.30;
 $bigWidth = 10.49;
 $height = 27;
-$offsetZones = 0.01;
+
+$anmlTopX = 35.05;
+$anmlTopY = 5.6;
+$anmlWidth = 5.473;
+$anmlHeight = 24.38;
+$offsetZones = 0.474;
 $this->actionStripZones = [];
 $this->actionStripZones['action_zone_1'] = [
   'topX' =>  0.52,
@@ -142,9 +147,9 @@ $this->actionStripZones['action_zone_1'] = [
 ];
 $this->actionStripZones['action_zone_2'] = [
   'topX' =>  $this->actionStripZones['action_zone_1']['topX'] + $this->actionStripZones['action_zone_1']['width'] + $offsetZones,
-  'topY' =>  $topY,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'topY' =>  $anmlTopY,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [FOX, KANGAROO],
   'type' =>  ANIMAL,
 ];
@@ -164,9 +169,9 @@ $this->actionStripZones['action_zone_4'] = [
 ];
 $this->actionStripZones['action_zone_5'] = [
   'topX' =>  $this->actionStripZones['action_zone_4']['topX'] + $this->actionStripZones['action_zone_4']['width'] + $offsetZones,
-  'topY' =>  $topY,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'topY' =>  $anmlTopY,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [PENGUIN, MEERKAT],
   'type' =>  ANIMAL,
 ];
@@ -179,9 +184,9 @@ $this->actionStripZones['action_zone_6'] = [
 ];
 $this->actionStripZones['action_zone_7'] = [
   'topX' =>  $this->actionStripZones['action_zone_6']['topX'] + $this->actionStripZones['action_zone_6']['width'] + $offsetZones,
-  'topY' =>  $topY,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'topY' =>  $anmlTopY,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [PENGUIN, FOX],
   'type' =>  ANIMAL,
 ];
@@ -201,9 +206,9 @@ $this->actionStripZones['action_zone_9'] = [
 ];
 $this->actionStripZones['action_zone_10'] = [
   'topX' =>  $this->actionStripZones['action_zone_9']['topX'] + $this->actionStripZones['action_zone_9']['width'] + $offsetZones,
-  'topY' =>  $topY,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'topY' =>  $anmlTopY,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [FOX, FLAMINGO],
   'type' =>  ANIMAL,
 ];
@@ -216,9 +221,9 @@ $this->actionStripZones['action_zone_11'] = [
 ];
 $this->actionStripZones['action_zone_12'] = [
   'topX' =>  $this->actionStripZones['action_zone_11']['topX'] + $this->actionStripZones['action_zone_11']['width'] + $offsetZones,
-  'topY' =>  $topY,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'topY' =>  $anmlTopY,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [PENGUIN, KANGAROO],
   'type' =>  ANIMAL,
 ];
@@ -237,10 +242,10 @@ $this->actionStripZones['action_zone_14'] = [
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_15'] = [
-  'topX' =>  $this->actionStripZones['action_zone_14']['topX'] - $smallWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_14']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [KANGAROO, MEERKAT],
   'type' =>  ANIMAL,
 ];
@@ -252,10 +257,10 @@ $this->actionStripZones['action_zone_16'] = [
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_17'] = [
-  'topX' =>  $this->actionStripZones['action_zone_16']['topX'] - $smallWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_16']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [FLAMINGO, MEERKAT],
   'type' =>  ANIMAL,
 ];
@@ -274,10 +279,10 @@ $this->actionStripZones['action_zone_19'] = [
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_20'] = [
-  'topX' =>  $this->actionStripZones['action_zone_19']['topX'] - $smallWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_19']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [FLAMINGO, KANGAROO],
   'type' =>  ANIMAL,
 ];
@@ -289,10 +294,10 @@ $this->actionStripZones['action_zone_21'] = [
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_22'] = [
-  'topX' =>  $this->actionStripZones['action_zone_21']['topX'] - $smallWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_21']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2,
-  'width' =>  $smallWidth,
-  'height' =>  $height,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [FOX, MEERKAT],
   'type' =>  ANIMAL,
 ];
@@ -311,10 +316,10 @@ $this->actionStripZones['action_zone_24'] = [
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_25'] = [
-  'topX' =>  0.52,
-  'topY' =>  36.96,
-  'width' =>  $smallWidth,
-  'height' =>  26.57,
+  'topX' =>  1,
+  'topY' =>  37.96,
+  'width' =>  $anmlWidth,
+  'height' =>  $anmlHeight,
   'animals' =>  [PENGUIN, FLAMINGO],
   'type' =>  ANIMAL,
 ];
