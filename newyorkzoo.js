@@ -777,10 +777,6 @@ define([
             this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
             this.connectClass('house', 'onclick', 'onHouse');
 
-            document.querySelectorAll(`.tableau_${gameui.player_no} .pieces .animal`).forEach((item) => {
-                item.addEventListener('click', (event) => this.onAnimal(event), false);
-            });
-
             dojo.query('.timetracker').forEach((node) => {
                 this.updateTooltip(node.id);
             });
@@ -993,6 +989,11 @@ define([
         // state hooks
         onEnteringState: function (stateName, args) {
             this.inherited(arguments);
+            
+           /* document.querySelectorAll(`.tableau_${gameui.player_no} .pieces .animal`).forEach((item) => {
+                item.addEventListener('click', (event) => this.onAnimal(event), false);
+            });*/
+
         },
 
         onEnteringState_chooseFence(args) {
@@ -1106,7 +1107,7 @@ define([
             this.clientStateArgs.action = 'placeAnimal';
             var possibleAnimals = Object.values(args.possibleAnimals);
             possibleAnimals.forEach((id) => {
-                dojo.addClass(id, 'active_slot');
+                this.addActiveSlot(id, "onAnimal");
             });
 
             var possibleTargets = Object.values(args.possibleTargets);
@@ -1245,7 +1246,7 @@ define([
                     div.dataset.copy = "true";
                 }
             });
-            uniqueMasks.forEach(m => this.queryFirst(`.bonus_market .patch[data-mask="${m}"]`).dataset.copy = "false");
+            uniqueMasks.forEach(m => this.queryLast(`.bonus_market .patch[data-mask="${m}"]`).dataset.copy = "false");
         },
 
         onUpdateActionButtons_commonClientPickPatch: function (args) {
