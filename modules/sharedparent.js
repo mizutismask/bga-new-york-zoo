@@ -1300,6 +1300,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui"], function (dojo, decla
 			return document.querySelector(query);
 		},
 
+		queryLast: function (query) {
+			var res = document.querySelectorAll(query);
+			if (res) return res[res.length-1];
+			return undefined;
+		},
+
 		queryFirstId: function (query, defaultValue) {
 			var res = document.querySelector(query);
 			if (!res) return defaultValue;
