@@ -118,7 +118,10 @@
 }
 .square.active_slot,
 .house.active_slot {
-    outline: #4af056 solid 2px;
+    /*outline: #4af056 solid 3px;*/
+    /*background-color: rgba(215, 250, 14, 0.7);
+    filter: drop-shadow(0px 0px 4px rgb(125, 247, 26)) !important;*/
+     box-shadow:  0px 4px 17px rgb(125, 247, 26) inset !important;
 }
 
 .central {
@@ -415,7 +418,7 @@
     filter: opacity(80%);
 }
 
-.square:empty.animal-target-image {
+.square:empty.animal-target-image, .square:empty.active_slot {
     z-index: 101;
 }
 
@@ -451,10 +454,10 @@
 }
 
 .active_slot:hover {
-    filter: drop-shadow(0px 0px 4px green) !important;
+    filter: drop-shadow(0px 0px 4px rgb(125, 247, 26)) !important;
 }
 .active_slot.selected {
-    filter: drop-shadow(0px 0px 4px rgb(46, 149, 218)) !important;
+    filter: drop-shadow(0px 0px 4px white) !important;
 }
 
 .market .active_slot:hover {
