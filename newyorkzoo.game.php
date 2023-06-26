@@ -360,11 +360,12 @@ class NewYorkZoo extends EuroGame {
     }
 
     function getPatchFromSquare($square) {
-        return self::getUniqueValueFromDB("SELECT token_key FROM fence_squares WHERE square = '$square'");
+        $gridSquare=$this->replaceAnimalSquareByGridSquare($square);
+        return self::getUniqueValueFromDB("SELECT token_key FROM fence_squares WHERE square = '$gridSquare'");
     }
 
     function getFenceSquares($fenceKey) {
-        return self::getObjectListFromDB("SELECT square FROM fence_squares WHERE token_key = '$fenceKey'", true);
+        return self::getObjectListFromDB("SELECT replace(square, 'square_', 'anml_square_') FROM fence_squares WHERE token_key = '$fenceKey'", true);
     }
 
     function isFenceFull($fenceKey) {
@@ -806,6 +807,14 @@ class NewYorkZoo extends EuroGame {
         }
         self::dump('*******************animalId', $animalId, $state['name']);
         $this->saction_placeAnimal($from, $to, $animalType, $animalId);
+    }
+
+    function replaceGridSquareByAnimalSquare($squareId) {
+        return str_replace("square_", "anml_square_", $squareId);
+    }
+
+    function replaceAnimalSquareByGridSquare($squareId) {
+        return str_replace("anml_square_", "square_", $squareId);
     }
 
     /**
@@ -1672,14 +1681,15 @@ class NewYorkZoo extends EuroGame {
 
     function arg_possibleTargetsForAnimal($playerOrder, $animal) {
         $freeHouses = $this->getFreeHouses($playerOrder);
-        $fencesAcceptingAnml = $this->getSquaresInFencesAccepting($playerOrder, $animal);
+        $fencesAcceptingAnml = $this->getSquaresInFencesAccepting($playerOrder, $animal);//remove attraction squares
         return array_merge($freeHouses, $fencesAcceptingAnml);
     }
 
     function getSquaresInFencesAccepting($playerOrder, $animal) {
         $sql = "SELECT square FROM fence_squares JOIN fence on fence.token_key = fence_squares.token_key WHERE player_order=$playerOrder AND animal_type in('none', '$animal')";
         $allSquares = self::getObjectListFromDB($sql, true);
-        return $this->filterFreeSquares($allSquares);
+        $freeSquares = $this->filterFreeSquares($allSquares);
+        return array_map(fn ($sqre) => $this->replaceGridSquareByAnimalSquare($sqre), $freeSquares);
     }
 
     function filterFreeSquares($squares) {
@@ -1697,7 +1707,7 @@ class NewYorkZoo extends EuroGame {
         return $occupied;
     }
     function getAnimalsByFence($playerOrder) {
-        $sql = "SELECT fence.token_key fence_key, token.token_key animal_key FROM token JOIN fence_squares on token.token_location = fence_squares.square JOIN fence on fence.token_key = fence_squares.token_key WHERE token.token_key not like 'patch%' AND token.token_location like 'square%' AND player_order= $playerOrder GROUP BY fence.token_key, token.token_key";
+        $sql = "SELECT fence.token_key fence_key, token.token_key animal_key FROM token JOIN fence_squares on token.token_location = replace(fence_squares.square, 'square_', 'anml_square_') JOIN fence on fence.token_key = fence_squares.token_key WHERE token.token_key not like 'patch%' AND token.token_location like 'anml_square%' AND player_order= $playerOrder GROUP BY fence.token_key, token.token_key";
         $animalsByFence =  self::getDoubleKeyCollectionFromDB($sql, true);
         return $animalsByFence;
     }
@@ -1727,7 +1737,7 @@ class NewYorkZoo extends EuroGame {
             $fence["squares"] = $this->getFenceSquares($fenceKey);
             $fence["freeSquares"] = $this->filterFreeSquares($fence["squares"]);
         }
-        //self::dump('*******************getFencesInfo', $fences);
+        self::dump('*******************getFencesInfo', $fences);
         return $fences;
     }
 

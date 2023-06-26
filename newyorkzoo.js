@@ -50,16 +50,16 @@ class PatchManager {
         if (dropNode == null) return;
 
         if (gameui.curstate === 'client_PlaceAnimal') {
-            gameui.clientStateArgs.to = dropNode.id;
+            gameui.clientStateArgs.to = this.replaceGridSquareByAnimalSquare(dropNode.id);
             gameui.ajaxClientStateAction();
         } else if (gameui.curstate === 'populateNewFence') {
             $(id).classList.toggle('selected');
-            gameui.clientStateArgs.to = id;
+            gameui.clientStateArgs.to = this.replaceGridSquareByAnimalSquare(id);
             gameui.ajaxClientStateAction();
             //gameui.startActionTimer("place_animal", 3, 1);
         } else if (gameui.curstate === 'chooseFence') {
             dojo.toggleClass(dropNode.id, 'animal-target-image');
-            gameui.clientStateArgs.squares = gameui.queryIds('.animal-target-image');
+            gameui.clientStateArgs.squares = gameui.queryIds('.animal-target-image').map(sqre=> this.replaceGridSquareByAnimalSquare(sqre));
             console.log('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares);
         } else {
             if (dropNode == gameui.clientStateArgs.dropTarget) {
@@ -71,6 +71,10 @@ class PatchManager {
             this.selectPickPatchSquare(dropNode);
             this.endPickPatch();
         }
+    }
+
+    replaceGridSquareByAnimalSquare(squareId) {
+        return squareId.replace("square_", "anml_square_");
     }
 
     applyRotate(targetNode, dir) {

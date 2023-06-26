@@ -80,11 +80,16 @@
     <!-- END square -->
 				</div>
 				<div id="pieces_{ORDER}" class="pieces pieces_{ORDER}"></div>
-				<!--<div class="board_houses"> -->
-				<!-- BEGIN house -->
+				<div id="animals_layer_{ORDER}" class="animals-layer animals-layer_{ORDER} squares">
+					<!-- BEGIN anml_square -->
+    				<div id="anml_square_{ORDER}_{Y}_{X}" class="anml-square {CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+    				<!-- END anml_square -->
+				</div>
+				<div class="board_houses">
+					<!-- BEGIN house -->
 					<div id="house_{PLAYER_ORDER}_{HOUSE_INDEX}" class="house {CLASSES}"></div>
-				<!-- END house -->
-				<!--</div> -->
+					<!-- END house -->
+				</div>
 			</div>
 			<span class="player_name">{PLAYER_NAME}</span>
 			<div id="breeding_time_{ORDER}_wrapper" class="breeding_time_wrapper">

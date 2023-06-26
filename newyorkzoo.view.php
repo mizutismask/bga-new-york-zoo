@@ -46,6 +46,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $current_player = $g_user->get_id();
     // Create squares
     $this->page->reset_subblocks('square');
+    $this->page->reset_subblocks('anml_square');
     $this->page->reset_subblocks('house');
     $hor_scale = CELL_WIDTH;
     $ver_scale = CELL_WIDTH;
@@ -68,6 +69,18 @@ class view_newyorkzoo_newyorkzoo extends game_view {
         ));
       }
     }
+
+    $gridSize = $this->game->getGridSize();
+    for ($x = 0; $x < $gridSize[0]; $x++) {
+      for ($y = 0; $y < $gridSize[1]; $y++) {
+        $classes = '';
+        $this->page->insert_block("anml_square", array(
+          'X' => $x, 'Y' => $y, 'LEFT' => round(($x) * $hor_scale),
+          'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "ORDER" => $order
+        ));
+      }
+    }
+
     $own = $player_id == $current_player;
     $this->page->insert_block("player_board", array(
       "ORDER" => $order, "PLAYER_NAME" => $name,
@@ -159,6 +172,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     }
 
     $this->page->begin_block($template, "square");
+    $this->page->begin_block($template, "anml_square");
     $this->page->begin_block($template, "house");
     $this->page->begin_block($template, "player_board");
     // inner blocks in player blocks
