@@ -308,6 +308,7 @@ class NewYorkZoo extends EuroGame {
         }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
+        $result['attractionsWithCount'] = array_keys($this->arg_placeAttraction()["patches"]);
         return $result;
     }
 
@@ -635,24 +636,19 @@ class NewYorkZoo extends EuroGame {
 
         if ($this->gamestate->state()["name"] === "placeAttraction") {
             $this->userAssertTrue(self::_("Should be a bonus attraction"), $pos === "bonus_market");
-            $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
+            //if there is another attraction left of the same shape, we place any other but the last one, since it’s used for attraction counters
+            $tokenToMove = $token_id;
+            if(in_array($token_id,array_keys($this->arg_placeAttraction()["patches"]))){
+                $mask=$this->getRulesFor($token_id, "mask");
+                $patchesWithSameShape = $this->mtCollectWithFieldValue("mask", $mask);
+                $tokenToMoveMain =array_shift($patchesWithSameShape);
+                $instances=$this->tokens->getTokensOfTypeInLocation(getPartsPrefix($token_id,2)."_%","bonus_market");
+                $tokenToMove=array_shift($instances)["key"];
+                self::dump("**************replaced with*********************", $tokenToMove);
+            }
+
+            $this->saction_PlacePatch($order, $tokenToMove, $dropTarget, $rotateZ, $rotateY);
             $this->resolveLastContextIfAction(CHECK_FENCE_FULL);
-            /*$fullFences = $this->getFullFences($order);
-            if ($fullFences) {
-                $patch = array_shift($fullFences);
-                $animalType = $this->emptyFence($patch);
-                if ($this->getFreeHouses($this->getMostlyActivePlayerOrder())) {
-                    //offers to keep one animal
-                    self::setGameStateValue(GS_ANIMAL_TO_KEEP, $this->getAnimalType($animalType));
-                    $this->gamestate->nextState(TRANSITION_KEEP_ANIMAL);
-                    return;
-                } else {
-                    $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
-                    return;
-                }
-            } else {
-                $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
-            }*/
         } else {
             $order = $this->getPlayerPosition($player_id);
             $canBuy  = $this->arg_canBuyPatches($order);

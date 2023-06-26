@@ -59,7 +59,9 @@ class PatchManager {
             //gameui.startActionTimer("place_animal", 3, 1);
         } else if (gameui.curstate === 'chooseFence') {
             dojo.toggleClass(dropNode.id, 'animal-target-image');
-            gameui.clientStateArgs.squares = gameui.queryIds('.animal-target-image').map(sqre=> this.replaceGridSquareByAnimalSquare(sqre));
+            gameui.clientStateArgs.squares = gameui
+                .queryIds('.animal-target-image')
+                .map((sqre) => this.replaceGridSquareByAnimalSquare(sqre));
             console.log('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares);
         } else {
             if (dropNode == gameui.clientStateArgs.dropTarget) {
@@ -74,7 +76,7 @@ class PatchManager {
     }
 
     replaceGridSquareByAnimalSquare(squareId) {
-        return squareId.replace("square_", "anml_square_");
+        return squareId.replace('square_', 'anml_square_');
     }
 
     applyRotate(targetNode, dir) {
@@ -183,7 +185,7 @@ class PatchManager {
     }
 
     dragStart(event) {
-        console.log("drag started ", event.target);
+        console.log('drag started ', event.target);
         if (!event.target.id) return;
         //event.preventDefault();// does not with with prevent defaults
         //event.stopPropagation();
@@ -217,7 +219,7 @@ class PatchManager {
     }
 
     dragEnd() {
-        		console.log('drag end');
+        console.log('drag end');
         var shadowNode = $('dragShadow');
         if (!shadowNode) return;
         if (gameui.clientStateArgs.dropTarget) {
@@ -323,7 +325,7 @@ class PatchManager {
         targetNode = $(targetNode);
         this.practiceMode = gameui.isPracticeMode();
         var location = targetNode.parentNode.id;
-        console.log("begin "+targetNode.id);
+        console.log('begin ' + targetNode.id);
 
         if (!this.practiceMode) {
             var has_error = true;
@@ -380,7 +382,7 @@ class PatchManager {
             }
             this.applyRotate(this.mobileNode);
             targetNode.style.transition = 'none';
-            console.log("moved to pieces");
+            console.log('moved to pieces');
             gameui.attachToNewParentNoDestroy(targetNode, 'pieces_' + gameui.player_no);
             targetNode.style.removeProperty('transition');
             gameui.moveClass('selected', targetNode);
@@ -419,8 +421,8 @@ class PatchManager {
         console.log('restoreOriginalPatch', $(targetNode));
         if (!targetNode.id.startsWith('patch_0')) {
             let dest = 'market';
-            if (targetNode.dataset?.startFence=="true") {
-                dest = 'hand_' + (gameui.player_id);
+            if (targetNode.dataset?.startFence == 'true') {
+                dest = 'hand_' + gameui.player_id;
                 gameui.stripPosition(targetNode);
             }
             //var order = parseInt(targetNode.getAttribute('data-order'));
@@ -623,9 +625,9 @@ define([
             }
 
             // TODO: Set up your game interface here, according to "gamedatas"
-            
+
             this.inherited(arguments);
-            this.addAttractionCount();
+            this.addAttractionCount(gamedatas.attractionsWithCount);
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -729,7 +731,7 @@ define([
                     'data-dy': dy,
                     'data-rz': rotateZ,
                 });
-                if (mat.color == "bonus") {
+                if (mat.color == 'bonus') {
                     dojo.setAttr(token, 'data-mask', mat.mask);
                 }
             } else if (token == 'token_neutral') {
@@ -993,11 +995,10 @@ define([
         // state hooks
         onEnteringState: function (stateName, args) {
             this.inherited(arguments);
-            
-           /* document.querySelectorAll(`.tableau_${gameui.player_no} .pieces .animal`).forEach((item) => {
+
+            /* document.querySelectorAll(`.tableau_${gameui.player_no} .pieces .animal`).forEach((item) => {
                 item.addEventListener('click', (event) => this.onAnimal(event), false);
             });*/
-
         },
 
         onEnteringState_chooseFence(args) {
@@ -1111,7 +1112,7 @@ define([
             this.clientStateArgs.action = 'placeAnimal';
             var possibleAnimals = Object.values(args.possibleAnimals);
             possibleAnimals.forEach((id) => {
-                this.addActiveSlot(id, "onAnimal");
+                this.addActiveSlot(id, 'onAnimal');
             });
 
             var possibleTargets = Object.values(args.possibleTargets);
@@ -1241,16 +1242,23 @@ define([
             );
         },
 
-        addAttractionCount() {
-            const uniqueMasks = new Set(dojo.query(".bonus_market .patch").map(div => {return div.dataset.mask}));
-            dojo.query(".bonus_market .patch").forEach(div => {
-                if (!div.hasAttribute('copies')) {
-                    var mask = this.getRulesFor(div.id, "mask");
-                    div.dataset.copies = dojo.query(`.bonus_market [data-mask="${mask}"]`).length;
-                    div.dataset.copy = "true";
-                }
+        addAttractionCount(attractionsWithCount) {
+            dojo.query(`.bonus_market .patch`).forEach((a) => (a.dataset.copy = 'true'));
+            attractionsWithCount.forEach((a) => {
+                div = $(a);
+                div.dataset.copy = 'false';
+                var mask = this.getRulesFor(div.id, 'mask');
+                div.dataset.copies = dojo.query(`.bonus_market [data-mask="${mask}"]`).length;
             });
-            uniqueMasks.forEach(m => this.queryLast(`.bonus_market .patch[data-mask="${m}"]`).dataset.copy = "false");
+         },
+
+        updateAttractionCount() {
+            $copy = true;
+            dojo.query(`.bonus_market [data-copy="${copy}"]`).forEach((a) => {
+                div = $(a);
+                var mask = div.dataset.mask;
+                div.dataset.copies = dojo.query(`.bonus_market [data-mask="${mask}"]`).length;
+            });
         },
 
         onUpdateActionButtons_commonClientPickPatch: function (args) {
@@ -1388,13 +1396,12 @@ define([
             if (action == 'placeStartFence') {
                 this.pm.endPickPatch();
                 this.onLeavingState(this.gamedatas.state);
-
-            };
-            
+            }
         },
         onPlaceToken: function (tokenId) {
             var token = $(tokenId);
             if (!token) return; // destroyed
+            this.updateAttractionCount();
         },
         onDone: function () {
             var token = gameui.clientStateArgs.token;
@@ -1427,7 +1434,7 @@ define([
 
             if (location.startsWith('hand')) {
                 var state = parseInt(tokenInfo.state);
-                console.log("state",state);
+                console.log('state', state);
                 //result.position = 'absolute';
                 var tokenNode = $(token);
                 if (!tokenNode) return result; // ???
@@ -1632,7 +1639,10 @@ define([
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             //
             var _this = this;
-            var notifs = [['breedingTime', 1000],["placeStartFenceArgs",1]];
+            var notifs = [
+                ['breedingTime', 1000],
+                ['placeStartFenceArgs', 1],
+            ];
             notifs.forEach(function (notif) {
                 dojo.subscribe(notif[0], _this, 'notif_' + notif[0]);
                 _this.notifqueue.setSynchronous(notif[0], notif[1]);
@@ -1680,7 +1690,7 @@ define([
         },
 
         notif_placeStartFenceArgs(notif) {
-            this.onEnteringState("placeStartFences", notif.args);//updates possible moves
-        }
+            this.onEnteringState('placeStartFences', notif.args); //updates possible moves
+        },
     });
 });
