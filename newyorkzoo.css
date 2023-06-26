@@ -287,10 +287,6 @@
     z-index: 10;
 }
 
-.patch .pbutton {
-    position: absolute;
-    pointer-events: none;
-}
 .pboard .patch.state_1 {
     transform: rotateZ(90deg);
 }
@@ -461,13 +457,6 @@
     opacity: 0;
 }
 
-.pieces .patch .sticker {
-    display: none;
-}
-.stickers_always .pieces .patch .sticker {
-    display: unset;
-}
-
 .active_slot:hover {
     filter: drop-shadow(0px 0px 4px rgb(125, 247, 26)) !important;
 }
@@ -523,10 +512,6 @@
     opacity: 0.2;
 }
 .original .patch-outline,
-.original .pbutton,
-.original .sticker {
-    display: none;
-}
 
 .original {
     filter: initial !important;
@@ -730,20 +715,6 @@
     display: inline-block;
     vertical-align: middle;
     line-height: 32px;
-}
-.logitem.pbutton {
-    color: antiquewhite;
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    font-weight: bold;
-    font-size: large;
-
-    text-align: center;
-    line-height: 32px;
-
-    width: 32px;
-    height: 32px;
-    background-image: url(img/tokens.png);
-    background-size: calc(600px / 50 * 32) auto;
 }
 
 .logitem.patch {

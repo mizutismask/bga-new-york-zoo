@@ -1393,30 +1393,14 @@ define([
             
         },
         onPlaceToken: function (tokenId) {
-            // updating counters
             var token = $(tokenId);
             if (!token) return; // destroyed
-            var parent = token.parentNode;
-            if (tokenId.startsWith('timemarker_')) {
-                var newPos = 53 - getIntPart(parent.id, 1);
-                var counter = $('time_' + getPart(tokenId, 1) + '_counter');
-                counter.innerHTML = newPos;
-            }
-            if (tokenId.startsWith('pbutton')) {
-                for (var player_id in this.gamedatas.players) {
-                    var playerInfo = this.gamedatas.players[player_id];
-                    var c = playerInfo.color;
-                    var size = $('buttons_' + c).children.length;
-                    var counter = $('buttons_' + c + '_counter');
-                    counter.innerHTML = size;
-                }
-            }
         },
         onDone: function () {
             var token = gameui.clientStateArgs.token;
             var id = gameui.clientStateArgs.dropTarget;
             if (!gameui.isActiveSlot(id)) {
-                if (!this.practiceMode) gameui.showError(_('Illegal patch location'));
+                if (!this.practiceMode) gameui.showError(_('Illegal fence location'));
                 return;
             }
             dojo.destroy(token + '_temp');
@@ -1482,25 +1466,6 @@ define([
 
                 return result;
             }
-            if (location.startsWith('house')) {
-                /*  if (!$(token)) {
-                    console.log('create token in house ', token, location, tokenInfo);
-                    this.createToken(token, tokenInfo, location);
-                }*/
-                return result;
-            }
-            if (location.startsWith('supply_buttons') || location.startsWith('buttons')) {
-                //	debugger;
-                result.inlinecoords = true;
-                var cbox = dojo.contentBox(location);
-                var width = cbox.w - 40;
-                var height = cbox.h - 40;
-                result.x = Math.floor(Math.random() * width);
-                result.y = Math.floor(Math.random() * height);
-                if (!$(token)) this.createToken(token, tokenInfo, location);
-                //dojo.attr(token, 'data-pos', getIntPart(token, 1));
-                return result;
-            }
             if (location.startsWith('square')) {
                 result.inlinecoords = true;
 
@@ -1511,7 +1476,6 @@ define([
                 result.y = top;
                 result.location = 'pieces_' + getPart(location, 1);
                 if ($(token)) $(token).style.removeProperty('transform');
-                //result.onclick = this.onAnimal;
             }
             /* if (location.startsWith('action_zone')) {
                      result.inlinecoords = true;

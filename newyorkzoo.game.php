@@ -1365,8 +1365,6 @@ class NewYorkZoo extends EuroGame {
         $res = [];
         $patches = $this->arg_canBuyPatches($order);
         self::dump('*************arg_playerTurn***patches***', $patches);
-        $curbuttons = $this->tokens->getTokensInLocation("buttons_$order");
-        $buttons = count($curbuttons);
         $canUseAny = false;
         $canPopulate = !empty($this->getAnimalsByFenceHavingMinimalAnimalCount($order, 2)) || count($this->getFreeHouses($order)) != count($this->getPlayerHouses($order));
         $occupancy = $this->getOccupancyMatrix($order);
@@ -1386,10 +1384,6 @@ class NewYorkZoo extends EuroGame {
             $res['patches'][$patch]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
-        // $advance = $this->dbGetAdvance($player_id);
-        $advance = 0; //todo
-        $res += ['advance' => $advance];
-        $res += ['buttons' => $buttons];
 
         $res['canPatch'] = $canUseAny && $canPopulate;
         $res['maxMoves'] = $this->arg_elephantMove();
@@ -1511,16 +1505,15 @@ class NewYorkZoo extends EuroGame {
 
     /** Return patches that are accessible with an elephant move. */
     function arg_canBuyPatches($order) {
-        //$patches = ['patch_16', 'patch_1', 'patch_18'];
         $patches = [];
         $nextZones = $this->getNextActionZones();
         foreach ($nextZones as $nz) {
-            self::dump("*****************getNextActionZones rs*", $nz);
+           // self::dump("*****************getNextActionZones rs*", $nz);
             $topPatch = $this->tokens->getTokenOnTop($nz, true, 'patch');
             if ($topPatch)
                 $patches[] = $topPatch["key"];
         }
-        self::dump("*****************arg_canBuyPatches*", $patches);
+        //self::dump("*****************arg_canBuyPatches*", $patches);
         return $patches;
     }
 
@@ -1558,7 +1551,7 @@ class NewYorkZoo extends EuroGame {
         $housesWithToken = $this->getFieldValuesFromArray($houseTokens, "location", true);
         $allHouses = $this->getPlayerHouses($playerOrder);
         $emptyHouses = array_values(array_diff($allHouses, $housesWithToken));
-        self::dump("*****************getFreeHouses ", implode(",", $emptyHouses));
+        //self::dump("*****************getFreeHouses ", implode(",", $emptyHouses));
         return $emptyHouses;
     }
 
