@@ -960,18 +960,20 @@
     gap: 11px;
 }
 
-.bonus_market [data-copy="true"]{
-   display: none;
-}
-
-.bonus_market [data-copy="false"]::after{
-    content: attr(data-copies);
+.group-counter{
     position: absolute;
     right: 2px;
     top: 2px;
     color: brown;
     font-size: smaller;
     font-weight: bold;
+    background: wheat;
+    z-index: 17;
+    width: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
 }
 
 .bonus_market .state_1 {
@@ -1002,6 +1004,11 @@
 .bonus_market > * {
     /*display: inline-block;
 		padding:3px;*/
+}
+
+.bonus-mask-group{
+    position: relative;
+    display: grid;
 }
 
 .board_houses {

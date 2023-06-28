@@ -627,7 +627,7 @@ define([
             // TODO: Set up your game interface here, according to "gamedatas"
 
             this.inherited(arguments);
-            this.addAttractionCount(gamedatas.attractionsWithCount);
+            this.updateAttractionCount();
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -731,9 +731,6 @@ define([
                     'data-dy': dy,
                     'data-rz': rotateZ,
                 });
-                if (mat.color == 'bonus') {
-                    dojo.setAttr(token, 'data-mask', mat.mask);
-                }
             } else if (token == 'token_neutral') {
                 var dx = CELL_WIDTH;
                 var dy = CELL_WIDTH * 2;
@@ -1242,22 +1239,14 @@ define([
             );
         },
 
-        addAttractionCount(attractionsWithCount) {
-            dojo.query(`.bonus_market .patch`).forEach((a) => (a.dataset.copy = 'true'));
-            attractionsWithCount.forEach((a) => {
-                div = $(a);
-                div.dataset.copy = 'false';
-                var mask = this.getRulesFor(div.id, 'mask');
-                div.dataset.copies = dojo.query(`.bonus_market [data-mask="${mask}"]`).length;
-            });
-         },
-
         updateAttractionCount() {
-            $copy = true;
-            dojo.query(`.bonus_market [data-copy="${copy}"]`).forEach((a) => {
-                div = $(a);
-                var mask = div.dataset.mask;
-                div.dataset.copies = dojo.query(`.bonus_market [data-mask="${mask}"]`).length;
+            dojo.query(`.group-counter`).forEach((g) => {
+                g.innerHTML = g.parentNode.childElementCount - 1;
+                if (g.innerHTML == 0) {
+                    g.style.display = 'none';
+                } else {
+                    g.style.display = 'flex';
+                }
             });
         },
 
@@ -1483,6 +1472,12 @@ define([
                 result.y = top;
                 result.location = 'pieces_' + getPart(location, 1);
                 if ($(token)) $(token).style.removeProperty('transform');
+            }
+            if (location.startsWith('bonus_market')) {
+                //redirects to the sub group corresponding to the mask
+                const mask = this.getRulesFor(token, 'mask');
+                result.location = this.queryFirstId(`.bonus_market [data-mask-group="${mask}"]`);
+                return result;
             }
             /* if (location.startsWith('action_zone')) {
                      result.inlinecoords = true;

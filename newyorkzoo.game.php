@@ -308,7 +308,6 @@ class NewYorkZoo extends EuroGame {
         }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
-        $result['attractionsWithCount'] = array_keys($this->arg_placeAttraction()["patches"]);
         return $result;
     }
 
@@ -551,6 +550,24 @@ class NewYorkZoo extends EuroGame {
         return $res;
     }
 
+    /**
+     * Return the entire object and not only its id.
+     */
+    function mtCollectAllWithFieldValue($field, $expectedValue, $callback = null) {
+        $res = [];
+        foreach ($this->token_types as $id => $info) {
+            if (array_key_exists($field, $info)) {
+                $trig = $info[$field];
+                if ($trig === $expectedValue) {
+                    if ((!$callback) || $callback($trig, $id)) {
+                        $res[] = $info;
+                    }
+                }
+            }
+        }
+        return $res;
+    }
+
     function stateToRotor($state) {
         $ydir = (int) ($state / 4);
         $zdir = $state % 4;
@@ -636,18 +653,8 @@ class NewYorkZoo extends EuroGame {
 
         if ($this->gamestate->state()["name"] === "placeAttraction") {
             $this->userAssertTrue(self::_("Should be a bonus attraction"), $pos === "bonus_market");
-            //if there is another attraction left of the same shape, we place any other but the last one, since it’s used for attraction counters
-            $tokenToMove = $token_id;
-            if(in_array($token_id,array_keys($this->arg_placeAttraction()["patches"]))){
-                $mask=$this->getRulesFor($token_id, "mask");
-                $patchesWithSameShape = $this->mtCollectWithFieldValue("mask", $mask);
-                $tokenToMoveMain =array_shift($patchesWithSameShape);
-                $instances=$this->tokens->getTokensOfTypeInLocation(getPartsPrefix($token_id,2)."_%","bonus_market");
-                $tokenToMove=array_shift($instances)["key"];
-                self::dump("**************replaced with*********************", $tokenToMove);
-            }
 
-            $this->saction_PlacePatch($order, $tokenToMove, $dropTarget, $rotateZ, $rotateY);
+            $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
             $this->resolveLastContextIfAction(CHECK_FENCE_FULL);
         } else {
             $order = $this->getPlayerPosition($player_id);

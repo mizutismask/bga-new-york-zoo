@@ -107,7 +107,13 @@
 
 
 
-<div id="bonus_market" class="bonus_market"></div>
+<div id="bonus_market" class="bonus_market">
+	<!-- BEGIN bonus-mask -->
+	<div id="bonus-mask-{COUNTER}" class="bonus-mask-group" data-mask-group="{MASK}">
+		<div class="group-counter"></div>
+	</div>
+	<!-- END bonus-mask -->
+</div>
 <div id="limbo" class="limbo">
 	<div id="rotate_control_template" class="rotate-image control-image"></div>
 	<div id="flip_control_template" class="mirror-image control-image"></div>
