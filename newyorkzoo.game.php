@@ -1184,6 +1184,10 @@ class NewYorkZoo extends EuroGame {
                 $this->resolveLastContextIfAction(ACTION_POPULATE_FENCE);
                 $this->changeNextStateFromContext();
                 break;
+            case "keepAnimalFromFullFence":
+                $this->resolveLastContextIfAction(ACTION_KEEP_ANIMAL_FROM_FULL_FENCE);
+                $this->changeNextStateFromContext();
+                break;
             default:
                 //animal action zone
                 self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
