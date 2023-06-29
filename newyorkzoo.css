@@ -827,6 +827,10 @@
     /*align-content: center;*/
 }
 
+.nyz_action_zone:nth-child(13){
+    align-content: center;
+}
+
 .nyz_animal_action_zone {
     border-radius: 85px;
 }
