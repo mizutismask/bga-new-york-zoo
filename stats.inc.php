@@ -80,7 +80,41 @@ $stats_type = array(
             "name" => totranslate("Number of turns"),
             "type" => "int"
         ),
-
+        "game_empty_squares" => array(
+            "id" => 11,
+            "name" => totranslate("Empty squares left"),
+            "type" => "int"
+        ),
+        "game_attractions_squares" => array(
+            "id" => 12,
+            "name" => totranslate("Squares occupied by attractions"),
+            "type" => "int"
+        ),
+        "game_attractions" => array(
+            "id" => 13,
+            "name" => totranslate("Attractions"),
+            "type" => "int"
+        ),
+        "game_animals_breed" => array(
+            "id" => 14,
+            "name" => totranslate("Animals bred"),
+            "type" => "int"
+        ),
+        "game_animals_bonus_breed" => array(
+            "id" => 15,
+            "name" => totranslate("Animals bred with bonus bred"),
+            "type" => "int"
+        ),
+        "game_animals_kept_from_full_fence" => array(
+            "id" => 16,
+            "name" => totranslate("Animals kept from full fence"),
+            "type" => "int"
+        ),
+        "game_animals_added_from_house" => array(
+            "id" => 17,
+            "name" => totranslate("Additional animals added to fence from house"),
+            "type" => "int"
+        ),
         /*
         Examples:    
         

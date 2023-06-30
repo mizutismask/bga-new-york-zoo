@@ -139,12 +139,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_RESOLVING_BREEDING, 0);
             self::setGameStateInitialValue(GS_BONUS_BREEDING, 0);
 
-            // Init game statistics
-            // (note: statistics used in this file must be defined in your stats.inc.php file)
-            //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-            //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-            // TODO: setup the initial game situation here
+            $this->initStats();
 
 
             // Activate first player (which is in general a good idea :) )
@@ -360,7 +355,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function getPatchFromSquare($square) {
-        $gridSquare=$this->replaceAnimalSquareByGridSquare($square);
+        $gridSquare = $this->replaceAnimalSquareByGridSquare($square);
         return self::getUniqueValueFromDB("SELECT token_key FROM fence_squares WHERE square = '$gridSquare'");
     }
 
@@ -655,6 +650,9 @@ class NewYorkZoo extends EuroGame {
             $this->userAssertTrue(self::_("Should be a bonus attraction"), $pos === "bonus_market");
 
             $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
+            self::incStat(1, "game_attractions", $player_id);
+            $mask = $this->getRulesFor($token_id, "mask");
+            self::incStat(substr_count($mask, "1"), "game_attractions_squares", $player_id);
             $this->resolveLastContextIfAction(CHECK_FENCE_FULL);
         } else {
             $order = $this->getPlayerPosition($player_id);
@@ -828,17 +826,22 @@ class NewYorkZoo extends EuroGame {
         $state = $this->gamestate->state();
         $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name}', []);
         $patch = $this->getPatchFromSquare($to);
-
+        //self::dump('*******************state name', $state['name']);
+      
         switch ($state['name']) {
+
             case 'keepAnimalFromFullFence':
                 self::setGameStateValue(GS_ANIMAL_TO_KEEP, 0);
+                self::incStat(1, "game_animals_kept_from_full_fence", $this->getMostlyActivePlayerId());
                 $this->resolveLastContextIfAction(ACTION_KEEP_ANIMAL_FROM_FULL_FENCE);
                 break;
-            case 'chooseFences':
-                //bonus breeding
+            case 'chooseFence':
+                //only bonus breeding passes here
+                self::incStat(1, "game_animals_bonus_breed", $this->getMostlyActivePlayerId());
                 break;
             case 'placeAnimalFromHouse':
                 $this->resolveLastContextIfAction(ADD_FROM_HOUSE);
+                self::incStat(1, "game_animals_added_from_house", $this->getMostlyActivePlayerId());
                 break;
             default:
                 //animal zone
@@ -1236,6 +1239,7 @@ class NewYorkZoo extends EuroGame {
                 foreach ($squaresIds as $i => $squareKey) {
                     $token = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo");
                     $this->dbSetTokenLocation($token["key"], $squareKey, null, '', []);
+                    self::incStat(1, "game_animals_breed", $this->getMostlyActivePlayerId());
 
                     $patch = $this->getPatchFromSquare($squareKey);
                     $this->dbIncFenceAnimalsAddedNumber($patch);
@@ -1352,6 +1356,7 @@ class NewYorkZoo extends EuroGame {
             $occupancy = $this->getOccupancyMatrix($order);
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
             $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_slot');
+            self::setStat($unoccup_count, "game_empty_squares", $player_id);
 
             //tie breaker
             $animalCount = 0;
@@ -1515,7 +1520,7 @@ class NewYorkZoo extends EuroGame {
         $patches = [];
         $nextZones = $this->getNextActionZones();
         foreach ($nextZones as $nz) {
-           // self::dump("*****************getNextActionZones rs*", $nz);
+            // self::dump("*****************getNextActionZones rs*", $nz);
             $topPatch = $this->tokens->getTokenOnTop($nz, true, 'patch');
             if ($topPatch)
                 $patches[] = $topPatch["key"];
@@ -1681,7 +1686,7 @@ class NewYorkZoo extends EuroGame {
 
     function arg_possibleTargetsForAnimal($playerOrder, $animal) {
         $freeHouses = $this->getFreeHouses($playerOrder);
-        $fencesAcceptingAnml = $this->getSquaresInFencesAccepting($playerOrder, $animal);//remove attraction squares
+        $fencesAcceptingAnml = $this->getSquaresInFencesAccepting($playerOrder, $animal); //remove attraction squares
         return array_merge($freeHouses, $fencesAcceptingAnml);
     }
 
@@ -1737,7 +1742,7 @@ class NewYorkZoo extends EuroGame {
             $fence["squares"] = $this->getFenceSquares($fenceKey);
             $fence["freeSquares"] = $this->filterFreeSquares($fence["squares"]);
         }
-        self::dump('*******************getFencesInfo', $fences);
+        //self::dump('*******************getFencesInfo', $fences);
         return $fences;
     }
 
