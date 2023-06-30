@@ -1244,6 +1244,16 @@
     /*margin: 47px 0px 0px 47px*/
 }
 
+.log .flamingo,
+.log .fox,
+.log .kangaroo,
+.log .meerkat,
+.log .penguin {
+    width: 30px;
+    height: 30px;
+    vertical-align: bottom;
+}
+
 /*
 Responsive CSS Sprite created using: https://responsive-css.us/
 */

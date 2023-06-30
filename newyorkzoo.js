@@ -475,13 +475,17 @@ class PatchManager {
             this.normalizedRotateAngle(gameui.clientStateArgs.rotateZ) +
             '_' +
             this.normalizedRotateAngle(gameui.clientStateArgs.rotateY);
-        //console.log("updating moves for " + curpatch + " " + combo);
+        //console.log('updating moves for ' + curpatch + ' ' + combo);
         var moves_info = gameui.gamedatas.gamestate.args.patches[curpatch];
         if (moves_info) {
             var moves = moves_info.moves[combo];
             if (moves) {
                 for (var x of moves) {
                     $(x).classList.add('active_slot');
+                    //todo there is still pbs with animals
+                    //when target mark is on another patch, activate only square_x_x won’t be seen since this patch is on top of it
+                    //so we activate anml_square_x_x too to make it visible
+                    $(this.replaceGridSquareByAnimalSquare(x)).classList.add('active_slot');
                 }
             }
         }
@@ -920,7 +924,7 @@ define([
                     if (args.you) args.you = this.divYou(); // will replace ${you} with colored version
                     args.You = this.divYou(); // will replace ${You} with colored version
 
-                    var keys = ['token_name', 'token_divs', 'token_names', 'token_div', 'token_div_count'];
+                    var keys = ['token_name', 'token_divs', 'token_names', 'token_div', 'token_div_count', "animal"];
                     for (var i in keys) {
                         var key = keys[i];
                         // console.log("checking " + key + " for " + log);
@@ -982,6 +986,11 @@ define([
                 var name = this.getTokenName(token_id);
                 var div = "<span>'" + name + "'</span>";
                 return div;
+            }
+            if (key == 'animal') {
+                if (typeof value == 'string') {
+                     return `<div class="animal ${value}"></div>`;
+                }
             }
             return this.divInlineToken(token_id);
         },
