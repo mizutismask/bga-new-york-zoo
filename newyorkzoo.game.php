@@ -1845,7 +1845,7 @@ class NewYorkZoo extends EuroGame {
             return;
         }
         $this->activateNextPlayerCustom();
-        $this->notifyWithName('message', clienttranslate('Start of ${player_name}\'s turn'));
+        $this->notifyWithName('message', clienttranslate('&#10148; Start of ${player_name}\'s turn'));
         $this->gamestate->nextState('next');
     }
 
