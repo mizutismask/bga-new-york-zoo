@@ -84,6 +84,12 @@ class action_newyorkzoo extends APP_GameAction {
     self::ajaxResponse();
   }
 
+  public function dismissAttraction() {
+    self::setAjaxMode();
+    $this->game->action_dismissAttraction();
+    self::ajaxResponse();
+  }
+
   public function chooseFences() {
     self::setAjaxMode();
     $tokenIdsRaw = self::getArg("squares", AT_alphanum, true);

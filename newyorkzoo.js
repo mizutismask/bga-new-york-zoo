@@ -1223,7 +1223,7 @@ define([
                 'c',
                 _('Dismiss'),
                 () => {
-                    gameui.ajaxClientStateAction('dismiss');
+                    gameui.ajaxClientStateAction('dismissAttraction');
                 },
                 null,
                 null,

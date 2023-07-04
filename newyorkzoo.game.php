@@ -1153,6 +1153,11 @@ class NewYorkZoo extends EuroGame {
     function dbGetFencesKeysByPlayer(Int $order) {
         return self::getObjectListFromDB("SELECT token_key FROM fence WHERE player_order='$order'", true);
     }
+    function action_dismissAttraction() {
+        $this->resolveLastContextIfAction(CHECK_FENCE_FULL);
+        $this->notifyWithName('message', clienttranslate('${player_name} does not place a bonus attraction'));
+        $this->changeNextStateFromContext();
+    }
 
     function action_dismissAnimal() {
         $state = $this->gamestate->state();
@@ -1298,6 +1303,7 @@ class NewYorkZoo extends EuroGame {
     function action_chooseFencesForBonusBreeding($squaresIds, $args) {
         $squaresCount = count($squaresIds);
         if ($squaresCount) {
+            
             $this->userAssertTrue(self::_("Have to select exactly 1 fence"), $squaresCount == 1);
             $this->checkSquaresInSquaresByFence($squaresIds, $args["squares"], _("Bonus breeding must happen in fences where there was no normal breeding"));
 
@@ -1308,7 +1314,7 @@ class NewYorkZoo extends EuroGame {
             //$this->dbSetTokenLocation($token["key"], $squareKey, null, '', []);
             //$this->dbIncFenceAnimalsAddedNumber($patch);
 
-            self::notifyAllPlayers("msg", clienttranslate('${player_name} breeds ${number} ${animals}(s)'), array(
+            self::notifyAllPlayers("msg", clienttranslate('${player_name} breeds ${number} ${animals}(s) with the bonus breeding'), array(
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
                 'animals' => $animalType
@@ -1327,6 +1333,10 @@ class NewYorkZoo extends EuroGame {
 */
             $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
             $this->saction_placeAnimal(null, $squareKey, $animalType, $animalId);
+        } else {
+            self::notifyWithName("msg", clienttranslate('${player_name} does not use the bonus breeding'), []);
+            $this->dbUpdatePlayer($this->getMostlyActivePlayerId(), "player_has_bonus_bred", 1);
+            $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
         }
     }
     function checkSquaresInSquaresByFence($squaresIds, $squaresByFence, $errorMsg) {
