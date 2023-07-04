@@ -1682,7 +1682,7 @@ define([
                 classes.push('bonus');
                 notifDiv = $('bonus_breeding_time_' + this.playerOrder);
             } else {
-                animal = notif.args.animal;
+                animal = notif.args.animalType;
                 classes.push('notif-' + animal);
                 if (Object.values(notif.args.cantBreed).indexOf(this.player_id + '') !== -1) {
                     classes.push('disabled');
