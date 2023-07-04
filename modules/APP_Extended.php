@@ -288,6 +288,25 @@ abstract class APP_Extended extends Table {
     }
 
     /**
+     * Return player table in order starting from $staring player id, if $starting is not in the player table
+     * i.e. spectator returns same as loadPlayersBasicInfos(), i.e. natural player order. Zombies are not returned.
+     * This is useful in view.php file
+     * @param number $starting - player number
+     * @return string[][] - map of playerId => playerInfo
+     */
+    function getPlayingPlayersInOrder($starting) {
+        $players = $this->loadPlayersBasicInfos();
+        $player_ids = $this->getPlayerIdsInOrder($starting);
+        $result = [];
+        foreach ($player_ids as $player_id) {
+            if ($players[$player_id]["player_zombie"] != 1) {
+                $result[$player_id] = $players[$player_id];
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Change activate player, also increasing turns_number stats and giving extra time
      */
     function setNextActivePlayerCustom($next_player_id) {
@@ -419,15 +438,15 @@ abstract class APP_Extended extends Table {
     function dbGetLastContextToResolve($count = 1) {
         $positiveCount = $count <= 0 ? 1 : $count;
         $sql = "select * from context_log where resolved = 0 order by id desc limit $positiveCount";
-        $res=self::getObjectListFromDB($sql);
-        if($count==1 && count($res)) return $res[0];
+        $res = self::getObjectListFromDB($sql);
+        if ($count == 1 && count($res)) return $res[0];
         return $res;
     }
 
     function dbGetLastResolvedContext() {
         $sql = "select * from context_log where resolved = 1 order by id desc limit 1";
-        $res=self::getObjectListFromDB($sql);
-        if(count($res)) return $res[0];
+        $res = self::getObjectListFromDB($sql);
+        if (count($res)) return $res[0];
         return $res;
     }
 

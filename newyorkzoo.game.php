@@ -827,7 +827,7 @@ class NewYorkZoo extends EuroGame {
         $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name}', []);
         $patch = $this->getPatchFromSquare($to);
         //self::dump('*******************state name', $state['name']);
-      
+
         switch ($state['name']) {
 
             case 'keepAnimalFromFullFence':
@@ -1040,7 +1040,7 @@ class NewYorkZoo extends EuroGame {
         if ($needed) {
             $animalType = $this->getAnimalName($needed);
             $needed = false;
-            $players = $this->getPlayersInOrder($currentPlayerId);
+            $players = $this->getPlayingPlayersInOrder($currentPlayerId);
             $notBreeding = [];
             foreach ($players as $playerId =>  $player) {
                 $squaresByFence = $this->getFreeSquaresAvailableForBreeding($this->getPlayerPosition($playerId), $animalType);
@@ -1053,7 +1053,8 @@ class NewYorkZoo extends EuroGame {
             }
 
             self::notifyAllPlayers("breedingTime", clienttranslate('Breeding time for ${animal}'), array(
-                'animal' => $animalType,
+                'animal' => $animalType, //replaced by format_recursive
+                'animalType' => $animalType, //stays as is
                 'cantBreed' => array_map(fn ($p) => $p["player_id"], $notBreeding),
                 'bonus' => false,
             ));
@@ -1864,7 +1865,7 @@ class NewYorkZoo extends EuroGame {
 
     function st_gameTurnNextBreeder() {
         $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
-        $players = array_values($this->getPlayersInOrder($triggerPlayer));
+        $players = array_values($this->getPlayingPlayersInOrder($triggerPlayer));
         $playerCount = count($players);
         $i = 0;
         while ($i < $playerCount) {
@@ -1904,7 +1905,7 @@ class NewYorkZoo extends EuroGame {
     function st_gameNextBonusBreeder() {
         $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
         $this->gamestate->changeActivePlayer($triggerPlayer);
-        $players = array_values($this->getPlayersInOrder($triggerPlayer));
+        $players = array_values($this->getPlayingPlayersInOrder($triggerPlayer));
         $i = 0;
         self::dump('*****************getPlayersInOrder**', $players);
         while ($i < count($players)) {
@@ -1969,7 +1970,7 @@ class NewYorkZoo extends EuroGame {
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 default:
-                    $this->gamestate->nextState("zombiePass");
+                    $this->gamestate->jumpToState(STATE_GAME_TURN_NEXT_PLAYER);
                     break;
             }
 
