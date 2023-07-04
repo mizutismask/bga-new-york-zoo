@@ -818,6 +818,14 @@ class NewYorkZoo extends EuroGame {
         return str_replace("anml_square_", "square_", $squareId);
     }
 
+    function formatPlaceName($placeName) {
+        $parts = explode('_', $placeName);
+        $len = count($parts);
+        if ($len == 5 && str_starts_with($placeName, "anml_square"))
+            return strval(intval(getpart($placeName, 3, true)) + 1) . ":" . strval(intval(getpart($placeName, 4)) + 1);
+        return $placeName;
+    }
+
     /**
      * Does place the animal, when all parameters have been checked.
      */

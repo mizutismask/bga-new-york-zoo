@@ -332,21 +332,27 @@ abstract class EuroGame extends APP_Extended
         }
     }
 
+    function formatPlaceName($placeName){
+        return $placeName;
+    }
+
     function dbSetTokenLocation($token_id, $place_id, $state = null, $notif = '*', $args = null)
     {
         $this->systemAssertTrue("token_id cannot be array " . toJson($token_id), !is_array($token_id));
         $this->systemAssertTrue("token_id is null/empty $token_id, $place_id $notif", $token_id != null && $token_id != '');
-        if ($args == null)
-            $args = array();
-        if ($notif === '*')
-            $notif = clienttranslate('${player_name} moves ${token_name} into ${place_name}');
-        if ($state === null) {
-            $state = $this->tokens->getTokenState($token_id);
-        }
+        
         $place_from = $this->tokens->getTokenLocation($token_id);
         $this->systemAssertTrue("token_id does not exists, create first: $token_id", $place_from);
         if ($place_id === null) {
             $place_id = $place_from;
+        }
+
+        if ($args == null)
+            $args = array();
+        if ($notif === '*')
+            $notif = clienttranslate('${player_name} moves ${token_name} into square ' . $this->formatPlaceName($place_id));
+        if ($state === null) {
+            $state = $this->tokens->getTokenState($token_id);
         }
         $this->tokens->moveToken($token_id, $place_id, $state);
         $notifyArgs = array(
