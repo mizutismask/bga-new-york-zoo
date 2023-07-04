@@ -894,23 +894,6 @@ define([
         //                  You can use this method to perform some user interface changes at this moment.
         //
         /** @Override */
-        addMoveToLog: function (log_id, move_id) {
-            this.inherited(arguments);
-            var lognode = $('log_' + log_id);
-            //lognode.setAttribute('data-move-id', move_id);
-
-            var prevmove = document.querySelector('[data-move-id="' + move_id + '"]');
-            if (!prevmove) {
-                tsnode = document.createElement('div');
-                tsnode.classList.add('movestamp');
-                tsnode.innerHTML = _('Move #') + move_id;
-                lognode.appendChild(tsnode);
-
-                tsnode.setAttribute('data-move-id', move_id);
-            }
-        },
-
-        /** @Override */
         format_string_recursive: function (log, args) {
             try {
                 //console.trace("format_string_recursive(" + log + ")", args);
