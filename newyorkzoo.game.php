@@ -643,7 +643,7 @@ class NewYorkZoo extends EuroGame {
             $this->notifyWithName("fenceFull", "", ["fence" => $context["param1"], "resolved" => true]);
         }
     }
-    
+
     function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
         self::dump("**************action_place*********************", $token_id);
         self::dump("**************to*********************", $dropTarget);
@@ -841,7 +841,13 @@ class NewYorkZoo extends EuroGame {
     function saction_placeAnimal($from, $to, $animalType, $animalId) {
 
         $state = $this->gamestate->state();
-        $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name}', []);
+        $newLocation = "";
+        if(str_starts_with($to, "house")){
+            $newLocation=clienttranslate('into a house');
+        }else if(str_starts_with($to, "anml_square")){
+            $newLocation=clienttranslate('into a fence');
+        }
+        $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name} ${newLocation}', ["newLocation"=>$newLocation]);//todo i18
         $patch = $this->getPatchFromSquare($to);
         //self::dump('*******************state name', $state['name']);
 
