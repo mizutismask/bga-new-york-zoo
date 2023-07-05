@@ -330,6 +330,7 @@
 .patch-face {
     top: 0;
     left: 0;
+    background-color: rgb(181 152 105);
 }
 
 .patch .patch {
@@ -349,6 +350,9 @@
 .pboard .patch-outline {
     display: block;
     z-index: 90;
+}
+.filler .patch-outline {
+    display: none;
 }
 
 .patch-outline-poligon {
