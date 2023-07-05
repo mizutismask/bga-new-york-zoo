@@ -26,7 +26,7 @@
  */
 
 require_once(APP_BASE_PATH . "view/common/game.view.php");
-define("CELL_WIDTH", 43);
+define("CELL_WIDTH", 42);
 
 class view_newyorkzoo_newyorkzoo extends game_view {
   function getGameName() {

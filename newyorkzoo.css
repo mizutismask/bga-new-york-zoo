@@ -48,7 +48,7 @@
 :root {
     --colsNb: 14;
     --rowsNb: var(--rowsNb);
-    --cellWidth: 43px;
+    --cellWidth: 42px;
     --playerCount: 3;
 }
 
@@ -226,6 +226,52 @@
 }
 .tableau.player_order_5 {
     background-position: calc(100% / var(--playerCountMinus1) * 4) 0%;
+}
+
+.player_count_2.player_order_1 .pboard {
+    padding: 143px 0px 0px 56px;
+}
+.player_count_2.player_order_2 .pboard {
+    padding: 143px 0px 0px 57px;
+}
+
+.player_count_3.player_order_1 .pboard {
+    padding: 143px 0px 0px 62px;
+}
+.player_count_3.player_order_2 .pboard {
+    padding:142px 0px 0px 60px;
+}
+.player_count_3.player_order_3 .pboard {
+    padding:142px 0px 0px 58px;
+}
+
+.player_count_4.player_order_1 .pboard {
+    padding: 141px 0px 0px 50px;
+}
+.player_count_4.player_order_2 .pboard {
+    padding:143px 0px 0px 54px;
+}
+.player_count_4.player_order_3 .pboard {
+    padding:142px 0px 0px 53px;
+}
+.player_count_4.player_order_4 .pboard {
+    padding:143px 0px 0px 52px;
+}
+
+.player_count_5.player_order_1 .pboard {
+    padding: 141px 0px 0px 50px;
+}
+.player_count_5.player_order_2 .pboard {
+    padding:143px 0px 0px 52px;
+}
+.player_count_5.player_order_3 .pboard {
+    padding:145px 0px 0px 51px;
+}
+.player_count_5.player_order_4 .pboard {
+    padding:143px 0px 0px 49px;
+}
+.player_count_5.player_order_5 .pboard {
+    padding:143px 0px 0px 48px;
 }
 
 .player_name {

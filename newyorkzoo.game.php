@@ -2115,4 +2115,19 @@ class NewYorkZoo extends EuroGame {
         $this->dbSetTokenLocation($animalId, "house_" . $playerOrder . "_" . 3, null, '${player_name} places a ${token_name}', []);
         $this->saction_MoveNeutralToken("action_zone_17");
     }
+
+    /** Places several patches on the active player board. */
+    function placePatches($count = 10) {
+        $playerOrder = $this->getMostlyActivePlayerOrder();
+
+        for ($i=0; $i < $count; $i++) { 
+            $turn = $this->arg_playerTurn();
+            $fences = $this->arg_canBuyPatches($playerOrder);
+            $patch1 = array_shift($fences);
+
+            $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
+            $p1Move = array_shift($patchOneMoves);
+            $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
+        }
+    }
 }

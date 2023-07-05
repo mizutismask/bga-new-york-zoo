@@ -14,7 +14,7 @@
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *
  */
-const CELL_WIDTH = 43;
+const CELL_WIDTH = 42;
 
 class PatchManager {
     constructor(game) {
