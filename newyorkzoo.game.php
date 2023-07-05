@@ -636,6 +636,14 @@ class NewYorkZoo extends EuroGame {
         }
     }
 
+    function resolveLastFullFenceContext() {
+        $context = $this->dbGetLastContextToResolve();
+        if ($context["action"] == CHECK_FENCE_FULL) {
+            $this->dbResolveContextLog($context["id"]);
+            $this->notifyWithName("fenceFull", "", ["fence" => $context["param1"], "resolved" => true]);
+        }
+    }
+    
     function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
         self::dump("**************action_place*********************", $token_id);
         self::dump("**************to*********************", $dropTarget);
@@ -653,7 +661,8 @@ class NewYorkZoo extends EuroGame {
             self::incStat(1, "game_attractions", $player_id);
             $mask = $this->getRulesFor($token_id, "mask");
             self::incStat(substr_count($mask, "1"), "game_attractions_squares", $player_id);
-            $this->resolveLastContextIfAction(CHECK_FENCE_FULL);
+
+            $this->resolveLastFullFenceContext();
         } else {
             $order = $this->getPlayerPosition($player_id);
             $canBuy  = $this->arg_canBuyPatches($order);
@@ -879,6 +888,7 @@ class NewYorkZoo extends EuroGame {
             $this->dbUpdateFenceType($patch, $animalType);
             $this->dbIncFenceAnimalsAddedNumber($patch);
             if ($this->isFenceFull($patch)) {
+                $this->notifyWithName("fenceFull", "", ["fence" => $patch, "resolved" => false]);
                 $this->dbInsertContextLog(CHECK_FENCE_FULL, $patch);
                 /*  $nextStoppingState = $this->fenceFullActions($patch);
                 $this->gamestate->nextState($nextStoppingState);
@@ -1154,8 +1164,8 @@ class NewYorkZoo extends EuroGame {
         return self::getObjectListFromDB("SELECT token_key FROM fence WHERE player_order='$order'", true);
     }
     function action_dismissAttraction() {
-        $this->resolveLastContextIfAction(CHECK_FENCE_FULL);
         $this->notifyWithName('message', clienttranslate('${player_name} does not place a bonus attraction'));
+        $this->resolveLastFullFenceContext();
         $this->changeNextStateFromContext();
     }
 
@@ -1277,6 +1287,7 @@ class NewYorkZoo extends EuroGame {
                     if ($this->isFenceFull($patch)) {
                         // $nextStoppingState = $this->fenceFullActions($patch);
                         // $this->gamestate->nextState($nextStoppingState);
+                        $this->notifyWithName("fenceFull", "", ["fence" => $patch, "resolved" => false]);
                         $this->dbInsertContextLog(CHECK_FENCE_FULL, $patch);
                     }
                 }
@@ -1303,7 +1314,7 @@ class NewYorkZoo extends EuroGame {
     function action_chooseFencesForBonusBreeding($squaresIds, $args) {
         $squaresCount = count($squaresIds);
         if ($squaresCount) {
-            
+
             $this->userAssertTrue(self::_("Have to select exactly 1 fence"), $squaresCount == 1);
             $this->checkSquaresInSquaresByFence($squaresIds, $args["squares"], _("Bonus breeding must happen in fences where there was no normal breeding"));
 

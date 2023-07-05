@@ -907,7 +907,7 @@ define([
                     if (args.you) args.you = this.divYou(); // will replace ${you} with colored version
                     args.You = this.divYou(); // will replace ${You} with colored version
 
-                    var keys = ['token_name', 'token_divs', 'token_names', 'token_div', 'token_div_count', "animal"];
+                    var keys = ['token_name', 'token_divs', 'token_names', 'token_div', 'token_div_count', 'animal'];
                     for (var i in keys) {
                         var key = keys[i];
                         // console.log("checking " + key + " for " + log);
@@ -972,7 +972,7 @@ define([
             }
             if (key == 'animal') {
                 if (typeof value == 'string') {
-                     return `<div class="animal ${value}"></div>`;
+                    return `<div class="animal ${value}"></div>`;
                 }
             }
             return this.divInlineToken(token_id);
@@ -1628,6 +1628,7 @@ define([
             var _this = this;
             var notifs = [
                 ['breedingTime', 1000],
+                ['fenceFull', 1000],
                 ['placeStartFenceArgs', 1],
             ];
             notifs.forEach(function (notif) {
@@ -1674,6 +1675,11 @@ define([
             console.log('classes', classes);
             notifDiv.classList.add(...classes);
             setTimeout(() => notifDiv.classList.remove('animated', 'disabled', 'bonus', 'notif-' + animal), 1000);
+        },
+
+        notif_fenceFull(notif) {
+            console.log("notif_fenceFull", notif);
+            $(notif.args.fence).classList.toggle("animated", !notif.args.resolved);
         },
 
         notif_placeStartFenceArgs(notif) {
