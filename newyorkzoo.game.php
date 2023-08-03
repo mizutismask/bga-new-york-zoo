@@ -28,6 +28,7 @@ if (!defined('OFFSET')) {
     define("OFFSET", 5);
     define("ACTION_ZONES_COUNT", 25);
     define("ACTION_ZONE_PREFIX", "action_zone_");
+    define("ANIMALS_INITIAL_NUMBER", 60);
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
     define("GS_BREEDING", "breeding");
@@ -195,11 +196,11 @@ class NewYorkZoo extends EuroGame {
         }
 
         //animals
-        $this->tokens->createTokensPack("meerkat_{INDEX}", "limbo", 28);
-        $this->tokens->createTokensPack("flamingo_{INDEX}", "limbo", 26);
-        $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", 24);
-        $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", 24);
-        $this->tokens->createTokensPack("fox_{INDEX}", "limbo", 24);
+        $this->tokens->createTokensPack("meerkat_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
+        $this->tokens->createTokensPack("flamingo_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
+        $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
+        $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
+        $this->tokens->createTokensPack("fox_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_10
     }
 
@@ -681,7 +682,7 @@ class NewYorkZoo extends EuroGame {
 
     function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY) {
         $occupancy = $this->getOccupancyMatrix($order);
-        self::dump('*********getOccupancyMatrixBefore**********', $this->matrix->dumpMatrix($occupancy));
+        //self::dump('*********getOccupancyMatrixBefore**********', $this->matrix->dumpMatrix($occupancy));
 
         $rotateZ = $rotateZ % 360;
         $rotateY = $rotateY % 360;
@@ -701,13 +702,13 @@ class NewYorkZoo extends EuroGame {
         );
 
         $occupancy = $this->getOccupancyMatrix($order);
-        self::dump('*********getOccupancyMatrix**********', $this->matrix->dumpMatrix($occupancy));
+        //self::dump('*********getOccupancyMatrix**********', $this->matrix->dumpMatrix($occupancy));
         $unoccup_count = $this->getOccupancyEmpty($occupancy);
         $this->notifyCounterDirect("empties_${order}_counter", $unoccup_count, '');
 
 
         $occupancy = $this->getOccupancyMatrixForPiece($order, $token_id);
-        self::dump('*********getOccupancyMatrixForPiece**********', $this->matrix->dumpMatrix($occupancy));
+        //self::dump('*********getOccupancyMatrixForPiece**********', $this->matrix->dumpMatrix($occupancy));
         $prefix = "square_${order}_";
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
         self::dump('*********occupiedByPiece**********', $occupiedByPiece);
@@ -842,12 +843,12 @@ class NewYorkZoo extends EuroGame {
 
         $state = $this->gamestate->state();
         $newLocation = "";
-        if(str_starts_with($to, "house")){
-            $newLocation=clienttranslate('into a house');
-        }else if(str_starts_with($to, "anml_square")){
-            $newLocation=clienttranslate('into a fence');
+        if (str_starts_with($to, "house")) {
+            $newLocation = clienttranslate('into a house');
+        } else if (str_starts_with($to, "anml_square")) {
+            $newLocation = clienttranslate('into a fence');
         }
-        $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name} ${newLocation}', ["newLocation"=>$newLocation]);//todo i18
+        $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name} ${newLocation}', ["newLocation" => $newLocation]); //todo i18
         $patch = $this->getPatchFromSquare($to);
         //self::dump('*******************state name', $state['name']);
 
@@ -1524,7 +1525,7 @@ class NewYorkZoo extends EuroGame {
             $rotor2 = $this->stateToRotor($state);
             $mask2 = $this->getRulesFor($tokenId, 'mask');
             $occupdata[] = [$x, $y, $mask2, $rotor2];
-            self::dump('*******************occupdata', $occupdata);
+            //self::dump('*******************occupdata', $occupdata);
         }
         $occupancy = $this->matrix->occupancyMatrix($occupdata);
 
@@ -2082,7 +2083,12 @@ class NewYorkZoo extends EuroGame {
                     $minus++;
                 } else {
                     $filler = $this->tokens->getTokenOfTypeInLocation($type, "limbo");
-                    $this->dbSetTokenLocation($filler["key"], $square);
+                    if($filler){
+                        $this->dbSetTokenLocation($filler["key"], $square);
+                    }
+                   // else{
+                   //     throw new feException("No more animals in limbo of type: " . $type);       
+                   // }
                 }
             }
         }
@@ -2116,18 +2122,49 @@ class NewYorkZoo extends EuroGame {
         $this->saction_MoveNeutralToken("action_zone_17");
     }
 
+    function fullFences() {
+        $playerOrder = $this->getMostlyActivePlayerOrder();
+        $fences = $this->getFencesInfo($playerOrder);
+        foreach ($fences as $fenceKey => $fence) {
+            $this->fullFence($fenceKey, MEERKAT, 1);
+        }
+    }
+
     /** Places several patches on the active player board. */
-    function placePatches($count = 10) {
+    function placeFences($count = 10) {
         $playerOrder = $this->getMostlyActivePlayerOrder();
 
-        for ($i=0; $i < $count; $i++) { 
+        for ($i = 0; $i < $count; $i++) {
+            self::dump('************************************************************************i', $i);
             $turn = $this->arg_playerTurn();
             $fences = $this->arg_canBuyPatches($playerOrder);
+            self::dump('*******************arg_canBuyPatches', $fences);
+            $placed = false;
             $patch1 = array_shift($fences);
+            self::dump('*******************$patch1', $patch1);
+            while (!$placed && $patch1 != null) {
 
-            $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
-            $p1Move = array_shift($patchOneMoves);
-            $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
+                $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
+                if (empty($patchOneMoves)) {
+                    $patchOneMoves = $turn['patches'][$patch1]['moves']["90_0"];
+                }
+                if (empty($patchOneMoves)) {
+                    $patchOneMoves = $turn['patches'][$patch1]['moves']["180_0"];
+                }
+                if (empty($patchOneMoves)) {
+                    $patchOneMoves = $turn['patches'][$patch1]['moves']["270_0"];
+                }
+                self::dump('*******************patchOneMoves', $patchOneMoves);
+                if (!empty($patchOneMoves)) {
+                    $p1Move = array_shift($patchOneMoves);
+                    self::dump('*******************patch1 placed', $patch1);
+                    self::dump('*******************to', $p1Move);
+                    $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
+                    $placed = true;
+                }
+                //$patch1 = array_shift($fences);
+                self::dump('*******************patch1 end', $patch1);
+            }
         }
     }
 }
