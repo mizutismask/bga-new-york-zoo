@@ -367,7 +367,7 @@ class NewYorkZoo extends EuroGame {
     function isFenceFull($fenceKey) {
         $squares = $this->getFenceSquares($fenceKey);
         $empty = $this->filterFreeSquares($squares);
-        self::dump('***********isFenceFull********', !$empty);
+        //self::dump('***********isFenceFull********', !$empty);
         return !$empty;
     }
 
@@ -1023,9 +1023,15 @@ class NewYorkZoo extends EuroGame {
                     break;
             }
         }
-        if ($nextState == TRANSITION_NEXT_PLAYER && $this->isBreedingNeeded()) {
-            //before moving to the next player, we have to make breeding
-            $nextState = TRANSITION_NEXT_BREEDER;
+        if ($nextState == TRANSITION_NEXT_PLAYER) {
+            if ($this->isGameOver()) {
+                $this->saction_FinalScoring();
+                $nextState = 'last';
+            }
+            else if ($this->isBreedingNeeded()) {
+                //before moving to the next player, we have to make breeding
+                $nextState = TRANSITION_NEXT_BREEDER;
+            }
         }
         self::dump('******************nextState*', $nextState);
         $this->gamestate->nextState($nextState);
@@ -1185,9 +1191,6 @@ class NewYorkZoo extends EuroGame {
                     case 0:
                         self::setGameStateValue(GS_FROM, 0);
                         self::setGameStateValue(GS_TO, 0);
-                        if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) || self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE)) {
-                            $this->gamestate->nextState(TRANSITION_PLACE_ANIMAL);
-                        }
                         break;
                     case 1:
                         self::setGameStateValue(GS_TO, 0);
@@ -1197,22 +1200,8 @@ class NewYorkZoo extends EuroGame {
                         self::setGameStateValue(GS_BREED2_TO, 0);
                         break;
                 }
-
-                $order = $this->getMostlyActivePlayerOrder();
-                $fullFences = $this->getFullFences($order);
-                if ($fullFences) {
-                    $patch = array_shift($fullFences);
-                    $animalType = $this->emptyFence($patch);
-                    if ($this->getFreeHouses($this->getMostlyActivePlayerOrder())) {
-                        //offers to keep one animal
-                        self::setGameStateValue(GS_ANIMAL_TO_KEEP, $this->getAnimalType($animalType));
-                        $this->gamestate->nextState(TRANSITION_KEEP_ANIMAL);
-                        return;
-                    } else {
-                        $this->gamestate->nextState(TRANSITION_PLACE_ATTRACTION);
-                        return;
-                    }
-                }
+                $this->resolveLastContextIfAction(ADD_FROM_HOUSE);
+                $this->changeNextStateFromContext();
                 break;
             case "populateNewFence":
                 $this->resolveLastContextIfAction(ACTION_POPULATE_FENCE);
@@ -1436,7 +1425,7 @@ class NewYorkZoo extends EuroGame {
 
         $res['canPatch'] = $canUseAny && $canPopulate;
         $res['maxMoves'] = $this->arg_elephantMove();
-        $res['canGetAnimals'] = $this->arg_canGetAnimals($order); //$this->hasEmptyHouses(1)||$this->hasFenceAcceptinq();
+        $res['canGetAnimals'] = $this->arg_canGetAnimals($order);
 
 
         return $res;
@@ -1862,20 +1851,23 @@ class NewYorkZoo extends EuroGame {
         }
     }
 
-    function st_gameTurnNextPlayer() {
+    function isGameOver() {
         $endOfGame = false;
         $players = $this->loadPlayersBasicInfos();
         foreach ($players as $player_id => $info) {
-            $order = $info['player_no'];
-            $occupdata = $this->arg_occupancyData($order);
-            $occupancy = $this->matrix->occupancyMatrix($occupdata);
-            $filled = $this->matrix->isFullyFilled($occupancy);
-            if (!$endOfGame && $filled) {
-                $endOfGame = true;
+            if (!$endOfGame) {
+                $order = $info['player_no'];
+                $occupdata = $this->arg_occupancyData($order);
+                $occupancy = $this->matrix->occupancyMatrix($occupdata);
+                $filled = $this->matrix->isFullyFilled($occupancy);
+                $endOfGame = $filled;
             }
         }
+        return $endOfGame;
+    }
 
-        if ($endOfGame) {
+    function st_gameTurnNextPlayer() {
+        if ($this->isGameOver()) {
             $this->saction_FinalScoring();
             $this->gamestate->nextState('last');
             return;
@@ -2083,12 +2075,12 @@ class NewYorkZoo extends EuroGame {
                     $minus++;
                 } else {
                     $filler = $this->tokens->getTokenOfTypeInLocation($type, "limbo");
-                    if($filler){
+                    if ($filler) {
                         $this->dbSetTokenLocation($filler["key"], $square);
                     }
-                   // else{
-                   //     throw new feException("No more animals in limbo of type: " . $type);       
-                   // }
+                    // else{
+                    //     throw new feException("No more animals in limbo of type: " . $type);       
+                    // }
                 }
             }
         }
