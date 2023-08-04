@@ -658,7 +658,7 @@ class NewYorkZoo extends EuroGame {
         if ($this->gamestate->state()["name"] === "placeAttraction") {
             $this->userAssertTrue(self::_("Should be a bonus attraction"), $pos === "bonus_market");
 
-            $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
+            $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY, true);
             self::incStat(1, "game_attractions", $player_id);
             $mask = $this->getRulesFor($token_id, "mask");
             self::incStat(substr_count($mask, "1"), "game_attractions_squares", $player_id);
@@ -680,7 +680,7 @@ class NewYorkZoo extends EuroGame {
         $this->changeNextStateFromContext();
     }
 
-    function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY) {
+    function saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY, $isBonusAttraction = false) {
         $occupancy = $this->getOccupancyMatrix($order);
         //self::dump('*********getOccupancyMatrixBefore**********', $this->matrix->dumpMatrix($occupancy));
 
@@ -712,18 +712,19 @@ class NewYorkZoo extends EuroGame {
         $prefix = "square_${order}_";
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
         self::dump('*********occupiedByPiece**********', $occupiedByPiece);
-        $fenceId = $this->dbInsertFence($order, $token_id, $occupiedByPiece);
+        $fenceId = $this->dbInsertFence($order, $token_id, $occupiedByPiece, $isBonusAttraction);
         self::setGameStateValue(GS_LAST_FENCE_PLACED, $fenceId);
     }
 
-    function dbInsertFence($order, $token_id, $squares) {
+    function dbInsertFence($order, $token_id, $squares, $isBonusAttraction) {
         $sql = "INSERT INTO fence (token_key, player_order) VALUES ('$token_id', '$order') ";
         self::DbQuery($sql);
 
-        $sql = "INSERT INTO fence_squares (token_key, square) VALUES ";
+        $sql = "INSERT INTO fence_squares (token_key, square, bonus) VALUES ";
         $values = array();
+        $bonus=intval($isBonusAttraction);
         foreach ($squares as $loc) {
-            $values[] = "( '$token_id', '$loc' )";
+            $values[] = "( '$token_id', '$loc' , '$bonus' )";
         }
         $sql .= implode($values, ',');
         self::DbQuery($sql);
@@ -1027,8 +1028,7 @@ class NewYorkZoo extends EuroGame {
             if ($this->isGameOver()) {
                 $this->saction_FinalScoring();
                 $nextState = 'last';
-            }
-            else if ($this->isBreedingNeeded()) {
+            } else if ($this->isBreedingNeeded()) {
                 //before moving to the next player, we have to make breeding
                 $nextState = TRANSITION_NEXT_BREEDER;
             }
@@ -1717,7 +1717,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function getSquaresInFencesAccepting($playerOrder, $animal) {
-        $sql = "SELECT square FROM fence_squares JOIN fence on fence.token_key = fence_squares.token_key WHERE player_order=$playerOrder AND animal_type in('none', '$animal')";
+        $sql = "SELECT square FROM fence_squares JOIN fence on fence.token_key = fence_squares.token_key WHERE player_order=$playerOrder AND bonus=false AND animal_type in('none', '$animal')";
         $allSquares = self::getObjectListFromDB($sql, true);
         $freeSquares = $this->filterFreeSquares($allSquares);
         return array_map(fn ($sqre) => $this->replaceGridSquareByAnimalSquare($sqre), $freeSquares);

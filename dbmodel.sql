@@ -56,6 +56,7 @@ ALTER TABLE `player` ADD `player_has_bonus_bred` INT(1) UNSIGNED NOT NULL DEFAUL
    CREATE TABLE IF NOT EXISTS `fence_squares` (
  `token_key` varchar(32) NOT NULL,
  `square` varchar(13) NOT NULL, 
+ `bonus` INT(1) UNSIGNED NOT NULL DEFAULT '0',
  PRIMARY KEY (`token_key`, `square`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
