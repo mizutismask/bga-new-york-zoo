@@ -718,6 +718,9 @@
 .map_scrollable_oversurface {
     pointer-events: none;
 }
+.map_scrollable_oversurface[data-auto-scroll='true']{
+    transition: all 1s ease-in-out;
+}
 .practice_mode .map_scrollable_oversurface .patch,
 .map_scrollable_oversurface .active_slot {
     pointer-events: initial;

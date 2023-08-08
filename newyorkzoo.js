@@ -800,6 +800,7 @@ define([
             console.log('enging token setup');
         },
         adjustScrollMap: function (duration) {
+            console.log('************adjustScrollMap');
             // we need to move market cursor to center on 3 pieces to select
             if (!$('thething')) return;
             var container = $('market').parentNode;
@@ -865,9 +866,10 @@ define([
                     dojo.setAttr(tokenNode, "data-x", mwidth);
                     dojo.setAttr(tokenNode, "data-y", mheight);
                 };
-*/
+*/ var cbox = dojo.contentBox('token_neutral');
+            console.log('********cbox1111', cbox);
             if (this.scrollmap) {
-                var mwidth = CELL_WIDTH * 4 * pawnPos;
+                /* var mwidth = CELL_WIDTH * 4 * pawnPos;
 
                 var sect = CELL_WIDTH * 5 * 3;
                 var half = (width - sect) / 2;
@@ -883,6 +885,61 @@ define([
                 } else {
                     //scroll map to 0,0
                     this.scrollmap.setPos(0, 0);
+                }*/
+                let actionZone = $('token_neutral').parentNode.id;
+                let zoneNumber = getPart(actionZone, 2);
+                var cbox = dojo.contentBox($('token_neutral').parentNode);
+                console.log('********cbox', cbox);
+                //this.scrollmap.scrollto(cbox.l, 0);
+                if (cbox.l <= 0) {
+                    //this.scrollmap.scrollto(0, 0);
+                } else {
+                    //scroll map to 0,0
+                    //this.scrollmap.scrollto(300 + cbox.l, 0);
+                }
+                let width;
+                console.log('*****zone***', zoneNumber);
+                if ((zoneNumber > 2 && zoneNumber < 11) || (zoneNumber > 15 && zoneNumber < 23)) {
+                    //middle zone
+                    console.log('zone centrale');
+                    if (zoneNumber < 13) {
+                        //upper line, need to see forward
+                        width = cbox.l * -1;
+                    } else {
+                        //lower line, need to see backwards
+                        let mapX = this.scrollmap.container_div.getBoundingClientRect().width; //dojo.contentBox(this.scrollmap).l;
+                        console.log('mapX', mapX);
+                        width = (cbox.l + cbox.w - mapX) * -1;
+                    }
+                    setTimeout(() => {
+                        if (width > 0) {
+                            width = 0;
+                        }
+                        this.scrollmap.onsurface_div.dataset.autoScroll = true;//for smooth scroll
+                        this.scrollmap.setPos(width, 0);
+                        setTimeout(() => {
+                             this.scrollmap.onsurface_div.dataset.autoScroll = false;
+                        }, 1000);
+                    }, 400);
+                    console.log('*******width', width);
+                } else {
+                    //edges
+                    console.log('bords');
+                    if (zoneNumber < 3 || zoneNumber > 22) {
+                        //left
+                        console.log('gauche');
+                        width = 0;
+                    } else {
+                        //right
+                        console.log('droit');
+                        let mapX = this.scrollmap.container_div.getBoundingClientRect().width; //dojo.contentBox(this.scrollmap).l;
+                        console.log('mapX', mapX);
+                        width = (cbox.l + 300 - mapX) * -1; //animal action zone width + fence action zone width=300
+                    }
+                    console.log('*******width', width);
+                    setTimeout(() => {
+                        this.scrollmap.setPos(width, 0);
+                    }, 400);
                 }
             }
         },
@@ -1630,6 +1687,7 @@ define([
                 ['breedingTime', 1000],
                 ['fenceFull', 1000],
                 ['placeStartFenceArgs', 1],
+                ['eofnet', 1],
             ];
             notifs.forEach(function (notif) {
                 dojo.subscribe(notif[0], _this, 'notif_' + notif[0]);
@@ -1678,8 +1736,8 @@ define([
         },
 
         notif_fenceFull(notif) {
-            console.log("notif_fenceFull", notif);
-            $(notif.args.fence).classList.toggle("animated", !notif.args.resolved);
+            console.log('notif_fenceFull', notif);
+            $(notif.args.fence).classList.toggle('animated', !notif.args.resolved);
         },
 
         notif_placeStartFenceArgs(notif) {
