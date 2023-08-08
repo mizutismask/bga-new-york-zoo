@@ -338,6 +338,8 @@ class PatchManager {
                 gameui.showError(_('You cannot select this fence yet'));
             } else if (!moves_info.canPlace) {
                 gameui.showError(_('You cannot place this fence on your zoo, it would not fit'));
+            } else if (!moves_info.canUse) {
+                gameui.showError(_('You cannot place a fence on your zoo, you would have no animal to populate it'));
             } else {
                 has_error = false;
             }
@@ -915,10 +917,10 @@ define([
                         if (width > 0) {
                             width = 0;
                         }
-                        this.scrollmap.onsurface_div.dataset.autoScroll = true;//for smooth scroll
+                        this.scrollmap.onsurface_div.dataset.autoScroll = true; //for smooth scroll
                         this.scrollmap.setPos(width, 0);
                         setTimeout(() => {
-                             this.scrollmap.onsurface_div.dataset.autoScroll = false;
+                            this.scrollmap.onsurface_div.dataset.autoScroll = false;
                         }, 1000);
                     }, 400);
                     console.log('*******width', width);
@@ -1118,8 +1120,8 @@ define([
                 var canBuy = Object.keys(args.patches);
                 canBuy.forEach((id) => {
                     var canUse = args.patches[id].canUse;
-                    dojo.addClass(id, 'active_slot');
                     if (canUse == false) dojo.addClass(id, 'cannot_use');
+                    else dojo.addClass(id, 'active_slot');
                 });
             }
 

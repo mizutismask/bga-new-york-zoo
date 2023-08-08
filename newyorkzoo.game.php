@@ -665,7 +665,9 @@ class NewYorkZoo extends EuroGame {
 
             $this->resolveLastFullFenceContext();
         } else {
-            $order = $this->getPlayerPosition($player_id);
+            //$order = $this->getPlayerPosition($player_id);
+            $this->userAssertTrue(self::_("No animal available to populate a fence"), $this->canPopulateNewFence());
+           
             $canBuy  = $this->arg_canBuyPatches($order);
             $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
 
@@ -720,7 +722,7 @@ class NewYorkZoo extends EuroGame {
 
         $sql = "INSERT INTO fence_squares (token_key, square, bonus) VALUES ";
         $values = array();
-        $bonus=intval($isBonusAttraction);
+        $bonus = intval($isBonusAttraction);
         foreach ($squares as $loc) {
             $values[] = "( '$token_id', '$loc' , '$bonus' )";
         }
@@ -1332,7 +1334,7 @@ class NewYorkZoo extends EuroGame {
         $patches = $this->arg_canBuyPatches($order);
         self::dump('*************arg_playerTurn***patches***', $patches);
         $canUseAny = false;
-        $canPopulate = !empty($this->getAnimalsByFenceHavingMinimalAnimalCount($order, 2)) || count($this->getFreeHouses($order)) != count($this->getPlayerHouses($order));
+        $canPopulate = $this->canPopulateNewFence();
         $occupancy = $this->getOccupancyMatrix($order);
         foreach ($patches as $patch) {
             $moves = $this->arg_possibleMoves($patch, $order, null, $occupancy);
@@ -1357,6 +1359,11 @@ class NewYorkZoo extends EuroGame {
 
 
         return $res;
+    }
+
+    function canPopulateNewFence() {
+        $order = $this->getMostlyActivePlayerOrder();
+        return !empty($this->getAnimalsByFenceHavingMinimalAnimalCount($order, 2)) || count($this->getFreeHouses($order)) != count($this->getPlayerHouses($order));
     }
 
     function arg_possibleMovesByPatch($patches, $player_id) {
