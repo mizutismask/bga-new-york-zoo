@@ -55,7 +55,9 @@ class PatchManager {
         } else if (gameui.curstate === 'populateNewFence') {
             $(id).classList.toggle('selected');
             gameui.clientStateArgs.to = this.replaceGridSquareByAnimalSquare(id);
-            gameui.ajaxClientStateAction();
+            if (gameui.clientStateArgs.from && gameui.clientStateArgs.to) {
+                gameui.ajaxClientStateAction();
+            }
             //gameui.startActionTimer("place_animal", 3, 1);
         } else if (gameui.curstate === 'chooseFence') {
             dojo.toggleClass(dropNode.id, 'animal-target-image');
@@ -1394,6 +1396,7 @@ define([
                         if (args.animals[anml].canPlace) {
                             this.setClientStateAction('client_PlaceAnimal');
                             this.clientStateArgs.animalType = anml;
+                            this.setDescriptionOnMyTurn(_('Place the ${animalType} in a house or with his friends'), {"animalType":anml});
 
                             args.animals[anml].possibleTargets.forEach((id) => {
                                 dojo.addClass(id, 'active_slot');
