@@ -26,6 +26,7 @@ class PatchManager {
         console.log('onClickPatch', event);
         var id = event.currentTarget.id;
         if (id == null) return;
+        if (gameui.curstate === 'placeAnimal' || gameui.curstate === 'client_PlaceAnimal') return;
         if (!this.beginPickPatch(id)) return;
         gameui.onUpdateActionButtons_client_PickPatch(gameui.gamedatas.gamestate.args);
     }
@@ -72,7 +73,8 @@ class PatchManager {
                 this.selectPickPatchSquare(dropNode);
                 return;
             }
-            if (gameui.queryFirst('.selected').draggable) {
+            const fence= gameui.queryFirst('.selected');
+            if (gameui.isPracticeMode()|| (fence && fence.hasOwnProperty("draggable") && fence.draggable)) {
                 this.selectPickPatchSquare(dropNode);
                 this.endPickPatch();
             }
