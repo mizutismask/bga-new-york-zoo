@@ -72,8 +72,10 @@ class PatchManager {
                 this.selectPickPatchSquare(dropNode);
                 return;
             }
-            this.selectPickPatchSquare(dropNode);
-            this.endPickPatch();
+            if (gameui.queryFirst('.selected').draggable) {
+                this.selectPickPatchSquare(dropNode);
+                this.endPickPatch();
+            }
         }
     }
 
@@ -155,7 +157,7 @@ class PatchManager {
         this.createPatchControl('done_control', pboard, '_a');
         this.createPatchControl('cancel_control', pboard, '_a');
 
-        const patchQuery = document.querySelectorAll('.patch');
+        const patchQuery = document.querySelectorAll('.market .patch');
         for (const item of patchQuery) {
             this.addDragListeners(item, false);
             item.addEventListener('click', (event) => this.onClickPatch(event), false);
@@ -1396,7 +1398,9 @@ define([
                         if (args.animals[anml].canPlace) {
                             this.setClientStateAction('client_PlaceAnimal');
                             this.clientStateArgs.animalType = anml;
-                            this.setDescriptionOnMyTurn(_('Place the ${animalType} in a house or with his friends'), {"animalType":anml});
+                            this.setDescriptionOnMyTurn(_('Place the ${animalType} in a house or with his friends'), {
+                                'animalType': anml,
+                            });
 
                             args.animals[anml].possibleTargets.forEach((id) => {
                                 dojo.addClass(id, 'active_slot');
@@ -1426,10 +1430,10 @@ define([
         // UTILS
 
         cancelLocalStateEffects: function () {
-            if (this.curstate == 'client_PickPatch') {
-                this.pm.cancelPickPatch();
-                this.pm.endPickPatch();
-            }
+            //if (this.curstate == 'client_PickPatch') {
+            this.pm.cancelPickPatch();
+            this.pm.endPickPatch();
+            // }
             this.inherited(arguments);
         },
         ajaxActionResultCallback: function (action, args, result) {
@@ -1464,6 +1468,11 @@ define([
             gameui.placeTokenLocal(gameui.clientStateArgs.token, gameui.clientStateArgs.dropTarget, state, {
                 noa: true,
             });
+
+            if ($(token).draggable) {
+                //patch just placed
+                $(token).draggable = false;
+            }
 
             this.ajaxClientStateAction();
         },
