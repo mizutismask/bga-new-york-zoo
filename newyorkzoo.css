@@ -317,6 +317,9 @@
     height: var(--cellWidth);
     overflow: visible;
 }
+.placingFence .animal{
+    pointer-events: none !important;
+}
 
 .anml-square .animal{
     pointer-events: all;

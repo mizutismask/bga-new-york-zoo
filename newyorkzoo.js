@@ -355,6 +355,8 @@ class PatchManager {
         gameui.clientStateArgs.token = targetNode.id;
 
         this.gamebody.classList.add('pick-activated');
+        $('overall-content').classList.add('placingFence');
+
         if (this.gamebody.classList.contains('pick-dragging') && gameui.scrollmap) gameui.scrollmap.disableScrolling();
         gameui.onUpdateActionButtons_client_PickPatch(gameui.gamedatas.gamestate.args);
 
@@ -412,6 +414,7 @@ class PatchManager {
         console.log('cancelPickPatch', this.selectedNode);
         if (this.selectedNode) {
             this.restoreOriginalPatch(this.selectedNode.id);
+            $('overall-content').classList.remove('placingFence');
         }
         this.destroy('dragShadow');
         gameui.removeClass('selected');
@@ -1452,6 +1455,7 @@ define([
             //if (this.curstate == 'client_PickPatch') {
             this.pm.cancelPickPatch();
             this.pm.endPickPatch();
+            $("overall-content").classList.remove("placingFence");
             // }
             this.inherited(arguments);
         },
@@ -1470,6 +1474,7 @@ define([
             this.updateAttractionCount();
         },
         onDone: function () {
+            $('overall-content').classList.remove('placingFence');
             var token = gameui.clientStateArgs.token;
             var id = gameui.clientStateArgs.dropTarget;
             if (!gameui.isActiveSlot(id)) {
@@ -1627,11 +1632,11 @@ define([
         },
 
         onAnimal: function (event) {
-            dojo.stopEvent(event);
             var id = event.currentTarget.id;
 
             switch (gameui.curstate) {
                 case 'populateNewFence':
+                    dojo.stopEvent(event);
                     $(id).classList.toggle('selected');
                     gameui.clientStateArgs.from = id;
                     break;
