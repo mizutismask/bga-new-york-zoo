@@ -637,6 +637,15 @@ class NewYorkZoo extends EuroGame {
         }
     }
 
+    function action_resetStartFences() {
+        $playerOrder = $this->getMostlyActivePlayerOrder();
+        self::DbQuery("DELETE FROM fence_squares where square like 'square_$playerOrder%'");
+        self::DbQuery("DELETE FROM fence where player_order = '$playerOrder'");
+        $fences = array_keys($this->tokens->getTokensOfTypeInLocation("patch%", "square_" . $playerOrder."%"));
+        $fillers = $this->mtCollectWithFieldValue("color", "filler");
+        $this->dbSetTokensLocation(array_diff($fences, $fillers), "hand_" . $this->getMostlyActivePlayerId(), null, '${player_name} resets the start fences', []);
+    }
+
     function resolveLastFullFenceContext() {
         $context = $this->dbGetLastContextToResolve();
         if ($context["action"] == CHECK_FENCE_FULL) {

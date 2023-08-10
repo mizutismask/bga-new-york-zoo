@@ -73,11 +73,11 @@ class PatchManager {
                 this.selectPickPatchSquare(dropNode);
                 return;
             }
-            const fence= gameui.queryFirst('.selected');
-            if (gameui.isPracticeMode()|| (fence && fence.hasOwnProperty("draggable") && fence.draggable)) {
+            const fence = gameui.queryFirst('.selected');
+            //if (gameui.isPracticeMode() || (fence && fence.hasOwnProperty('draggable') && fence.draggable)) {
                 this.selectPickPatchSquare(dropNode);
                 this.endPickPatch();
-            }
+            //}
         }
     }
 
@@ -1257,6 +1257,23 @@ define([
                 },
                 'red'
             );
+        },
+
+        onUpdateActionButtons_placeStartFences: function (args) {
+            const playerOrder = this.gamedatas.players[this.player_id].no;
+            const placedPatchesCount = this.queryIds(`.pieces_${playerOrder} .patch`).length;
+            console.log(this.queryIds(`.pieces_${playerOrder} .patch`));
+            if (placedPatchesCount > 1) {//the first one is the filler
+                gameui.addImageActionButton(
+                    'c',
+                    _('Reset'),
+                    () => {
+                        //todo remove draggable
+                        gameui.ajaxClientStateAction('resetStartFences');
+                    },
+                    'red'
+                );
+            }
         },
 
         onUpdateActionButtons_client_PickPatch: function (args) {

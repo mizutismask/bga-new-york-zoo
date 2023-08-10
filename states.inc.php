@@ -228,7 +228,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} have to place some fences before starting'),
         "type" => "multipleactiveplayer",
         "args" => "arg_placeStartFences",
-        "possibleactions" => ["placeStartFence"],
+        "possibleactions" => ["placeStartFence", "resetStartFences"],
         "transitions" => [
             "" => STATE_PLAYER_TURN,
         ] 

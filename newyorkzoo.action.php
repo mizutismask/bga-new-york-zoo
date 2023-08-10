@@ -55,6 +55,12 @@ class action_newyorkzoo extends APP_GameAction {
     self::ajaxResponse();
   }
 
+  public function resetStartFences() {
+    self::setAjaxMode();
+    $this->game->action_resetStartFences();
+    self::ajaxResponse();
+  }
+
   public function getAnimals() {
     self::setAjaxMode();
     $actionZone = self::getArg('actionZone', AT_alphanum, true);
