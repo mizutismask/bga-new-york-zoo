@@ -159,7 +159,7 @@ class PatchManager {
         this.createPatchControl('done_control', pboard, '_a');
         this.createPatchControl('cancel_control', pboard, '_a');
 
-        const patchQuery = document.querySelectorAll('.market .patch');
+        const patchQuery = document.querySelectorAll('.market .patch, .bonus_market .patch');
         for (const item of patchQuery) {
             this.addDragListeners(item, false);
             item.addEventListener('click', (event) => this.onClickPatch(event), false);
@@ -1338,7 +1338,7 @@ define([
             }
             //todo différencier bonus et patch
             console.log('args.patches', args['patches']);
-            var canBuy = Object.keys(args['patches']);
+            var canBuy = Object.keys(args['patches']??[]);
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
