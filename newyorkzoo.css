@@ -306,7 +306,7 @@
     /* background-color: cyan; */
     width: var(--cellWidth);
     height: var(--cellWidth);
-    border: 1px solid hsl(0deg 0% 100% / 70%); /* to comment*/
+    /*border: 1px solid hsl(0deg 0% 100% / 70%);*/ /* to debug*/
     overflow: visible;
     z-index: 99;
 }
@@ -1085,174 +1085,174 @@
 }
 
 .player_count_2.player_order_1 .house_1 {
-    top: 8.9%;
-    left: 14%;
+    top: 7.2%;
+    left: 13.3%;
 }
 .player_count_2.player_order_1 .house_2 {
-    top: 1.8%;
-    left: 2.5%;
+    top: 0%;
+    left: 1.2%;
 }
 .player_count_2.player_order_1 .house_3 {
-    top: 8.8%;
-    left: 5.4%;
+    top: 7.7%;
+    left: 4.4%;
 }
 .player_count_2.player_order_2 .house_1 {
-    top: 8.3%;
-    left: 15%;
+    top: 6.7%;
+    left: 14%;
 }
 .player_count_2.player_order_2 .house_2 {
-    top: 2.4%;
-    left: 2.4%;
+    top: 1%;
+    left: 1.1%;
 }
 .player_count_2.player_order_2 .house_3 {
-    top: 6.6%;
-    left: 11.7%;
+    top: 5.6%;
+    left: 10.7%;
 }
 
 .player_count_3.player_order_1 .house_1 {
-    top: 9.2%;
-    left: 10.3%;
+    top: 7.1%;
+    left: 8%;
 }
 .player_count_3.player_order_1 .house_2 {
-    top: 14.6%;
-    left: 6.7%;
+    top: 13.1%;
+    left: 3.9%;
 }
 .player_count_3.player_order_2 .house_1 {
-    top: 8.8%;
-    left: 18.5%;
+    top: 7.2%;
+    left: 16.2%;
 }
 .player_count_3.player_order_2 .house_2 {
-    top: 1.5%;
-    left: 3.2%;
+    top: 0.1%;
+    left: 0.8%;
 }
 .player_count_3.player_order_2 .house_3 {
-    top: 8.8%;
-    left: 6.9%;
+    top: 7.8%;
+    left: 4.6%;
 }
 .player_count_3.player_order_3 .house_1 {
-    top: 8.4%;
-    left: 19.1%;
+    top: 7%;
+    left: 17.6%;
 }
 .player_count_3.player_order_3 .house_2 {
-    top: 2.7%;
-    left: 3%;
+    top: 1.1%;
+    left: 1%;
 }
 .player_count_3.player_order_3 .house_3 {
-    top: 6.8%;
-    left: 15%;
+    top: 5.8%;
+    left: 13.3%;
 }
 
 .player_count_4.player_order_1 .house_1 {
-    top: 8.8%;
+    top: 7.7%;
     left: 12.9%;
 }
 .player_count_4.player_order_1 .house_2 {
-    top: 14.5%;
-    left: 8.2%;
+    top: 13.7%;
+    left: 8%;
 }
 .player_count_4.player_order_2 .house_1 {
-    top: 7.5%;
-    left: 22.4%;
+    top: 6%;
+    left: 21.4%;
 }
 .player_count_4.player_order_2 .house_2 {
-    top: 0.3%;
-    left: 4%;
+    top: -1.2%;
+    left: 2.6%;
 }
 .player_count_4.player_order_2 .house_3 {
-    top: 7.6%;
-    left: 8.4%;
+    top: 6.6%;
+    left: 7.3%;
 }
 .player_count_4.player_order_3 .house_1 {
-    top: 8.4%;
-    left: 23.5%;
+    top: 7%;
+    left: 22.8%;
 }
 .player_count_4.player_order_3 .house_2 {
-    top: 2.6%;
-    left: 3.7%;
+    top: 1.2%;
+    left: 3.0%;
 }
 .player_count_4.player_order_3 .house_3 {
-    top: 6.8%;
-    left: 18.3%;
+    top: 5.4%;
+    left: 17.6%;
 }
 .player_count_4.player_order_4 .house_1 {
-    top: 7.2%;
-    left: 23.1%;
+    top: 5.5%;
+    left: 22.4%;
 }
 .player_count_4.player_order_4 .house_2 {
-    top: -2.5%;
-    left: 4.2%;
+    top: -4%;
+    left: 3.6%;
 }
 .player_count_4.player_order_4 .house_3 {
-    top: 3.2%;
+    top: 2.2%;
     left: 21.1%;
 }
 .player_count_4.player_order_4 .house_4 {
-    top: -5.2%;
-    left: 1.9%;
+    top: -6.1%;
+    left: 1.2%;
 }
 
 .player_count_5.player_order_1 .house_1 {
-    top: 8.6%;
+    top: 7.8%;
     left: 14.5%;
 }
 .player_count_5.player_order_1 .house_2 {
-    top: 14.5%;
+    top: 13.7%;
     left: 9.1%;
 }
 .player_count_5.player_order_2 .house_1 {
-    top: 8.6%;
-    left: 25.4%;
+    top: 7.2%;
+    left: 24.7%;
 }
 .player_count_5.player_order_2 .house_2 {
-    top: 1.4%;
-    left: 4.4%;
+    top: -0.1%;
+    left: 3.5%;
 }
 .player_count_5.player_order_2 .house_3 {
-    top: 8.6%;
-    left: 9.5%;
+    top: 7.8%;
+    left: 8.9%;
 }
 .player_count_5.player_order_3 .house_1 {
-    top: 8.3%;
+    top: 6.3%;
     left: 23.9%;
 }
 .player_count_5.player_order_3 .house_2 {
-    top: 2.6%;
-    left: 2%;
+    top: 0.7%;
+    left: 1.6%;
 }
 .player_count_5.player_order_3 .house_3 {
-    top: 6.6%;
-    left: 18.6%;
+    top: 5.1%;
+    left: 18.2%;
 }
 .player_count_5.player_order_4 .house_1 {
-    top: 7.1%;
-    left: 25.7%;
+    top: 5.5%;
+    left: 26%;
 }
 .player_count_5.player_order_4 .house_2 {
-    top: -2.4%;
+    top: -4%;
     left: 4.5%;
 }
 .player_count_5.player_order_4 .house_3 {
-    top: 3.3%;
-    left: 23.6%;
+    top: 2.1%;
+    left: 24.1%;
 }
 .player_count_5.player_order_4 .house_4 {
-    top: -5%;
+    top: -6%;
     left: 1.6%;
 }
 .player_count_5.player_order_5 .house_1 {
-    top: 6.6%;
-    left: 29.9%;
+    top: 4.8%;
+    left: 30.7%;
 }
 .player_count_5.player_order_5 .house_2 {
-    top: -2.4%;
-    left: 6.3%;
+    top: -4.04%;
+    left: 6.5%;
 }
 .player_count_5.player_order_5 .house_3 {
-    top: 3.3%;
-    left: 25.7%;
+    top: 2.2%;
+    left: 26.3%;
 }
 .player_count_5.player_order_5 .house_4 {
-    top: -5%;
+    top: -6.1%;
     left: 3.7%;
 }
 .filler .target-image {
