@@ -75,8 +75,8 @@ class PatchManager {
             }
             const fence = gameui.queryFirst('.selected');
             //if (gameui.isPracticeMode() || (fence && fence.hasOwnProperty('draggable') && fence.draggable)) {
-                this.selectPickPatchSquare(dropNode);
-                this.endPickPatch();
+            this.selectPickPatchSquare(dropNode);
+            this.endPickPatch();
             //}
         }
     }
@@ -816,142 +816,42 @@ define([
             if (!$('thething')) return;
             var container = $('market').parentNode;
             if (!container && !this.scrollmap) return;
-            var width = container.offsetWidth;
             $('thething').style.removeProperty('height');
-            var height = container.offsetHeight;
 
-            var pawnPos = parseInt(gameui.getTokenState('token_neutral'));
-            /*var TOTAL = 34;
-                var off = 0;// TOTAL - pawnPos;
-
-                var patchList = Array.from(document.querySelectorAll("#market > *")).sort(function (a, b) {
-                    var aLeft = (off + parseInt(a.getAttribute('data-order'))) % TOTAL;
-                    var bLeft = (off + parseInt(b.getAttribute('data-order'))) % TOTAL;
-                    return aLeft - bLeft;
-                });
-
-                var dirx = 1;
-                var diry = 0;
-                var opa = 1;
-
-                for (var order = 0; order < patchList.length; order++) {
-                    var item = patchList[order];
-
-                    var info = gameui.getTokenDisplayInfo(item.id)
-                    var prevInfo = null;
-                    if (order > 0) {
-                        var previtem = patchList[order - 1];
-                        prevInfo = gameui.getTokenDisplayInfo(previtem.id);
-                        if (!prevInfo) console.error("Missing prev patch for " + (order));
-                    }
-
-                    var tokenNode = $(info.key);
-                    //console.log("layout "+info.key+" "+order);
-                    var dx = parseInt(dojo.getAttr(tokenNode, "data-dx")) || 0;
-                    var dy = parseInt(dojo.getAttr(tokenNode, "data-dy")) || 0;
-                    var mwidth = 0;
-                    var mheight = 0;
-
-                    if (prevInfo) {
-                        var prevNode = $(prevInfo.key);
-
-                        var px = parseInt(dojo.getAttr(prevNode, "data-x")) || 0;
-                        var py = parseInt(dojo.getAttr(prevNode, "data-y")) || 0;
-                        var pw = parseInt(prevInfo.w);
-                        var ph = parseInt(prevInfo.h);
-                        //console.log(tokenNode.id + " order " + order + " prevx=" + px + " w=" + prevInfo.w);
-
-                        var mwidth = px + pw * CELL_WIDTH + CELL_WIDTH;
-                        var mheight = 0;
-                        if (item.id != 'token_neutral') dx = 0;
-                    }
-                    tokenNode.style.left = (mwidth + dx) + "px";
-                    tokenNode.style.top = (mheight + dy) + "px";
-                    var rotateZ = parseInt(dojo.getAttr(tokenNode, "data-rz"));
-                    if (rotateZ) {
-                        var rule = "rotateY(0deg) rotateZ(" + rotateZ + "deg)";
-                        tokenNode.style.transform = rule;
-                    }
-                    if (opa != 1) tokenNode.style.opacity = opa;
-                    else tokenNode.style.removeProperty('opacity');
-                    dojo.setAttr(tokenNode, "data-x", mwidth);
-                    dojo.setAttr(tokenNode, "data-y", mheight);
-                };
-*/ var cbox = dojo.contentBox('token_neutral');
-            console.log('********cbox1111', cbox);
+            var cbox = dojo.contentBox('token_neutral');
+            //console.log('********cbox neutral', cbox);
             if (this.scrollmap) {
-                /* var mwidth = CELL_WIDTH * 4 * pawnPos;
-
-                var sect = CELL_WIDTH * 5 * 3;
-                var half = (width - sect) / 2;
-                //todo
-                var cbox = dojo.contentBox('token_neutral');
-                console.log('cbox', cbox);
-                var width = cbox.w - 40;
-                var height = cbox.h - 40;
-                mwidth = cbox.x;
-
-                if (half <= 0) {
-                    this.scrollmap.setPos(-mwidth, 0);
-                } else {
-                    //scroll map to 0,0
-                    this.scrollmap.setPos(0, 0);
-                }*/
                 let actionZone = $('token_neutral').parentNode.id;
                 let zoneNumber = getPart(actionZone, 2);
                 var cbox = dojo.contentBox($('token_neutral').parentNode);
-                console.log('********cbox', cbox);
-                //this.scrollmap.scrollto(cbox.l, 0);
-                if (cbox.l <= 0) {
-                    //this.scrollmap.scrollto(0, 0);
+                //console.log('********cbox', $('token_neutral').parentNode.id, cbox);
+
+                let mapWidth = this.scrollmap.container_div.getBoundingClientRect().width; //dojo.contentBox(this.scrollmap).l;
+                //console.log('mapX', mapWidth);
+                if (zoneNumber <= 13) {
+                    //upper line, need to see forward, but not too far
+                    width = cbox.l;
+                   // console.log('*******first line width', width);
+                    const lastZoneCBox = dojo.contentBox('action_zone_13');
+                   //console.log('action_zone_13.getBoundingClientRect()', lastZoneCBox);
+                    width = Math.min(width, dojo.contentBox('action_zone_13').l + lastZoneCBox.w - mapWidth + 30);
+                    //console.log('*******capped width', width);
+                    width = width * -1;
                 } else {
-                    //scroll map to 0,0
-                    //this.scrollmap.scrollto(300 + cbox.l, 0);
+                    //lower line, need to see backwards, but not too far
+                    width = cbox.l + cbox.w - mapWidth;
+                    //console.log('*******lower line width', width);
+                    width = width * -1;
+                    width = Math.min(width, 0);
+                    //console.log('*******capped width', width);
                 }
-                let width;
-                console.log('*****zone***', zoneNumber);
-                if ((zoneNumber > 2 && zoneNumber < 11) || (zoneNumber > 15 && zoneNumber < 23)) {
-                    //middle zone
-                    console.log('zone centrale');
-                    if (zoneNumber < 13) {
-                        //upper line, need to see forward
-                        width = cbox.l * -1;
-                    } else {
-                        //lower line, need to see backwards
-                        let mapX = this.scrollmap.container_div.getBoundingClientRect().width; //dojo.contentBox(this.scrollmap).l;
-                        console.log('mapX', mapX);
-                        width = (cbox.l + cbox.w - mapX) * -1;
-                    }
+                setTimeout(() => {
+                    this.scrollmap.onsurface_div.dataset.autoScroll = true; //for smooth scroll
+                    this.scrollmap.setPos(width, 0);
                     setTimeout(() => {
-                        if (width > 0) {
-                            width = 0;
-                        }
-                        this.scrollmap.onsurface_div.dataset.autoScroll = true; //for smooth scroll
-                        this.scrollmap.setPos(width, 0);
-                        setTimeout(() => {
-                            this.scrollmap.onsurface_div.dataset.autoScroll = false;
-                        }, 1000);
-                    }, 400);
-                    console.log('*******width', width);
-                } else {
-                    //edges
-                    console.log('bords');
-                    if (zoneNumber < 3 || zoneNumber > 22) {
-                        //left
-                        console.log('gauche');
-                        width = 0;
-                    } else {
-                        //right
-                        console.log('droit');
-                        let mapX = this.scrollmap.container_div.getBoundingClientRect().width; //dojo.contentBox(this.scrollmap).l;
-                        console.log('mapX', mapX);
-                        width = (cbox.l + 300 - mapX) * -1; //animal action zone width + fence action zone width=300
-                    }
-                    console.log('*******width', width);
-                    setTimeout(() => {
-                        this.scrollmap.setPos(width, 0);
-                    }, 400);
-                }
+                        this.scrollmap.onsurface_div.dataset.autoScroll = false;
+                    }, 1000);
+                }, 400);
             }
         },
 
@@ -1266,7 +1166,8 @@ define([
             const playerOrder = this.gamedatas.players[this.player_id].no;
             const placedPatchesCount = this.queryIds(`.pieces_${playerOrder} .patch`).length;
             console.log(this.queryIds(`.pieces_${playerOrder} .patch`));
-            if (placedPatchesCount > 1) {//the first one is the filler
+            if (placedPatchesCount > 1) {
+                //the first one is the filler
                 gameui.addImageActionButton(
                     'c',
                     _('Reset'),
@@ -1338,7 +1239,7 @@ define([
             }
             //todo différencier bonus et patch
             console.log('args.patches', args['patches']);
-            var canBuy = Object.keys(args['patches']??[]);
+            var canBuy = Object.keys(args['patches'] ?? []);
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
@@ -1455,7 +1356,7 @@ define([
             //if (this.curstate == 'client_PickPatch') {
             this.pm.cancelPickPatch();
             this.pm.endPickPatch();
-            $("overall-content").classList.remove("placingFence");
+            $('overall-content').classList.remove('placingFence');
             // }
             this.inherited(arguments);
         },
