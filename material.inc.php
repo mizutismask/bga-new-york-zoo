@@ -126,11 +126,13 @@ $this->boards = [
 
 /* Action board */
 $topY = 2.42;
-$topYLine2 = 69.8;
+$topYLine2Animals = 69.8;
+$topYLine2Fences = 64;
 $smallWidth = 6.42;
 $mediumWidth = 7.30;
 $bigWidth = 10.49;
 $height = 27;
+$heightLine2Fences = 34;
 
 $anmlTopX = 35.05;
 $anmlTopY = 5.6;
@@ -236,14 +238,14 @@ $this->actionStripZones['action_zone_13'] = [
 ];
 $this->actionStripZones['action_zone_14'] = [
   'topX' =>  78.46,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
-  'height' =>  $height,
+  'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_15'] = [
   'topX' =>  $this->actionStripZones['action_zone_14']['topX'] - $anmlWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
   'height' =>  $anmlHeight,
   'animals' =>  [KANGAROO, MEERKAT],
@@ -251,14 +253,14 @@ $this->actionStripZones['action_zone_15'] = [
 ];
 $this->actionStripZones['action_zone_16'] = [
   'topX' =>  $this->actionStripZones['action_zone_15']['topX'] - $mediumWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
-  'height' =>  $height,
+  'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_17'] = [
   'topX' =>  $this->actionStripZones['action_zone_16']['topX'] - $anmlWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
   'height' =>  $anmlHeight,
   'animals' =>  [FLAMINGO, MEERKAT],
@@ -266,21 +268,21 @@ $this->actionStripZones['action_zone_17'] = [
 ];
 $this->actionStripZones['action_zone_18'] = [
   'topX' =>  $this->actionStripZones['action_zone_17']['topX'] - $mediumWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
-  'height' =>  $height,
+  'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_19'] = [
   'topX' =>  41.05,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
-  'height' =>  $height,
+  'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_20'] = [
   'topX' =>  $this->actionStripZones['action_zone_19']['topX'] - $anmlWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
   'height' =>  $anmlHeight,
   'animals' =>  [FLAMINGO, KANGAROO],
@@ -288,14 +290,14 @@ $this->actionStripZones['action_zone_20'] = [
 ];
 $this->actionStripZones['action_zone_21'] = [
   'topX' =>  $this->actionStripZones['action_zone_20']['topX'] - $mediumWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
-  'height' =>  $height,
+  'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_22'] = [
   'topX' =>  $this->actionStripZones['action_zone_21']['topX'] - $anmlWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
   'height' =>  $anmlHeight,
   'animals' =>  [FOX, MEERKAT],
@@ -303,16 +305,16 @@ $this->actionStripZones['action_zone_22'] = [
 ];
 $this->actionStripZones['action_zone_23'] = [
   'topX' =>  $this->actionStripZones['action_zone_22']['topX'] - $mediumWidth - $offsetZones,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
-  'height' =>  $height,
+  'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_24'] = [
   'topX' =>  0.52,
-  'topY' =>  $topYLine2,
+  'topY' =>  $topYLine2Fences,
   'width' =>  $bigWidth,
-  'height' =>  $height,
+  'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
 $this->actionStripZones['action_zone_25'] = [
@@ -349,6 +351,11 @@ $this->birthZones = [
 
 
 $this->token_types = [
+  'action_zone' => [
+    'type' => 'nyz_animal_action_zone',
+    'name' => clienttranslate("Take animals"),
+    'tooltip' => clienttranslate("You must be able to place at least one of those two animals on your board, either in a free house or a fence (free or with animals of the same specie)"),
+  ],
   'house' => [
     'name' => clienttranslate("You can stock one animal per house"),
     'type' => 'house',
