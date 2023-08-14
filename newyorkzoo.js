@@ -648,6 +648,9 @@ define([
 
             this.playerOrder = gamedatas.players[this.player_id].no;
             $(`bonus_breeding_time_${this.playerOrder}`).innerHTML = _('Bonus breeding');
+            dojo.query('.nyz_animal_action_zone').forEach((node) => {
+               // this.updateTooltip(node.id);
+            });
 
             console.log('Ending game setup');
         },
@@ -733,10 +736,8 @@ define([
 
                 var tokenInfo = this.gamedatas.tokens[token];
                 var location = tokenInfo.location;
-                if (location.startsWith('action_zone') && mat.w > mat.h) {
-                    //rotate to minimize board width needed
-                    // dojo.addClass(token, 'minimized');
-                }
+                console.log("tokenInfo",tokenInfo);
+                
                 if (location == 'hand_' + this.player_id) {
                     dojo.setAttr(token, 'data-start-fence', 'true');
                 }
@@ -746,6 +747,11 @@ define([
                     'data-dy': dy,
                     'data-rz': rotateZ,
                 });
+
+                if (location.startsWith('action_zone') && mat.h > mat.w) {
+                    //rotate to minimize board width needed
+                    dojo.addClass(token, 'minimized');
+                }
             } else if (token == 'token_neutral') {
                 var dx = CELL_WIDTH;
                 var dy = CELL_WIDTH * 2;
@@ -786,8 +792,6 @@ define([
 
             this.pm.setupDragAndDropSupport();
 
-            this.connectClass('timetracker', 'onclick', 'onTimeTracker');
-
             /*const animalZonesQuery = document.querySelectorAll('.nyz_animal_action_zone');
                 for (const item of animalZonesQuery) {
                     item.addEventListener("click", event => this.onClickAnimalZone(event), false)
@@ -795,9 +799,6 @@ define([
             this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
             this.connectClass('house', 'onclick', 'onHouse');
 
-            dojo.query('.timetracker').forEach((node) => {
-                this.updateTooltip(node.id);
-            });
             //this.connectClass('token_neutral', 'onclick', 'onZoomPlus');
             this.notif_eofnet();
 

@@ -158,8 +158,9 @@
     height: 100%;
 }
 
-.minimized {
+.market .minimized {
     transform: rotate(90deg);
+    transform-origin: unset;
 }
 
 .tableau {
@@ -365,6 +366,17 @@
     transform-origin: calc(var(--cellWidth) / 2) calc(var(--cellWidth) / 2);
     height: min-content;
     width: min-content;
+}
+
+/*Ensures order of the piles in the market*/
+.market .patch[data-order="1"]{
+    z-index: 11;
+}
+.market .patch[data-order="2"]{
+    z-index: 12;
+}
+.market .patch[data-order="3"]{
+    z-index: 13;
 }
 
 .patch.animated{
@@ -1077,7 +1089,7 @@
     height: 100%;
 }
 .house {
-    border: orange solid 1px;
+    /*border: orange solid 1px;*/
     width: var(--cellWidth);
     height: var(--cellWidth);
     position: relative;
