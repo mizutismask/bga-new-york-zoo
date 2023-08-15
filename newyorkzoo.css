@@ -1037,6 +1037,7 @@
     display: flex;
     flex-flow: wrap;
     gap: 11px;
+    justify-content: center;
 }
 
 .group-counter{
@@ -1288,7 +1289,7 @@
 .kangaroo,
 .meerkat,
 .penguin {
-    display: inline-block;
+    /*display: inline-block;*/
     overflow: hidden;
     background-repeat: no-repeat;
     background-image: url(img/animals.png);
