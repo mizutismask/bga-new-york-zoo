@@ -326,26 +326,50 @@ $this->actionStripZones['action_zone_anml_25'] = [
   'type' =>  ANIMAL,
 ];
 
+$birthTopYLine1 = 30;
+$birthTopYLine2 = 44.4;
+$birthWidth=5.4;
+$birthHeight=25;
 $this->birthZones = [
   'birth_zone_1' => [
     'triggerZone' =>  4,
     'animal' =>  KANGAROO,
+    'topX' =>  23.2,
+    'topY' =>  $birthTopYLine1,
+    'width' =>  $birthWidth,
+    'height' =>  $birthHeight,
   ],
   'birth_zone_2' => [
     'triggerZone' =>  9,
     'animal' =>  PENGUIN,
+    'topX' =>  60.5,
+    'topY' =>  $birthTopYLine1,
+    'width' =>  $birthWidth,
+    'height' =>  $birthHeight,
   ],
   'birth_zone_3' => [
     'triggerZone' =>  14,
     'animal' =>  FOX,
+    'topX' =>  84.2,
+    'topY' =>  $birthTopYLine2,
+    'width' =>  $birthWidth,
+    'height' =>  $birthHeight,
   ],
   'birth_zone_4' => [
     'triggerZone' =>  19,
     'animal' =>  MEERKAT,
+    'topX' => 46.9,
+    'topY' =>  $birthTopYLine2,
+    'width' =>  $birthWidth,
+    'height' =>  $birthHeight,
   ],
   'birth_zone_5' => [
     'triggerZone' =>  24,
     'animal' =>  FLAMINGO,
+    'topX' =>  9.5,
+    'topY' =>  $birthTopYLine2,
+    'width' =>  $birthWidth,
+    'height' =>  $birthHeight,
   ],
 ];
 
@@ -360,6 +384,12 @@ $this->token_types = [
     'type' => 'nyz_animal_action_zone',
     'name' => clienttranslate("Take animals"),
     'tooltip' => clienttranslate("You must be able to place at least one of those two animals on your board, either in a free house or a fence (free or with animals of the same specie)"),
+  ],
+  'birth_zone' => [
+    'name' => clienttranslate("Breeding"),
+    'tooltip' => clienttranslate("When the elephant crosses this line, everyone may breed this type of animal in up to 2 eligible fences. To
+    be eligible, a fence must have at least 2 animals in it. For each of the [up to 2] eligible fences,
+    add 1 animal of the same type to an empty space of the fence."),
   ],
   'house' => [
     'name' => clienttranslate("You can stock one animal per house"),

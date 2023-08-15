@@ -648,7 +648,7 @@ define([
 
             this.playerOrder = gamedatas.players[this.player_id].no;
             $(`bonus_breeding_time_${this.playerOrder}`).innerHTML = _('Bonus breeding');
-            dojo.query('.nyz_animal_action_zone').forEach((node) => {
+            dojo.query('.nyz_animal_action_zone, .nyz_birth_zone').forEach((node) => {
                this.updateTooltip(node.id);
             });
 

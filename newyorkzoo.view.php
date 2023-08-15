@@ -171,6 +171,11 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
     }
 
+    $this->page->begin_block($template, "birthZone");
+    foreach ($this->game->birthZones as $id => &$zone) {
+      $this->page->insert_block("birthZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height']]);
+    }
+
     $this->page->begin_block($template, "bonus-mask");
     $attractions= $this->game->mtCollectAllWithFieldValue("color", "bonus");
     $uniqueMasks= array_unique(array_map(fn ($a)=> $a["mask"], $attractions));

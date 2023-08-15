@@ -24,7 +24,6 @@
     
     Please REMOVE this comment before publishing your game on BGA
 -->
-
 <div id="thething" class="thething">
 
 <div id="map_container" class="map_container">
@@ -34,9 +33,15 @@
 	<div id="market" class="market map_scrollable_oversurface map_layer">
 		<div class="actionStripWrapper">
 			<div class="actionStrip">
+
 				<!-- BEGIN actionStripZone -->
 				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
 				<!-- END actionStripZone -->
+
+				<!-- BEGIN birthZone -->
+				<div id="{ID}" class="nyz_birth_zone" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
+				<!-- END birthZone -->
+
 				<!-- BEGIN patch -->
 				<div id="{PATCH_ID}" class="patch flipper patch_{NUM} {PATCH_CLASSES}">
 					<div class="target-image target-spot"></div>
@@ -47,6 +52,7 @@
 					</svg>
 				</div>
 				<!-- END patch -->
+
 				<div id="token_neutral" class="token_neutral"></div>
 			</div>
 		</div>
@@ -61,7 +67,6 @@
 
 <div id="central" class="central">
 
-		
 		<!-- BEGIN player_board -->
 		<div id="miniboard_{ORDER}" class="miniboard">
 		    <div class="mini_icons">
@@ -100,12 +105,9 @@
 
 		<!-- END player_board -->
         </div>
-
-	
 </div>
+
 <div id="circle_market" class="circle_market"></div>
-
-
 
 <div id="bonus_market" class="bonus_market">
 	<!-- BEGIN bonus-mask -->

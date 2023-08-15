@@ -158,6 +158,12 @@
     height: 100%;
 }
 
+.nyz_birth_zone{
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: all;
+}
+
 .market .minimized {
     transform: rotate(90deg);
     transform-origin: unset;
