@@ -28,6 +28,7 @@ if (!defined('OFFSET')) {
     define("OFFSET", 5);
     define("ACTION_ZONES_COUNT", 25);
     define("ACTION_ZONE_PREFIX", "action_zone_");
+    define("ACTION_ZONE_ANML_PREFIX", "action_zone_anml_");
     define("ANIMALS_INITIAL_NUMBER", 60);
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
@@ -201,7 +202,7 @@ class NewYorkZoo extends EuroGame {
         $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
-        $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_10
+        $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_anml_10
     }
 
     function setupPatchesOnBoard() {
@@ -488,7 +489,7 @@ class NewYorkZoo extends EuroGame {
         return [1, 3, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21, 23, 24];
     }
 
-    function getNextActionZoneNumber($current) {
+    function getNextActionZoneNumber(int $current) {
         return $current == ACTION_ZONES_COUNT ? 1 : $current + 1;
     }
 
@@ -497,25 +498,46 @@ class NewYorkZoo extends EuroGame {
      */
     function getNextActionZones() {
         $zones = [];
-        $tokenNeutral = $this->tokens->getTokenInfo('token_neutral');
-        $neutralLocation = getPart($tokenNeutral['location'], 2);
-
         $moveMax = $this->arg_elephantMove();
         $moveCount = 1;
-        $nextZone = $this->getNextActionZoneNumber($neutralLocation);
+        $nextZone = $this->getNextActionZone();
         while (count($zones) < $moveMax) {
-            $patches = $this->tokens->getTokensOfTypeInLocation('patch', ACTION_ZONE_PREFIX . $nextZone);
-            if ($this->actionStripZones[ACTION_ZONE_PREFIX . $nextZone]['type'] == PATCH && !$patches) {
+            if ($this->isFenceActionZoneWithoutFences($nextZone)) {
                 //empty patch zones do not count
-                //self::dump("************no patch at******************", ACTION_ZONE_PREFIX . $nextZone);
             } else {
-                $zones[] = ACTION_ZONE_PREFIX . $nextZone;
+                $zones[] = $nextZone;
                 $moveCount++;
             }
-            $nextZone = $this->getNextActionZoneNumber($nextZone);
+            $nextZone = $this->getNextActionZone($nextZone);
         }
         //self::dump("************possible zones******************", $zones);
         return $zones;
+    }
+
+    function isFenceActionZoneWithoutFences($nextZone){
+        $patches = $this->tokens->getTokensOfTypeInLocation('patch', $nextZone);
+        return $this->actionStripZones[$nextZone]['type'] == PATCH && !$patches;
+    }
+
+    function getNextActionZone($from = null) {
+        if ($from) {
+            $origin = getPart($from, -1); 
+        } else {
+            $origin = $this->getNeutralPositionNumber();
+        }
+        $nextZone = $this->getNextActionZoneNumber(intval($origin));
+        $zoneId = ACTION_ZONE_PREFIX . $nextZone;
+        if (array_key_exists($zoneId, $this->actionStripZones)) {
+            return $zoneId;
+        } else {
+            return ACTION_ZONE_ANML_PREFIX . $nextZone;
+        }
+    }
+
+    function getNeutralPositionNumber() {
+        $tokenNeutral = $this->tokens->getTokenInfo('token_neutral');
+        $neutralLocation = getPart($tokenNeutral['location'], -1);
+        return $neutralLocation;
     }
 
     function mtCollectWithField($field, $callback = null) {
@@ -641,7 +663,7 @@ class NewYorkZoo extends EuroGame {
         $playerOrder = $this->getMostlyActivePlayerOrder();
         self::DbQuery("DELETE FROM fence_squares where square like 'square_$playerOrder%'");
         self::DbQuery("DELETE FROM fence where player_order = '$playerOrder'");
-        $fences = array_keys($this->tokens->getTokensOfTypeInLocation("patch%", "square_" . $playerOrder."%"));
+        $fences = array_keys($this->tokens->getTokensOfTypeInLocation("patch%", "square_" . $playerOrder . "%"));
         $fillers = $this->mtCollectWithFieldValue("color", "filler");
         $this->dbSetTokensLocation(array_diff($fences, $fillers), "hand_" . $this->getMostlyActivePlayerId(), null, '${player_name} resets the start fences', []);
     }
@@ -676,7 +698,7 @@ class NewYorkZoo extends EuroGame {
         } else {
             //$order = $this->getPlayerPosition($player_id);
             $this->userAssertTrue(self::_("No animal available to populate a fence"), $this->canPopulateNewFence());
-           
+
             $canBuy  = $this->arg_canBuyPatches($order);
             $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
 
@@ -743,8 +765,8 @@ class NewYorkZoo extends EuroGame {
 
     function saction_MoveNeutralToken($pos) {
         $old = $this->tokens->getTokenLocation('token_neutral');
-        $old = getPart($old, 2) + 0;
-        $new = getPart($pos, 2) + 0;
+        $old = getPart($old, -1) + 0;
+        $new = getPart($pos, -1) + 0;
 
         $spaces = array_search($pos, $this->getNextActionZones()) + 1;
 
@@ -2055,7 +2077,7 @@ class NewYorkZoo extends EuroGame {
 
         $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
         $this->dbSetTokenLocation($animalId, "house_" . $playerOrder . "_" . 3, null, '${player_name} places a ${token_name}', []);
-        $this->saction_MoveNeutralToken("action_zone_17");
+        $this->saction_MoveNeutralToken("action_zone_anml_17");
     }
 
     function fullFences() {

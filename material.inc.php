@@ -147,7 +147,7 @@ $this->actionStripZones['action_zone_1'] = [
   'height' =>  $height,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_2'] = [
+$this->actionStripZones['action_zone_anml_2'] = [
   'topX' =>  $this->actionStripZones['action_zone_1']['topX'] + $this->actionStripZones['action_zone_1']['width'] + $offsetZones,
   'topY' =>  $anmlTopY,
   'width' =>  $anmlWidth,
@@ -156,7 +156,7 @@ $this->actionStripZones['action_zone_2'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_3'] = [
-  'topX' =>  $this->actionStripZones['action_zone_2']['topX'] + $this->actionStripZones['action_zone_2']['width'] + $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_2']['topX'] + $this->actionStripZones['action_zone_anml_2']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
@@ -169,7 +169,7 @@ $this->actionStripZones['action_zone_4'] = [
   'height' =>  $height,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_5'] = [
+$this->actionStripZones['action_zone_anml_5'] = [
   'topX' =>  $this->actionStripZones['action_zone_4']['topX'] + $this->actionStripZones['action_zone_4']['width'] + $offsetZones,
   'topY' =>  $anmlTopY,
   'width' =>  $anmlWidth,
@@ -178,13 +178,13 @@ $this->actionStripZones['action_zone_5'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_6'] = [
-  'topX' =>  $this->actionStripZones['action_zone_5']['topX'] + $this->actionStripZones['action_zone_5']['width'] + $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_5']['topX'] + $this->actionStripZones['action_zone_anml_5']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_7'] = [
+$this->actionStripZones['action_zone_anml_7'] = [
   'topX' =>  $this->actionStripZones['action_zone_6']['topX'] + $this->actionStripZones['action_zone_6']['width'] + $offsetZones,
   'topY' =>  $anmlTopY,
   'width' =>  $anmlWidth,
@@ -193,7 +193,7 @@ $this->actionStripZones['action_zone_7'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_8'] = [
-  'topX' =>  $this->actionStripZones['action_zone_7']['topX'] + $this->actionStripZones['action_zone_7']['width'] + $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_7']['topX'] + $this->actionStripZones['action_zone_anml_7']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
@@ -206,7 +206,7 @@ $this->actionStripZones['action_zone_9'] = [
   'height' =>  $height,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_10'] = [
+$this->actionStripZones['action_zone_anml_10'] = [
   'topX' =>  $this->actionStripZones['action_zone_9']['topX'] + $this->actionStripZones['action_zone_9']['width'] + $offsetZones,
   'topY' =>  $anmlTopY,
   'width' =>  $anmlWidth,
@@ -215,13 +215,13 @@ $this->actionStripZones['action_zone_10'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_11'] = [
-  'topX' =>  $this->actionStripZones['action_zone_10']['topX'] + $this->actionStripZones['action_zone_10']['width'] + $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_10']['topX'] + $this->actionStripZones['action_zone_anml_10']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $mediumWidth,
   'height' =>  $height,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_12'] = [
+$this->actionStripZones['action_zone_anml_12'] = [
   'topX' =>  $this->actionStripZones['action_zone_11']['topX'] + $this->actionStripZones['action_zone_11']['width'] + $offsetZones,
   'topY' =>  $anmlTopY,
   'width' =>  $anmlWidth,
@@ -230,7 +230,7 @@ $this->actionStripZones['action_zone_12'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_13'] = [
-  'topX' =>  $this->actionStripZones['action_zone_12']['topX'] + $this->actionStripZones['action_zone_12']['width'] + $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_12']['topX'] + $this->actionStripZones['action_zone_anml_12']['width'] + $offsetZones,
   'topY' =>  $topY,
   'width' =>  $smallWidth,
   'height' =>  100,
@@ -243,7 +243,7 @@ $this->actionStripZones['action_zone_14'] = [
   'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_15'] = [
+$this->actionStripZones['action_zone_anml_15'] = [
   'topX' =>  $this->actionStripZones['action_zone_14']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
@@ -252,13 +252,13 @@ $this->actionStripZones['action_zone_15'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_16'] = [
-  'topX' =>  $this->actionStripZones['action_zone_15']['topX'] - $mediumWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_15']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
   'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_17'] = [
+$this->actionStripZones['action_zone_anml_17'] = [
   'topX' =>  $this->actionStripZones['action_zone_16']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
@@ -267,7 +267,7 @@ $this->actionStripZones['action_zone_17'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_18'] = [
-  'topX' =>  $this->actionStripZones['action_zone_17']['topX'] - $mediumWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_17']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
   'height' =>  $heightLine2Fences,
@@ -280,7 +280,7 @@ $this->actionStripZones['action_zone_19'] = [
   'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_20'] = [
+$this->actionStripZones['action_zone_anml_20'] = [
   'topX' =>  $this->actionStripZones['action_zone_19']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
@@ -289,13 +289,13 @@ $this->actionStripZones['action_zone_20'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_21'] = [
-  'topX' =>  $this->actionStripZones['action_zone_20']['topX'] - $mediumWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_20']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
   'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_22'] = [
+$this->actionStripZones['action_zone_anml_22'] = [
   'topX' =>  $this->actionStripZones['action_zone_21']['topX'] - $anmlWidth - $offsetZones,
   'topY' =>  $topYLine2Animals,
   'width' =>  $anmlWidth,
@@ -304,7 +304,7 @@ $this->actionStripZones['action_zone_22'] = [
   'type' =>  ANIMAL,
 ];
 $this->actionStripZones['action_zone_23'] = [
-  'topX' =>  $this->actionStripZones['action_zone_22']['topX'] - $mediumWidth - $offsetZones,
+  'topX' =>  $this->actionStripZones['action_zone_anml_22']['topX'] - $mediumWidth - $offsetZones,
   'topY' =>  $topYLine2Fences,
   'width' =>  $mediumWidth,
   'height' =>  $heightLine2Fences,
@@ -317,7 +317,7 @@ $this->actionStripZones['action_zone_24'] = [
   'height' =>  $heightLine2Fences,
   'type' =>  PATCH,
 ];
-$this->actionStripZones['action_zone_25'] = [
+$this->actionStripZones['action_zone_anml_25'] = [
   'topX' =>  1,
   'topY' =>  37.96,
   'width' =>  $anmlWidth,
@@ -352,6 +352,11 @@ $this->birthZones = [
 
 $this->token_types = [
   'action_zone' => [
+    'type' => 'nyz_fence_action_zone',
+    'name' => clienttranslate("Place patch"),
+    'tooltip' => clienttranslate("You must be able to place the patch from the top of this pile to your board, and populate it with an animal from a free house or from a fence having at least two animals"),
+  ],
+  'action_zone_anml' => [
     'type' => 'nyz_animal_action_zone',
     'name' => clienttranslate("Take animals"),
     'tooltip' => clienttranslate("You must be able to place at least one of those two animals on your board, either in a free house or a fence (free or with animals of the same specie)"),

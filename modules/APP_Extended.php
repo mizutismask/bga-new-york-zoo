@@ -579,7 +579,10 @@ function getPart($haystack, $i, $bNoexeption = false) {
     $len = count($parts);
     if ($bNoexeption && $i >= $len)
         return "";
-    return $parts[$i];
+    if ($bNoexeption && $len + $i < 0)
+        return "";
+
+    return $parts[$i >= 0 ? $i : $len + $i];
 }
 
 function getPartsPrefix($haystack, $i) {
