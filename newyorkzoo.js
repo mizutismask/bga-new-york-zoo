@@ -1222,9 +1222,9 @@ define([
             dojo.query(`.group-counter`).forEach((g) => {
                 g.innerHTML = g.parentNode.childElementCount - 1;
                 if (g.innerHTML == 0) {
-                    g.style.display = 'none';
+                    g.parentNode.style.display = 'none';
                 } else {
-                    g.style.display = 'flex';
+                    g.parentNode.style.display = 'grid';
                 }
             });
         },
