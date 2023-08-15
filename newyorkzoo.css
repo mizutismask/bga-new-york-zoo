@@ -902,7 +902,7 @@
 .nyz_action_zone {
     display: inline-block;
     position: absolute;
-    border: #436aab solid 1px;
+    /*border: #436aab solid 1px;*/
     display: grid;
     grid-template-columns: 1fr;
     justify-items: center;
