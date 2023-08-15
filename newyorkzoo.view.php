@@ -109,7 +109,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       if (isset($players[$current_player])) { // may be not set if spectator
         $this->page->insert_block("handMarket", array(
           "PLAYER_ID" => $player_info['player_id'],
-          "OTHER_CLASSES"=> $player_info['player_id'] != $current_player? "opponent":"",
+          "OTHER_CLASSES" => $player_info['player_id'] != $current_player ? "opponent" : "",
         ));
       }
     }
@@ -177,12 +177,15 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     }
 
     $this->page->begin_block($template, "bonus-mask");
-    $attractions= $this->game->mtCollectAllWithFieldValue("color", "bonus");
-    $uniqueMasks= array_unique(array_map(fn ($a)=> $a["mask"], $attractions));
-    foreach ($uniqueMasks as $i =>$mask) {
-      $this->page->insert_block("bonus-mask", ['COUNTER' => $i, 'MASK' => $mask, ]);
+    $attractions = $this->game->mtCollectAllWithFieldValue("color", "bonus");
+    $uniqueMasks = array_unique(array_map(fn ($a) => $a["mask"], $attractions));
+    usort($uniqueMasks, function ($a, $b) {
+      return substr_count($b,"1") - substr_count($a,"1");
+    });
+    foreach ($uniqueMasks as $i => $mask) {
+      $this->page->insert_block("bonus-mask", ['COUNTER' => $i, 'MASK' => $mask,]);
     }
-    
+
 
     $this->page->begin_block($template, "square");
     $this->page->begin_block($template, "anml_square");
