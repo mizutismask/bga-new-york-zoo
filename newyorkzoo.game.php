@@ -151,7 +151,7 @@ class NewYorkZoo extends EuroGame {
             $this->error("Fatal error while creating game");
             $this->dump('err', $e);
         }
-        $this->dblBreeding(); //debug only
+        //$this->dblBreeding(); //debug only
         /************ End of the game initialization *****/
     }
 
@@ -328,6 +328,11 @@ class NewYorkZoo extends EuroGame {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
+    function action_endGame() {
+        $this->checkAction('endGame');
+        $this->gamestate->nextState('next');
+    }
+    
     function hasReachLimit($patch) {
         return intval($this->dbGetFence($patch)["animals_added"]) >= 2;
     }
@@ -514,14 +519,14 @@ class NewYorkZoo extends EuroGame {
         return $zones;
     }
 
-    function isFenceActionZoneWithoutFences($nextZone){
+    function isFenceActionZoneWithoutFences($nextZone) {
         $patches = $this->tokens->getTokensOfTypeInLocation('patch', $nextZone);
         return $this->actionStripZones[$nextZone]['type'] == PATCH && !$patches;
     }
 
     function getNextActionZone($from = null) {
         if ($from) {
-            $origin = getPart($from, -1); 
+            $origin = getPart($from, -1);
         } else {
             $origin = $this->getNeutralPositionNumber();
         }
@@ -1005,10 +1010,7 @@ class NewYorkZoo extends EuroGame {
             }
         }
         if ($nextState == TRANSITION_NEXT_PLAYER) {
-            if ($this->isGameOver()) {
-                $this->saction_FinalScoring();
-                $nextState = 'last';
-            } else if ($this->isBreedingNeeded()) {
+            if (!$this->isGameOver() && $this->isBreedingNeeded()) {
                 //before moving to the next player, we have to make breeding
                 $nextState = TRANSITION_NEXT_BREEDER;
             }

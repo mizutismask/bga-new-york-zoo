@@ -108,6 +108,11 @@ class action_newyorkzoo extends APP_GameAction {
     self::ajaxResponse();
   }
 
+  public function endGame() {
+    self::setAjaxMode();
+    $this->game->action_endGame();
+    self::ajaxResponse();
+  }
 
   /*
     
