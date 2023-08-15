@@ -392,7 +392,7 @@ class NewYorkZoo extends EuroGame {
         $occupied = $this->filterOccupiedSquares($squares);
         $tokens = $this->tokens->getTokensInLocations($occupied);
         $tokens = $this->filterAnimals($tokens);
-        $this->dbSetTokensLocation($tokens, "limbo", null, '${player_name} has a full fence', []);
+        $this->dbSetTokensLocation($tokens, "limbo", null, '✅ ${player_name} has a full fence', []);
         $this->dbUpdateFenceType($fenceId, "none");
         return $type;
     }
@@ -1264,7 +1264,7 @@ class NewYorkZoo extends EuroGame {
                 }
             }
 
-            self::notifyAllPlayers("msg", clienttranslate('${player_name} breeds ${number} ${animals}(s)'), array(
+            self::notifyAllPlayers("msg", clienttranslate('🍼 ${player_name} breeds ${number} ${animals}(s)'), array(
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
                 'animals' => $animalType
@@ -1291,7 +1291,7 @@ class NewYorkZoo extends EuroGame {
             //$this->dbSetTokenLocation($token["key"], $squareKey, null, '', []);
             //$this->dbIncFenceAnimalsAddedNumber($patch);
 
-            self::notifyAllPlayers("msg", clienttranslate('${player_name} breeds ${number} ${animals}(s) with the bonus breeding'), array(
+            self::notifyAllPlayers("msg", clienttranslate('🍼 ${player_name} breeds ${number} ${animals}(s) with the bonus breeding'), array(
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
                 'animals' => $animalType
