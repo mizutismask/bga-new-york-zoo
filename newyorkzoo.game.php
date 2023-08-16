@@ -665,6 +665,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function action_resetStartFences() {
+        $this->checkAction('resetStartFences');
         $playerOrder = $this->getMostlyActivePlayerOrder();
         self::DbQuery("DELETE FROM fence_squares where square like 'square_$playerOrder%'");
         self::DbQuery("DELETE FROM fence where player_order = '$playerOrder'");
@@ -726,9 +727,9 @@ class NewYorkZoo extends EuroGame {
         $occupancy = $this->getOccupancyMatrix($order);
         $moves = $this->arg_possibleMoves($token_id, $order, $rotor, $occupancy)[$rotor];
         $valid = array_search($dropTarget, $moves) !== false;
-        $this->userAssertTrue(self::_("Not possible to place patch: illegal move"), $valid);
+        $this->userAssertTrue(self::_("Not possible to place fence: illegal move"), $valid);
         $state = $rotateZ / 90 + $rotateY / 180 * 4;
-        $message = clienttranslate('${player_name} places patch ${token_div}');
+        $message = clienttranslate('${player_name} places fence ${token_div}');
         $this->dbSetTokenLocation(
             $token_id,
             $dropTarget,
@@ -1091,6 +1092,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function action_placeAnimalFromHouse() {
+        $this->checkAction('placeAnimalFromHouse');
         $playerOrder = $this->getMostlyActivePlayerOrder();
         $from = self::getGameStateValue(GS_FROM); //animal type
         $animalType = $this->getAnimalName($from);
@@ -1160,12 +1162,14 @@ class NewYorkZoo extends EuroGame {
         return self::getObjectListFromDB("SELECT token_key FROM fence WHERE player_order='$order'", true);
     }
     function action_dismissAttraction() {
+        $this->checkAction('dismissAttraction');
         $this->notifyWithName('message', clienttranslate('${player_name} does not place a bonus attraction'));
         $this->resolveLastFullFenceContext();
         $this->changeNextStateFromContext();
     }
 
     function action_dismissAnimal() {
+        $this->checkAction('dismiss');
         $state = $this->gamestate->state();
 
         switch ($state['name']) {
@@ -1860,7 +1864,7 @@ class NewYorkZoo extends EuroGame {
         $canPatch = $args['canPatch'];
         //$this->warn("st_playerTurn canPatch='".$canPatch."' pl=$player_id ".toJson($args)."|");
         if (false &&  !$canPatch) {
-            $this->notifyWithName('message', clienttranslate('${player_name} cannot buy any patches'));
+            $this->notifyWithName('message', clienttranslate('${player_name} cannot place any fence'));
             $this->sendNotifications(); // have to do it so it does not bundle too much
         }
     }

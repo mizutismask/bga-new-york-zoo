@@ -1047,7 +1047,7 @@ define([
             if (!args.canPatch) pickcolor = 'red';
             gameui.addImageActionButton(
                 'b',
-                _('Pick Patch'),
+                _('Pick fence'),
                 () => {
                     if (args.canPatch) this.setClientStateAction('client_PickPatch');
                     else this.showError(_('No legal moves'));
@@ -1198,7 +1198,7 @@ define([
             if (!args.canPatch) pickcolor = 'red';
             gameui.addImageActionButton(
                 'b',
-                _('Pick Patch'),
+                _('Pick fence'),
                 () => {
                     if (args.canPatch) this.setClientStateAction('client_PickPatch');
                     else this.showError(_('No legal moves'));
