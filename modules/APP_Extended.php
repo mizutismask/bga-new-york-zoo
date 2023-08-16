@@ -324,8 +324,8 @@ abstract class APP_Extended extends Table {
     function activateNextPlayerCustom() {
         $player_id = $this->activeNextPlayer();
         $this->giveExtraTime($player_id);
-        //$this->incStat(1, 'turns_number', $next_player_id);
-        //$this->incStat(1, 'turns_number');
+        $this->incStat(1, 'turns_number', $player_id);
+        $this->incStat(1, 'turns_number');
     }
 
     // ------ DB ----------
