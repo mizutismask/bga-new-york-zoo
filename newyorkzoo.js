@@ -646,10 +646,12 @@ define([
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
-            this.playerOrder = gamedatas.players[this.player_id].no;
-            $(`bonus_breeding_time_${this.playerOrder}`).innerHTML = _('Bonus breeding');
+            if (!this.isSpectator) {
+                this.playerOrder = gamedatas.players[this.player_id].no;
+                $(`bonus_breeding_time_${this.playerOrder}`).innerHTML = _('Bonus breeding');
+            }
             dojo.query('.nyz_animal_action_zone, .nyz_birth_zone').forEach((node) => {
-               this.updateTooltip(node.id);
+                this.updateTooltip(node.id);
             });
 
             console.log('Ending game setup');
@@ -736,8 +738,8 @@ define([
 
                 var tokenInfo = this.gamedatas.tokens[token];
                 var location = tokenInfo.location;
-                console.log("tokenInfo",tokenInfo);
-                
+                console.log('tokenInfo', tokenInfo);
+
                 if (location == 'hand_' + this.player_id) {
                     dojo.setAttr(token, 'data-start-fence', 'true');
                 }
@@ -832,9 +834,9 @@ define([
                 if (zoneNumber <= 13) {
                     //upper line, need to see forward, but not too far
                     width = cbox.l;
-                   // console.log('*******first line width', width);
+                    // console.log('*******first line width', width);
                     const lastZoneCBox = dojo.contentBox('action_zone_13');
-                   //console.log('action_zone_13.getBoundingClientRect()', lastZoneCBox);
+                    //console.log('action_zone_13.getBoundingClientRect()', lastZoneCBox);
                     width = Math.min(width, dojo.contentBox('action_zone_13').l + lastZoneCBox.w - mapWidth + 30);
                     //console.log('*******capped width', width);
                     width = width * -1;
@@ -1656,6 +1658,7 @@ define([
         },
 
         notif_breedingTime(notif) {
+            if (this.isReadOnly()) return;
             let notifDiv = $('breeding_time_' + this.playerOrder);
             const bonus = notif.args.bonus;
             let classes = ['animated'];
