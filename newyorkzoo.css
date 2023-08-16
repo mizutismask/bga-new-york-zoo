@@ -53,7 +53,7 @@
 }
 
 .player-board {
-    background-color: #e2e7c2c2;
+    background-color: #cfe396; /*#d7e3b6*/
 }
 
 .playerOrderHelp {
@@ -839,21 +839,23 @@
 }
 
 .empty_icon {
+    background-color: #a97b33;
     background-image: none;
-    width: 2.2em;
-    height: 2.2em;
-    border-width: thin;
-    border-style: dashed;
-    margin-left: 5px;
-    border-color: black;
-    background-color: #b19466;
+    border: 1px solid #2f2008;
+    height: 1.6em;
+    margin-left: 1px;
+    width: 1.6em;
 }
 
 .mini_icons {
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: start;
     align-items: center;
+}
+
+.miniboard{
+    margin-top: 6px;
 }
 
 .mini_board_item > * {
@@ -861,8 +863,9 @@
     vertical-align: middle;
 }
 .mini_counter {
-    font-size: x-large;
+    font-size: larger;
     font-weight: bold;
+    color: #65481b;
 }
 
 /* TOOLTIP */
