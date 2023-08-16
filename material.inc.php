@@ -377,8 +377,8 @@ $this->birthZones = [
 $this->token_types = [
   'action_zone' => [
     'type' => 'nyz_fence_action_zone',
-    'name' => clienttranslate("Place patch"),
-    'tooltip' => clienttranslate("You must be able to place the patch from the top of this pile to your board, and populate it with an animal from a free house or from a fence having at least two animals"),
+    'name' => clienttranslate("Place fence"),
+    'tooltip' => clienttranslate("You must be able to place the fence from the top of this pile to your board, and populate it with an animal from a free house or from a fence having at least two animals"),
   ],
   'action_zone_anml' => [
     'type' => 'nyz_animal_action_zone',
