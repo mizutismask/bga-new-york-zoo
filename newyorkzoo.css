@@ -313,7 +313,7 @@
     /* background-color: cyan; */
     width: var(--cellWidth);
     height: var(--cellWidth);
-    /*border: 1px solid hsl(0deg 0% 100% / 70%);*/ /* to debug*/
+    /*border: 1px solid hsl(0deg 0% 100% / 70%);*/ /* for debug*/
     overflow: visible;
     z-index: 99;
 }

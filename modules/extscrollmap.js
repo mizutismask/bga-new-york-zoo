@@ -40,38 +40,37 @@ define([
 				this.scrollto( 0, 0 );
 			},
 			onMouseDown: function(event) {
-				if (!this.bEnableScrolling) { return; }
+                if (!this.bEnableScrolling) {
+                    return;
+                }
 
-				//console.log(event);
-				if (event.button != undefined && event.button != 0)
-					return;
+                //debug(event);
+                if (event.button != undefined && event.button != 0) return;
 
-				this.isdragging = true;
-				//console.log("start dragging");
+                this.isdragging = true;
+                //debug("start dragging");
 
-				var scrollable_coords = dojo.position(this.scrollable_div);
-				var container_coords = dojo.position(this.container_div);
-				if (event.pageX === undefined && event.touches && event.touches.length > 0) {
-					event.pageX = event.touches[0].pageX;
-					event.pageY = event.touches[0].pageY;
-				}
+                var scrollable_coords = dojo.position(this.scrollable_div);
+                var container_coords = dojo.position(this.container_div);
+                if (event.pageX === undefined && event.touches && event.touches.length > 0) {
+                    event.pageX = event.touches[0].pageX;
+                    event.pageY = event.touches[0].pageY;
+                }
 
-				this.dragging_offset_x = event.pageX - (scrollable_coords.x - container_coords.x);
-				this.dragging_offset_y = event.pageY - (scrollable_coords.y - container_coords.y);
+                this.dragging_offset_x = event.pageX - (scrollable_coords.x - container_coords.x);
+                this.dragging_offset_y = event.pageY - (scrollable_coords.y - container_coords.y);
 
-				this.dragging_handler = dojo.connect($('ebd-body'), "onmousemove", this, "onMouseMove");
-				this.dragging_handler_touch = dojo.connect($('ebd-body'), "ontouchmove", this, "onMouseMove");
-
-			},
+                this.dragging_handler = dojo.connect($('ebd-body'), 'onmousemove', this, 'onMouseMove');
+                this.dragging_handler_touch = dojo.connect($('ebd-body'), 'ontouchmove', this, 'onMouseMove');
+            },
 			onMouseUp: function(event) {
 				if (this.isdragging === true) {
-					this.isdragging = false;
-					dojo.disconnect(this.dragging_handler);
-					dojo.disconnect(this.dragging_handler_touch);
-//					console.log("stop dragging",this.off_x);
-					this.realign();
-
-				}
+                    this.isdragging = false;
+                    dojo.disconnect(this.dragging_handler);
+                    dojo.disconnect(this.dragging_handler_touch);
+                    //					debug("stop dragging",this.off_x);
+                    this.realign();
+                }
 			},
 
 			onMouseMove: function(event) {
@@ -88,15 +87,13 @@ define([
 				}
 			},
 			realign: function() {
-				var rect = this.getRect("#" + this.onsurface_div.id + ">*");
-				var cont = this.container_div.getBoundingClientRect();
-				var max = rect.x + rect.width - cont.width + 100;
-				//console.log(rect);
-				if (this.off_x > 100)
-					this.setPos(0, undefined);
-				else if (this.off_x < -max)
-					this.setPos(-max, undefined);
-			},
+                var rect = this.getRect('#' + this.onsurface_div.id + '>*');
+                var cont = this.container_div.getBoundingClientRect();
+                var max = rect.x + rect.width - cont.width + 100;
+                //debug(rect);
+                if (this.off_x > 100) this.setPos(0, undefined);
+                else if (this.off_x < -max) this.setPos(-max, undefined);
+            },
 			scroll: function(dx, dy) {
 				this.setPos(toint(this.off_x) + dx, toint(this.off_y) + dy);
 			},
@@ -152,13 +149,13 @@ define([
 				}
 				var nodes = document.querySelectorAll(css_query);
 				nodes.forEach((node)=>{
-					//console.log(node.id,node.getBoundingClientRect());
-					max_x = Math.max(max_x, dojo.style(node, 'left') + dojo.style(node, 'width'));
-					min_x = Math.min(min_x, dojo.style(node, 'left'));
+                    //debug(node.id,node.getBoundingClientRect());
+                    max_x = Math.max(max_x, dojo.style(node, 'left') + dojo.style(node, 'width'));
+                    min_x = Math.min(min_x, dojo.style(node, 'left'));
 
-					max_y = Math.max(max_y, dojo.style(node, 'top') + dojo.style(node, 'height'));
-					min_y = Math.min(min_y, dojo.style(node, 'top'));
-				});
+                    max_y = Math.max(max_y, dojo.style(node, 'top') + dojo.style(node, 'height'));
+                    min_y = Math.min(min_y, dojo.style(node, 'top'));
+                });
 
 				rect.x = min_x;
 				rect.y = min_y;
@@ -212,29 +209,29 @@ define([
 			//// Scroll with buttons
 
 			onMoveTop: function(event) {
-				console.log("onMoveTop");
-				event.preventDefault();
-				this.scroll(0, this.scrollDelta);
-				this.realign();
-			},
+                //debug("onMoveTop");
+                event.preventDefault();
+                this.scroll(0, this.scrollDelta);
+                this.realign();
+            },
 			onMoveLeft: function(event) {
-				console.log("onMoveLeft");
-				event.preventDefault();
-				this.scroll(this.scrollDelta, 0);
-				this.realign();
-			},
+                //debug("onMoveLeft");
+                event.preventDefault();
+                this.scroll(this.scrollDelta, 0);
+                this.realign();
+            },
 			onMoveRight: function(event) {
-				console.log("onMoveRight");
-				event.preventDefault();
-				this.scroll(-this.scrollDelta, 0);
-				this.realign();
-			},
+                //debug("onMoveRight");
+                event.preventDefault();
+                this.scroll(-this.scrollDelta, 0);
+                this.realign();
+            },
 			onMoveDown: function(event) {
-				console.log("onMoveDown");
-				event.preventDefault();
-				this.scroll(0, -this.scrollDelta);
-				this.realign();
-			},
+                //debug("onMoveDown");
+                event.preventDefault();
+                this.scroll(0, -this.scrollDelta);
+                this.realign();
+            },
 
 			isVisible: function(x, y) {
 				var width = dojo.style(this.container_div, "width");

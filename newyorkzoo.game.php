@@ -170,7 +170,6 @@ class NewYorkZoo extends EuroGame {
             $playerOrder = $player["player_no"];
             $boardConf = $this->boards[count($players)][$playerOrder];
             $h = 1;
-            self::dump("***********boardConf***********", $boardConf);
             foreach ($boardConf["animals"] as $animal) {
                 $this->tokens->moveToken($animal . '_' . $i, "house_" . $playerOrder . "_" . $h, 0);
                 $i++;
@@ -239,7 +238,6 @@ class NewYorkZoo extends EuroGame {
             foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
                 $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
                 $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
-                //self::dump('*******************removedColoredPatch', $removedColoredPatch);
                 for ($i = 0; $i < 3; $i++) {
                     $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
                     $stateP1++;
@@ -385,7 +383,6 @@ class NewYorkZoo extends EuroGame {
     function isFenceFull($fenceKey) {
         $squares = $this->getFenceSquares($fenceKey);
         $empty = $this->filterFreeSquares($squares);
-        //self::dump('***********isFenceFull********', !$empty);
         return !$empty;
     }
 
@@ -654,8 +651,6 @@ class NewYorkZoo extends EuroGame {
     */
 
     function action_placeStartFence($token_id, $dropTarget, $rotateZ, $rotateY) {
-        self::dump("**************action_placeStartFence*********************", $token_id);
-        self::dump("**************to*********************", $dropTarget);
         $this->checkAction('placeStartFence');
 
         $player_id = $this->getMostlyActivePlayerId();
@@ -695,8 +690,6 @@ class NewYorkZoo extends EuroGame {
     }
 
     function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
-        self::dump("**************action_place*********************", $token_id);
-        self::dump("**************to*********************", $dropTarget);
         $this->checkAction('place');
 
         $player_id = $this->getActivePlayerId();
@@ -719,8 +712,7 @@ class NewYorkZoo extends EuroGame {
 
             $canBuy  = $this->arg_canBuyPatches($order);
             $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
-
-            //self::dump("**************pos*********************", $pos);
+            
             $this->saction_MoveNeutralToken($pos);
             $this->dbInsertContextLog(ACTION_POPULATE_FENCE, $token_id);
             $this->dbInsertContextLog(ACTION_PLACE_FENCE, $token_id);
@@ -760,7 +752,7 @@ class NewYorkZoo extends EuroGame {
         //self::dump('*********getOccupancyMatrixForPiece**********', $this->matrix->dumpMatrix($occupancy));
         $prefix = "square_${order}_";
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
-        self::dump('*********occupiedByPiece**********', $occupiedByPiece);
+        //self::dump('*********occupiedByPiece**********', $occupiedByPiece);
         $fenceId = $this->dbInsertFence($order, $token_id, $occupiedByPiece, $isBonusAttraction);
         self::setGameStateValue(GS_LAST_FENCE_PLACED, $fenceId);
     }
@@ -866,7 +858,7 @@ class NewYorkZoo extends EuroGame {
                 $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
                 break;
         }
-        self::dump('*******************animalId', $animalId, $state['name']);
+        //self::dump('*******************animalId', $animalId, $state['name']);
         $this->saction_placeAnimal($from, $to, $animalType, $animalId);
     }
 
@@ -959,16 +951,16 @@ class NewYorkZoo extends EuroGame {
         $context = $this->dbGetLastContextToResolve();
         if ($context && $context["action"] == $action) {
             $this->dbResolveContextLog($context["id"]);
-            self::dump('*******************Context just resolved', $context);
+            //self::dump('*******************Context just resolved', $context);
         } else {
-            self::dump('*******************Last context not as expected', $action);
+            //self::dump('*******************Last context not as expected', $action);
         }
     }
 
     function changeNextStateFromContext() {
         $nextState = "";
         $situation = $this->dbGetLastContextToResolve();
-        self::dump('******************situation*', $situation);
+        //self::dump('******************situation*', $situation);
         if (!$situation) {
             $nextState = TRANSITION_NEXT_PLAYER;
         } else {
@@ -1029,7 +1021,7 @@ class NewYorkZoo extends EuroGame {
                 $nextState = TRANSITION_NEXT_BREEDER;
             }
         }
-        self::dump('******************nextState*', $nextState);
+        //self::dump('******************nextState*', $nextState);
         $this->gamestate->nextState($nextState);
     }
 
@@ -1115,19 +1107,19 @@ class NewYorkZoo extends EuroGame {
         // self::dump('*******************GS_BREED2_TO ', self::getGameStateValue(GS_BREED2_TO));
         if (self::getGameStateValue(GS_TO) && (self::getGameStateValue(GS_RESOLVING_BREEDING) == 1 || self::getGameStateValue(GS_BONUS_BREEDING) == 1)) {
             $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
-            self::dump('*******************action_placeAnimalFromHouse 1 ', $to);
+            //self::dump('*******************action_placeAnimalFromHouse 1 ', $to);
         } else if (self::getGameStateValue(GS_RESOLVING_BREEDING) == 2) {
             $to = "patch_" . self::getGameStateValue(GS_BREED2_TO); //fence key number
-            self::dump('*******************action_placeAnimalFromHouse 2 ', $to);
+            //self::dump('*******************action_placeAnimalFromHouse 2 ', $to);
         } else {
             $to = "patch_" . self::getGameStateValue(GS_TO); //fence key number
         }
         $squares = $this->getFenceSquares($to);
         $squares = $this->filterFreeSquares($squares);
         $toSquare = array_pop($squares);
-        self::dump('*******************action_placeAnimalFromHouse frorm ', $from);
-        self::dump('*******************action_placeAnimalFromHouse animal ', $animal);
-        self::dump('*******************action_placeAnimalFromHouse to ', $to);
+        //self::dump('*******************action_placeAnimalFromHouse frorm ', $from);
+        //self::dump('*******************action_placeAnimalFromHouse animal ', $animal);
+        //self::dump('*******************action_placeAnimalFromHouse to ', $to);
         $this->saction_placeAnimal(null, $toSquare, $animalType, $animal["key"]);
     }
 
@@ -1382,7 +1374,7 @@ class NewYorkZoo extends EuroGame {
         $order = $this->getPlayerPosition($player_id);
         $res = [];
         $patches = $this->arg_canBuyPatches($order);
-        self::dump('*************arg_playerTurn***patches***', $patches);
+        //self::dump('*************arg_playerTurn***patches***', $patches);
         $canUseAny = false;
         $canPopulate = $this->canPopulateNewFence();
         $occupancy = $this->getOccupancyMatrix($order);
@@ -1420,7 +1412,7 @@ class NewYorkZoo extends EuroGame {
         $res = [];
         $playerOrder = $this->getPlayerPosition($player_id);
         $patches = $this->getUniqueMasks($patches);
-        self::dump('*************arg_placeAttraction***patches***', $patches);
+        //self::dump('*************arg_placeAttraction***patches***', $patches);
         $canUseAny = false;
         $occupancy = $this->getOccupancyMatrix($playerOrder);
         foreach ($patches as $patch) {
@@ -1554,7 +1546,7 @@ class NewYorkZoo extends EuroGame {
                 $from[] = $nz;
             }
         }
-        self::dump("*****************arg_canGetAnimals*", $from);
+        //self::dump("*****************arg_canGetAnimals*", $from);
         return $from;
     }
 
@@ -1651,7 +1643,7 @@ class NewYorkZoo extends EuroGame {
 
         $args["possibleTargets"] =  $this->getFenceSquares($fenceTokenKey);
         $args["canDismiss"] = !$firstAnimal;
-        self::dump('*******************arg_populateNewFence', $args);
+        //self::dump('*******************arg_populateNewFence', $args);
         return $args;
     }
 
@@ -1924,22 +1916,22 @@ class NewYorkZoo extends EuroGame {
         $this->gamestate->changeActivePlayer($triggerPlayer);
         $players = array_values($this->getPlayingPlayersInOrder($triggerPlayer));
         $i = 0;
-        self::dump('*****************getPlayersInOrder**', $players);
+        //self::dump('*****************getPlayersInOrder**', $players);
         while ($i < count($players)) {
             $p = $players[$i];
             $playerId = $p["player_id"];
             $playerOrder = $p["player_no"];
             $hasBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bred");
             $hasBonusBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bonus_bred");
-            self::dump('*****************hasBred**', $hasBred);
-            self::dump('****************hasBonusBred**', $hasBonusBred);
+            //self::dump('*****************hasBred**', $hasBred);
+            //self::dump('****************hasBonusBred**', $hasBonusBred);
             if (!$hasBonusBred) {
-                self::dump('*****************NOT hasBonusBred**', $p);
+                //self::dump('*****************NOT hasBonusBred**', $p);
                 if ($hasBred && !empty($this->getFreeSquaresAvailableForBonusBreeding($playerOrder))) {
-                    self::dump('*****************CAN BonusBred**', $playerId);
+                    //self::dump('*****************CAN BonusBred**', $playerId);
                     if (intval($playerId) != $triggerPlayer) {
                         $this->gamestate->changeActivePlayer($playerId);
-                        self::dump('*****************changeActivePlayer**', $playerId);
+                        //self::dump('*****************changeActivePlayer**', $playerId);
                     }
                     $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
                     return;
@@ -2116,13 +2108,13 @@ class NewYorkZoo extends EuroGame {
         $playerOrder = $this->getMostlyActivePlayerOrder();
 
         for ($i = 0; $i < $count; $i++) {
-            self::dump('************************************************************************i', $i);
+            //self::dump('************************************************************************i', $i);
             $turn = $this->arg_playerTurn();
             $fences = $this->arg_canBuyPatches($playerOrder);
-            self::dump('*******************arg_canBuyPatches', $fences);
+            //self::dump('*******************arg_canBuyPatches', $fences);
             $placed = false;
             $patch1 = array_shift($fences);
-            self::dump('*******************$patch1', $patch1);
+            //self::dump('*******************$patch1', $patch1);
             while (!$placed && $patch1 != null) {
 
                 $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
@@ -2135,16 +2127,16 @@ class NewYorkZoo extends EuroGame {
                 if (empty($patchOneMoves)) {
                     $patchOneMoves = $turn['patches'][$patch1]['moves']["270_0"];
                 }
-                self::dump('*******************patchOneMoves', $patchOneMoves);
+                //self::dump('*******************patchOneMoves', $patchOneMoves);
                 if (!empty($patchOneMoves)) {
                     $p1Move = array_shift($patchOneMoves);
-                    self::dump('*******************patch1 placed', $patch1);
-                    self::dump('*******************to', $p1Move);
+                    //self::dump('*******************patch1 placed', $patch1);
+                    //self::dump('*******************to', $p1Move);
                     $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
                     $placed = true;
                 }
                 //$patch1 = array_shift($fences);
-                self::dump('*******************patch1 end', $patch1);
+                //self::dump('*******************patch1 end', $patch1);
             }
         }
     }

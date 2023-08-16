@@ -18,12 +18,12 @@ const CELL_WIDTH = 42;
 
 class PatchManager {
     constructor(game) {
-        console.log('patch manager constructor');
+        debug('patch manager constructor');
     }
 
     // on click hooks
     onClickPatch(event) {
-        console.log('onClickPatch', event);
+        debug('onClickPatch', event);
         var id = event.currentTarget.id;
         if (id == null) return;
         if (gameui.curstate === 'placeAnimal' || gameui.curstate === 'client_PlaceAnimal') return;
@@ -39,7 +39,7 @@ class PatchManager {
 
     onSquare(event) {
         var id = event.currentTarget.id;
-        console.log('onSquare', id, event, gameui.isCurrentPlayerActive(), gameui.isPracticeMode(), gameui.curstate);
+        debug('onSquare', id, event, gameui.isCurrentPlayerActive(), gameui.isPracticeMode(), gameui.curstate);
         event.preventDefault();
         if (!id) return;
         if (!gameui.isCurrentPlayerActive() && !gameui.isPracticeMode()) return;
@@ -65,7 +65,7 @@ class PatchManager {
             gameui.clientStateArgs.squares = gameui
                 .queryIds('.animal-target-image')
                 .map((sqre) => this.replaceGridSquareByAnimalSquare(sqre));
-            console.log('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares);
+            debug('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares);
         } else {
             if (dropNode == gameui.clientStateArgs.dropTarget) {
                 // pick up the piece to move again
@@ -112,7 +112,7 @@ class PatchManager {
     }
 
     triggerControl(controlId) {
-        console.log('trigger ' + controlId);
+        debug('trigger ' + controlId);
         const targetNode = this.mobileNode;
         if (!this.mobileNode) {
             gameui.showError(_('Nothing is selected'));
@@ -139,7 +139,7 @@ class PatchManager {
         } else if (controlId.startsWith('flip_control')) {
             if (gameui.clientStateArgs.rotateY) gameui.clientStateArgs.rotateY = 0;
             else gameui.clientStateArgs.rotateY = 180;
-            //console.log("rotateY "+gameui.clientStateArgs.rotateY);
+            //debug("rotateY "+gameui.clientStateArgs.rotateY);
         }
         if (targetNode) this.applyRotate(targetNode, dirz);
         //
@@ -191,7 +191,7 @@ class PatchManager {
     }
 
     dragStart(event) {
-        console.log('drag started ', event.target);
+        debug('drag started ', event.target);
         if (!event.target.id) return;
         //event.preventDefault();// does not with with prevent defaults
         //event.stopPropagation();
@@ -219,13 +219,13 @@ class PatchManager {
             gameui.placeTokenLocal(tokenId, 'market', order, { noa: true });
             // gameui.placeTokenLocal(tokenId, "hand_"+gameui.player_id, order, { noa: true })
         }, 100);
-        //console.log("drag shadow", this.mobileNode.style);
+        //debug("drag shadow", this.mobileNode.style);
         event.dataTransfer.setData('text/plain', tokenId); // not sure if needed
         event.dataTransfer.effectAllowed = 'move';
     }
 
     dragEnd() {
-        console.log('drag end');
+        debug('drag end');
         var shadowNode = $('dragShadow');
         if (!shadowNode) return;
         if (gameui.clientStateArgs.dropTarget) {
@@ -239,7 +239,7 @@ class PatchManager {
 
         if (!gameui.clientStateArgs.dropTarget) {
             // cancel
-            console.log('end cancel');
+            debug('end cancel');
             this.cancelPickPatch();
         } else {
             var state = this.getRotateState();
@@ -249,7 +249,7 @@ class PatchManager {
             dojo.destroy(shadowNode);
             this.mobileNode = this.selectedNode;
             this.selectPickPatchSquare($(gameui.clientStateArgs.dropTarget));
-            //console.log("end commit");
+            //debug("end commit");
         }
         if (gameui.scrollmap) gameui.scrollmap.enableScrolling();
         this.endPickPatch();
@@ -268,7 +268,7 @@ class PatchManager {
         var dropNode = this.getDropTarget(event.currentTarget);
         if (dropNode) event.stopPropagation();
         //if (!dropNode) dropNode = this.getDropTarget(event.target);
-        //console.log("enter " + event.target.id, event.currentTarget.id, dropNode);
+        //debug("enter " + event.target.id, event.currentTarget.id, dropNode);
 
         if (!this.mobileNode) return; // ???
         if (event.target.id == 'dragShadow') return; //ignore
@@ -294,7 +294,7 @@ class PatchManager {
         event.stopPropagation();
         if (!this.mobileNode) return;
         var dropNode = this.getDropTarget(event.currentTarget);
-        //console.log("drop this "+ this.selectedNode.id, dropNode,"event.target", event.target,"event.ctarget", event.currentTarget);
+        //debug("drop this "+ this.selectedNode.id, dropNode,"event.target", event.target,"event.ctarget", event.currentTarget);
         //if (dropNode == null) {
         //	dropNode = $('pickTarget');
         //}
@@ -317,7 +317,7 @@ class PatchManager {
 
     dragLeave(event) {
         event.preventDefault();
-        //console.log("leave "+this.id);
+        //debug("leave "+this.id);
         const dropNode = this.getDropTarget(event.currentTarget);
         if (dropNode == null) return;
 
@@ -331,7 +331,7 @@ class PatchManager {
         targetNode = $(targetNode);
         this.practiceMode = gameui.isPracticeMode();
         var location = targetNode.parentNode.id;
-        console.log('begin ' + targetNode.id);
+        debug('begin ' + targetNode.id);
 
         if (!this.practiceMode) {
             var has_error = true;
@@ -370,7 +370,7 @@ class PatchManager {
             this.cancelPickPatch();
             gameui.clientStateArgs.token = targetNode.id;
             // shadow clone will apear where it will be snapped
-            console.log('creating new shadow for ' + targetNode.id);
+            debug('creating new shadow for ' + targetNode.id);
 
             this.selectedNode = targetNode;
             this.mobileNode = targetNode;
@@ -392,7 +392,7 @@ class PatchManager {
             }
             this.applyRotate(this.mobileNode);
             targetNode.style.transition = 'none';
-            console.log('moved to pieces');
+            debug('moved to pieces');
             gameui.attachToNewParentNoDestroy(targetNode, 'pieces_' + gameui.player_no);
             targetNode.style.removeProperty('transition');
             gameui.moveClass('selected', targetNode);
@@ -400,7 +400,7 @@ class PatchManager {
             this.updateActiveSquares();
         }
 
-        //console.log("selected "+gameui.clientStateArgs.token);
+        //debug("selected "+gameui.clientStateArgs.token);
         return gameui.clientStateArgs.token;
     }
 
@@ -411,7 +411,7 @@ class PatchManager {
     }
 
     cancelPickPatch() {
-        console.log('cancelPickPatch', this.selectedNode);
+        debug('cancelPickPatch', this.selectedNode);
         if (this.selectedNode) {
             this.restoreOriginalPatch(this.selectedNode.id);
             $('overall-content').classList.remove('placingFence');
@@ -429,7 +429,7 @@ class PatchManager {
     restoreOriginalPatch(targetNode) {
         targetNode = $(targetNode);
         dojo.destroy(targetNode.id + '_temp');
-        console.log('restoreOriginalPatch', $(targetNode));
+        debug('restoreOriginalPatch', $(targetNode));
         if (!targetNode.id.startsWith('patch_0')) {
             let dest = 'market';
             if (targetNode.dataset?.startFence == 'true') {
@@ -456,7 +456,7 @@ class PatchManager {
         gameui.moveClass('pickTarget', dropNode);
         gameui.moveClass('drag_hover', dropNode);
         gameui.clientStateArgs.dropTarget = dropNode.id;
-        //console.log("pos",this.mobileNode.style.left, this.mobileNode.style.top);
+        //debug("pos",this.mobileNode.style.left, this.mobileNode.style.top);
     }
 
     getDropTarget(node) {
@@ -486,7 +486,7 @@ class PatchManager {
             this.normalizedRotateAngle(gameui.clientStateArgs.rotateZ) +
             '_' +
             this.normalizedRotateAngle(gameui.clientStateArgs.rotateY);
-        //console.log('updating moves for ' + curpatch + ' ' + combo);
+        //debug('updating moves for ' + curpatch + ' ' + combo);
         var moves_info = gameui.gamedatas.gamestate.args.patches[curpatch];
         if (moves_info) {
             var moves = moves_info.moves[combo];
@@ -529,7 +529,7 @@ class PatchManager {
         if (dropNode) {
             shadowNode.style.left = dropNode.style.left;
             shadowNode.style.top = dropNode.style.top;
-            //console.log("pos snap", this.mobileNode.style.left, this.mobileNode.style.top);
+            //debug("pos snap", this.mobileNode.style.left, this.mobileNode.style.top);
         } else if (shadowNode.parentNode) {
             var rectM = shadowNode.parentNode.getBoundingClientRect();
             left = coords.clientX - rectM.x - CELL_WIDTH / 2;
@@ -537,7 +537,7 @@ class PatchManager {
             shadowNode.style.left = left + 'px';
             shadowNode.style.top = top + 'px';
 
-            //console.log("pos free", shadowNode.style.left, shadowNode.style.top, coords);
+            //debug("pos free", shadowNode.style.left, shadowNode.style.top, coords);
         }
     }
 
@@ -548,7 +548,7 @@ class PatchManager {
         var rectM = this.mobileNodeParent.getBoundingClientRect();
         var x = rectT.x - rectM.x; //x position within the element.
         var y = rectT.y - rectM.y; //y position within the element.
-        //		console.log("dist "+y,rectT, rectM);
+        //		debug("dist "+y,rectT, rectM);
 
         var shadowNode = (this.mobileNode = targetNode.cloneNode(true));
         shadowNode.id = 'dragShadow';
@@ -597,7 +597,7 @@ define([
 ], function (dojo, declare) {
     return declare('bgagame.newyorkzoo', bgagame.sharedparent, {
         constructor: function () {
-            console.log('newyorkzoo constructor');
+            debug('newyorkzoo constructor');
             this.pm = new PatchManager(this);
             // Here, you can init the global variables of your user interface
             // Example:
@@ -618,7 +618,7 @@ define([
             */
 
         setup: function (gamedatas) {
-            console.log('Starting game setup, gamedatas:', gamedatas);
+            debug('Starting game setup, gamedatas:', gamedatas);
             var playerCount = Object.keys(gamedatas.players).length;
 
             // Setting up player boards
@@ -654,11 +654,11 @@ define([
                 this.updateTooltip(node.id);
             });
 
-            console.log('Ending game setup');
+            debug('Ending game setup');
         },
 
         setupPlayer: function (playerId, playerInfo, gamedatas) {
-            console.log('player info ' + playerId, playerInfo);
+            debug('player info ' + playerId, playerInfo);
             // move miniboards to the right
             var playerBoardDiv = dojo.byId('player_board_' + playerId);
             var order = gamedatas.players[playerId].no;
@@ -738,7 +738,6 @@ define([
 
                 var tokenInfo = this.gamedatas.tokens[token];
                 var location = tokenInfo.location;
-                console.log('tokenInfo', tokenInfo);
 
                 if (location == 'hand_' + this.player_id) {
                     dojo.setAttr(token, 'data-start-fence', 'true');
@@ -765,7 +764,7 @@ define([
                     'data-rz': rotateZ,
                 });
             } else {
-                console.log('setupToken unknown', token);
+                //debug('setupToken unknown', token);
             }
         },
         setupGameTokens: function () {
@@ -811,10 +810,10 @@ define([
                 dojo.connect(butt, 'onclick', () => reloadCss());
             }
 
-            console.log('enging token setup');
+            debug('enging token setup');
         },
         adjustScrollMap: function (duration) {
-            console.log('************adjustScrollMap');
+            debug('************adjustScrollMap');
             // we need to move market cursor to center on 3 pieces to select
             if (!$('thething')) return;
             var container = $('market').parentNode;
@@ -822,31 +821,31 @@ define([
             $('thething').style.removeProperty('height');
 
             var cbox = dojo.contentBox('token_neutral');
-            //console.log('********cbox neutral', cbox);
+            //debug('********cbox neutral', cbox);
             if (this.scrollmap) {
                 let actionZone = $('token_neutral').parentNode.id;
                 let zoneNumber = getPart(actionZone, 2);
                 var cbox = dojo.contentBox($('token_neutral').parentNode);
-                //console.log('********cbox', $('token_neutral').parentNode.id, cbox);
+                //debug('********cbox', $('token_neutral').parentNode.id, cbox);
 
                 let mapWidth = this.scrollmap.container_div.getBoundingClientRect().width; //dojo.contentBox(this.scrollmap).l;
-                //console.log('mapX', mapWidth);
+                //debug('mapX', mapWidth);
                 if (zoneNumber <= 13) {
                     //upper line, need to see forward, but not too far
                     width = cbox.l;
-                    // console.log('*******first line width', width);
+                    // debug('*******first line width', width);
                     const lastZoneCBox = dojo.contentBox('action_zone_13');
-                    //console.log('action_zone_13.getBoundingClientRect()', lastZoneCBox);
+                    //debug('action_zone_13.getBoundingClientRect()', lastZoneCBox);
                     width = Math.min(width, dojo.contentBox('action_zone_13').l + lastZoneCBox.w - mapWidth + 30);
-                    //console.log('*******capped width', width);
+                    //debug('*******capped width', width);
                     width = width * -1;
                 } else {
                     //lower line, need to see backwards, but not too far
                     width = cbox.l + cbox.w - mapWidth;
-                    //console.log('*******lower line width', width);
+                    //debug('*******lower line width', width);
                     width = width * -1;
                     width = Math.min(width, 0);
-                    //console.log('*******capped width', width);
+                    //debug('*******capped width', width);
                 }
                 setTimeout(() => {
                     this.scrollmap.onsurface_div.dataset.autoScroll = true; //for smooth scroll
@@ -881,7 +880,7 @@ define([
                     var keys = ['token_name', 'token_divs', 'token_names', 'token_div', 'token_div_count', 'animal'];
                     for (var i in keys) {
                         var key = keys[i];
-                        // console.log("checking " + key + " for " + log);
+                        // debug("checking " + key + " for " + log);
                         if (args[key] === undefined) continue;
 
                         if (key == 'token_divs') {
@@ -975,18 +974,8 @@ define([
             }
         },
 
-        onEnteringState_placeStartFences(args) {
-            //gamedatas.gamestate.args
-            //stateName == 'placeStartFences' ? args[this.player_id] : args
-            // this.gamedatas.gamestate.args = this.gamedatas.gamestate.args[this.player_id];
-            /* if (!$("hand" + this.player_id)) {
-                 dojo.place(this.createDiv("hand_market", "hand"+this.player_id), "circle_market", "after");
-             }
-             console.log(args[this.player_id]);*/
-        },
-
         processStateArgs(stateName, args) {
-            console.log('before processStateArgs: ', args);
+            //debug('before processStateArgs: ', args);
             return stateName == 'placeStartFences' ? args[this.player_id] : args;
         },
 
@@ -1038,7 +1027,6 @@ define([
             }
 
             args.canGetAnimals.forEach((id) => {
-                console.log('args.canGetAnimals', id);
                 //var canUse = args.patches[id].canUse;
                 dojo.addClass(id, 'active_slot');
                 //if (canUse == false)
@@ -1077,7 +1065,7 @@ define([
 
             var possibleTargets = Object.values(args.possibleTargets);
             possibleTargets.forEach((id) => {
-                console.log('args.canGetAnimals', id);
+                debug('args.canGetAnimals', id);
                 dojo.addClass(id, 'active_slot');
             });
 
@@ -1087,7 +1075,7 @@ define([
                 () => {
                     //todo translate i18
                     //this.setClientStateAction('client_PlaceAnimal');
-                    console.log('launching this.ajaxClientStateAction();');
+                    debug('launching this.ajaxClientStateAction();');
                     gameui.ajaxClientStateAction();
                 },
                 'blue'
@@ -1134,7 +1122,7 @@ define([
         onUpdateActionButtons_chooseFence: function (args) {
             gameui.clientStateArgs.action = 'chooseFences';
             gameui.clientStateArgs.squares = [];
-            console.log('squaresByFence', args);
+            debug('squaresByFence', args);
             var squaresByFence = Object.entries(args['squares']);
 
             squaresByFence.forEach(([fence, squares]) => {
@@ -1168,7 +1156,6 @@ define([
         onUpdateActionButtons_placeStartFences: function (args) {
             const playerOrder = this.gamedatas.players[this.player_id].no;
             const placedPatchesCount = this.queryIds(`.pieces_${playerOrder} .patch`).length;
-            console.log(this.queryIds(`.pieces_${playerOrder} .patch`));
             if (placedPatchesCount > 1) {
                 //the first one is the filler
                 gameui.addImageActionButton(
@@ -1232,7 +1219,7 @@ define([
         },
 
         onUpdateActionButtons_commonClientPickPatch: function (args) {
-            console.log('Calling  onUpdateActionButtons_client_PickPatch', args);
+            debug('Calling  onUpdateActionButtons_client_PickPatch', args);
             dojo.empty('generalactions');
             dojo.query('.done_control,.control-node').removeClass('active_slot');
 
@@ -1241,7 +1228,7 @@ define([
                 this.clientStateArgs.action = 'placeStartFence';
             }
             //todo différencier bonus et patch
-            console.log('args.patches', args['patches']);
+            debug('args.patches', args['patches']);
             var canBuy = Object.keys(args['patches'] ?? []);
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
@@ -1365,7 +1352,7 @@ define([
         },
         ajaxActionResultCallback: function (action, args, result) {
             this.inherited(arguments);
-            console.log('ajax callback');
+            debug('ajax callback');
             if (action == 'place' || action == 'placeStartFence') this.pm.cancelPickPatch();
             if (action == 'placeStartFence') {
                 this.pm.endPickPatch();
@@ -1414,7 +1401,7 @@ define([
 
             if (location.startsWith('hand')) {
                 var state = parseInt(tokenInfo.state);
-                console.log('state', state);
+                debug('state', state);
                 //result.position = 'absolute';
                 var tokenNode = $(token);
                 if (!tokenNode) return result; // ???
@@ -1507,14 +1494,14 @@ define([
             gameui.removeClass('original');
             gameui.removeClass('active_slot');
 
-            console.log('onAnimalZone', gameui.clientStateArgs);
+            debug('onAnimalZone', gameui.clientStateArgs);
             gameui.ajaxClientStateAction();
         },
 
         onHouse: function (event) {
             dojo.stopEvent(event);
             var id = event.currentTarget.id;
-            console.log('onHouse', id);
+            debug('onHouse', id);
 
             if (gameui.curstate === 'client_PlaceAnimal') {
                 if (!gameui.isActiveSlot(id)) {
@@ -1532,7 +1519,7 @@ define([
                 }
                 gameui.clientStateArgs.from = $(id).firstElementChild.id;
             }
-            console.log('onHouse', gameui.clientStateArgs);
+            debug('onHouse', gameui.clientStateArgs);
         },
 
         onAnimal: function (event) {
@@ -1548,7 +1535,7 @@ define([
                 default:
                     break;
             }
-            console.log('onAnimal', gameui.clientStateArgs);
+            debug('onAnimal', gameui.clientStateArgs);
         },
 
         ///////////////////////////////////////////////////
@@ -1569,7 +1556,7 @@ define([
             
             onMyMethodToCall1: function( evt )
             {
-                console.log( 'onMyMethodToCall1' );
+                debug( 'onMyMethodToCall1' );
                 
                 // Preventing default browser reaction
                 dojo.stopEvent( evt );
@@ -1644,8 +1631,8 @@ define([
             
             notif_cardPlayed: function( notif )
             {
-                console.log( 'notif_cardPlayed' );
-                console.log( notif );
+                debug( 'notif_cardPlayed' );
+                debug( notif );
                 
                 // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
                 
@@ -1673,13 +1660,12 @@ define([
                     classes.push('disabled');
                 }
             }
-            console.log('classes', classes);
             notifDiv.classList.add(...classes);
             setTimeout(() => notifDiv.classList.remove('animated', 'disabled', 'bonus', 'notif-' + animal), 1000);
         },
 
         notif_fenceFull(notif) {
-            console.log('notif_fenceFull', notif);
+            debug('notif_fenceFull', notif);
             $(notif.args.fence).classList.toggle('animated', !notif.args.resolved);
         },
 

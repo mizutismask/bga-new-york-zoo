@@ -37,9 +37,6 @@ class PwMatrix extends APP_Object {
     }
 
     function occupancyMatrix($data = null) {
-        //$this->game->dump("occupancyMatrix***************************************************", $this->game->getGridWidth());
-        //$this->game->dump("par", $this->game->getGridHeight());
-
         $res = [];
         for ($i = $this->game->getMatrixStart(); $i < $this->game->getMatrixHeightEnd(); $i++) {
             for ($j = $this->game->getMatrixStart(); $j < $this->game->getMatrixWidthEnd(); $j++) {
