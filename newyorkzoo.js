@@ -943,7 +943,7 @@ define([
             }
             if (key == 'animal') {
                 if (typeof value == 'string') {
-                    return `<div class="animal ${value}"></div>`;
+                    return `<div class="animal ${value}" title="${value}"></div>`;
                 }
             }
             return this.divInlineToken(token_id);
