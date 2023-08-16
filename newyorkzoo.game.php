@@ -319,9 +319,21 @@ class NewYorkZoo extends EuroGame {
         (see states.inc.php)
     */
     function getGameProgression() {
-        // TODO: compute and return the game progression
+        $players = $this->loadPlayersBasicInfos();
+        $done = [];
+        foreach ($players as $player_id => $info) {
+            // empty spaces
+            $order = $info['player_no'];
+            $occupancy = $this->getOccupancyMatrix($order);
+            $unoccup_count = $this->getOccupancyEmpty($occupancy);
 
-        return 0;
+            //total
+            $fillerSize = substr_count($this->token_types["patch_1" . count($players) . $order]["mask"], "1");
+            $totalToDo = $this->getGridHeight() * $this->getGridWidth() - $fillerSize;
+            
+            $done[$player_id] = ($totalToDo - $unoccup_count) * 100 / $totalToDo;
+        }
+        return max($done);
     }
 
 
