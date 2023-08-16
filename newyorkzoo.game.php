@@ -332,7 +332,7 @@ class NewYorkZoo extends EuroGame {
         $this->checkAction('endGame');
         $this->gamestate->nextState('next');
     }
-    
+
     function hasReachLimit($patch) {
         return intval($this->dbGetFence($patch)["animals_added"]) >= 2;
     }
@@ -931,6 +931,7 @@ class NewYorkZoo extends EuroGame {
             if ($this->isFenceFull($patch)) {
                 $this->notifyWithName("fenceFull", "", ["fence" => $patch, "resolved" => false]);
                 $this->dbInsertContextLog(CHECK_FENCE_FULL, $patch);
+                $this->giveExtraTime($this->getMostlyActivePlayerId());
             } else {
                 if ($state['name'] !== 'populateNewFence' && $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch)) {
                     self::setGameStateValue(GS_FROM, $this->getAnimalType($animalType));
@@ -1812,6 +1813,11 @@ class NewYorkZoo extends EuroGame {
 
     function st_gameTurnStart() {
         if ($this->isFastGame()) {
+            //needs time to place all the start fences
+            $players = $this->loadPlayersBasicInfos();
+            foreach ($players as $player_id => $info) {
+                $this->giveExtraTime($player_id);
+            }
             $this->gamestate->setAllPlayersMultiactive();
             $this->gamestate->nextState(TRANSITION_PLACE_START_FENCES);
         } else {
@@ -1890,7 +1896,6 @@ class NewYorkZoo extends EuroGame {
             $this->dbInsertContextLog(BONUS_BREEDING);
             self::notifyAllPlayers("breedingTime", clienttranslate('Bonus breeding time'), ["bonus" => true]);
             $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
-            // $this->gamestate->changeActivePlayer($triggerPlayer);
         } else {
             $this->dbUpdatePlayers("player_has_bred", 0);
             $this->gamestate->changeActivePlayer($triggerPlayer);
