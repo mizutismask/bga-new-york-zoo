@@ -201,7 +201,7 @@ class NewYorkZoo extends EuroGame {
         $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
-        $this->tokens->createToken("token_neutral", "action_zone_1", 0); //elephant todo remettre action_zone_anml_10
+        $this->tokens->createToken("token_neutral", "action_zone_anml_10", 0);
     }
 
     function setupPatchesOnBoard() {
