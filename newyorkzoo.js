@@ -1298,7 +1298,29 @@ define([
         },
 
         onUpdateActionButtons_keepAnimalFromFullFence: function (args) {
-            this.onUpdateActionButtons_commonPlaceAnimal(args);
+            this.clientStateArgs.action = 'keepAnimalFromFullFence';
+            gameui.addActionButton(
+                'yes',
+                _('Yes'),
+                () => {
+                    //todo translate i18
+                    this.ajaxClientStateAction();
+                },
+                null,
+                null,
+                'blue'
+            );
+
+            gameui.addActionButton(
+                'c',
+                _('No'),
+                () => {
+                    gameui.ajaxClientStateAction('dismiss');
+                },
+                null,
+                null,
+                'blue'
+            );
         },
 
         onUpdateActionButtons_commonPlaceAnimal: function (args) {

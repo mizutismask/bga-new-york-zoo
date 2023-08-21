@@ -852,11 +852,6 @@ class NewYorkZoo extends EuroGame {
                 $animalId = $from;
                 $animalType = getPart($animalId, 0);
                 break;
-            case 'keepAnimalFromFullFence':
-                //nothing to verify but prevents to fall into default case
-                $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
-                break;
-
             default:
                 //animal strip zone
                 $this->userAssertTrue(self::_("Have to select a location for this animal"), $animalType !== false && $to !== false);
@@ -869,6 +864,14 @@ class NewYorkZoo extends EuroGame {
         }
         //self::dump('*******************animalId', $animalId, $state['name']);
         $this->saction_placeAnimal($from, $to, $animalType, $animalId);
+    }
+
+    function action_keepAnimalFromFullFence() {
+        $this->checkAction('keepAnimalFromFullFence');
+        $animalType = $this->getAnimalName(self::getGameStateValue(GS_ANIMAL_TO_KEEP));
+        $freeHouses = $this->getFreeHouses($this->getMostlyActivePlayerOrder());
+        $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
+        $this->saction_placeAnimal(null, array_pop($freeHouses), $animalType, $animalId);
     }
 
     function replaceGridSquareByAnimalSquare($squareId) {
