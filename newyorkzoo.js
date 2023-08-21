@@ -798,7 +798,8 @@ define([
                     item.addEventListener("click", event => this.onClickAnimalZone(event), false)
                 }*/
             this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
-            this.connectClass('house', 'onclick', 'onHouse');
+            const playerOrder = this.gamedatas.players[this.player_id].no;
+            dojo.query(`.pboard_${playerOrder} .house`).connect("onclick", this,'onHouse');
 
             //this.connectClass('token_neutral', 'onclick', 'onZoomPlus');
             this.notif_eofnet();
