@@ -151,10 +151,19 @@ class NewYorkZoo extends EuroGame {
             $this->error("Fatal error while creating game");
             $this->dump('err', $e);
         }
-        //$this->dblBreeding(); //debug only
+
+        $this->debugSetup();
+        
         /************ End of the game initialization *****/
     }
 
+    function debugSetup() {
+        if ($this->getBgaEnvironment() != 'studio') {
+            return;
+        }
+        $this->dblBreeding();
+        $this->tokens->moveToken("token_neutral", "action_zone_1");
+    }
     function debugZoo() {
     }
 
