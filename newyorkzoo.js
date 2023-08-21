@@ -974,6 +974,26 @@ define([
             }
         },
 
+        onEnteringState_populateNewFence(args) {
+            if (this.isCurrentPlayerActive()) {
+                if (args.canDismiss) {
+                    this.setDescriptionOnMyTurn(
+                        _('${you} can place another animal on your new fence (from houses or other fences)')
+                    );
+                } else {
+                    this.setDescriptionOnMyTurn(
+                        _('${you} must place one animal on your new fence (from houses or other fences)')
+                    );
+                }
+            } else {
+                if (args.canDismiss) {
+                    this.setDescriptionOnOthersTurn(_('${actplayer} can place another animal on the new fence'));
+                } else {
+                    this.setDescriptionOnOthersTurn(_('${actplayer} must place one animal on the new fence'));
+                }
+            }
+        },
+
         processStateArgs(stateName, args) {
             //debug('before processStateArgs: ', args);
             return stateName == 'placeStartFences' ? args[this.player_id] : args;
@@ -1069,17 +1089,6 @@ define([
                 dojo.addClass(id, 'active_slot');
             });
 
-            gameui.addImageActionButton(
-                'place_animal',
-                _('Confirm'),
-                () => {
-                    //todo translate i18
-                    //this.setClientStateAction('client_PlaceAnimal');
-                    debug('launching this.ajaxClientStateAction();');
-                    gameui.ajaxClientStateAction();
-                },
-                'blue'
-            );
             if (args.canDismiss) {
                 gameui.addImageActionButton(
                     'c',
