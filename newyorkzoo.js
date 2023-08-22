@@ -478,7 +478,7 @@ class PatchManager {
     }
 
     updateActiveSquares() {
-        document.querySelectorAll('.square.drop-zone').forEach((item) => item.classList.remove('active_slot'));
+        document.querySelectorAll('.square.drop-zone, .anml-square.active_slot').forEach((item) => item.classList.remove('active_slot'));
         var curpatch = gameui.clientStateArgs.token;
 
         if (!curpatch) return;
