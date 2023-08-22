@@ -666,7 +666,7 @@ define([
 
             this.setupPlayerOrderHints(playerId, gamedatas);
             
-            gamedatas.fillerSquares.forEach(square => { dojo.query(`#${square}`).addClass("filler").removeClass("drop-zone") });
+            //gamedatas.fillerSquares.forEach(square => { dojo.query(`#${square}`).addClass("filler").removeClass("drop-zone") });
         },
 
         /** adds previous and next player color and name in a tooltip */
