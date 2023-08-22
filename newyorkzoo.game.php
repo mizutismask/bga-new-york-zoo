@@ -361,7 +361,7 @@ class NewYorkZoo extends EuroGame {
             $fenceKey = $this->getFillerId($this->getPlayersNumber(), $order);
             $occupancy = $this->getOccupancyMatrixForPiece($order, $fenceKey);
             $prefix = "square_${order}_";
-            $squares+= array_values($this->matrix->remap($occupancy, $prefix, 1));
+            $squares += array_values($this->matrix->remap($occupancy, $prefix, 1));
         }
         return $squares;
     }
@@ -875,9 +875,17 @@ class NewYorkZoo extends EuroGame {
                 //animal strip zone
                 $this->userAssertTrue(self::_("Have to select a location for this animal"), $animalType !== false && $to !== false);
                 $args = $this->arg_placeAnimal();
-                $this->userAssertTrue(self::_("Wrong animal to place"), isset($args["animals"][$animalType]));
-                $canGo  = $args["animals"][$animalType]["possibleTargets"];
-                $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
+                $isExpectedAnimal = isset($args["animals"][$animalType]);
+                $isChoosableAnimal = isset($args["choosableAnimals"][$animalType]);
+                $this->userAssertTrue(self::_("Wrong animal to place"), $isExpectedAnimal || $isChoosableAnimal);
+                if ($isExpectedAnimal) {
+                    $canGo  = $args["animals"][$animalType]["possibleTargets"];
+                    $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
+                }
+                if ($isChoosableAnimal) {
+                    $canGo  = $args["choosableAnimals"][$animalType]["possibleTargets"];
+                    $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
+                }
                 $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
                 break;
         }
@@ -942,11 +950,17 @@ class NewYorkZoo extends EuroGame {
                 break;
             default:
                 //animal zone
-                if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
-                    self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
-                }
-                if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
-                    self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
+                $anmlTypeConst=$this->getAnimalType($animalType);
+                if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) && self::getGameStateValue(GS_ANIMAL_TO_PLACE) != $anmlTypeConst && self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) != $anmlTypeConst) {
+                    //choosen type not in the expected ones, so we skip the second animal, the player give up on him by choosing another one
+                    $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
+                } else {
+                    if (self::getGameStateValue(GS_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+                        self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
+                    }
+                    if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) == $this->getAnimalType($animalType)) {
+                        self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
+                    }
                 }
                 $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
         }
@@ -1709,12 +1723,29 @@ class NewYorkZoo extends EuroGame {
         }
         if ($first && $second) {
             $args["canDismiss"] = false;
+            $args["choosableAnimals"] = $this->arg_dismissToChooseAnimalType([$this->getAnimalName($first, true), $this->getAnimalName($second, true)], $order);
         } else {
             $args["canDismiss"] = true;
         }
 
         $args["houses"] = $this->args_getHousesByAnimal($order);
 
+        return $args;
+    }
+
+    function arg_dismissToChooseAnimalType($toExclude, $playerOrder) {
+        $args = [];
+        foreach ($this->animals as $anmlType) {
+            if (array_search($anmlType, $toExclude) === false) {
+                $targets = $this->arg_possibleTargetsForAnimal($playerOrder, $anmlType);
+                $canPlace = count($targets) != 0;
+                if ($canPlace) {
+                    $args[$anmlType]["possibleTargets"] =  $targets;
+                    $args[$anmlType]["canPlace"] = $canPlace;
+                }
+            }
+        }
+        //self::dump('******************arg_dismissToChooseAnimalType*', $args);
         return $args;
     }
 

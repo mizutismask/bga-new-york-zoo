@@ -345,7 +345,9 @@ class PatchManager {
             } else if (!moves_info.canPlace) {
                 gameui.showError(_('You cannot place this enclosure on your zoo, it would not fit'));
             } else if (!moves_info.canUse) {
-                gameui.showError(_('You cannot place an enclosure on your zoo, you would have no animal to populate it'));
+                gameui.showError(
+                    _('You cannot place an enclosure on your zoo, you would have no animal to populate it')
+                );
             } else {
                 has_error = false;
             }
@@ -478,7 +480,9 @@ class PatchManager {
     }
 
     updateActiveSquares() {
-        document.querySelectorAll('.square.drop-zone, .anml-square.active_slot').forEach((item) => item.classList.remove('active_slot'));
+        document
+            .querySelectorAll('.square.drop-zone, .anml-square.active_slot')
+            .forEach((item) => item.classList.remove('active_slot'));
         var curpatch = gameui.clientStateArgs.token;
 
         if (!curpatch) return;
@@ -665,7 +669,7 @@ define([
             dojo.place('miniboard_' + order, playerBoardDiv);
 
             this.setupPlayerOrderHints(playerId, gamedatas);
-            
+
             //gamedatas.fillerSquares.forEach(square => { dojo.query(`#${square}`).addClass("filler").removeClass("drop-zone") });
         },
 
@@ -801,7 +805,7 @@ define([
                 }*/
             this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
             const playerOrder = this.gamedatas.players[this.player_id].no;
-            dojo.query(`.pboard_${playerOrder} .house`).connect("onclick", this,'onHouse');
+            dojo.query(`.pboard_${playerOrder} .house`).connect('onclick', this, 'onHouse');
 
             //this.connectClass('token_neutral', 'onclick', 'onZoomPlus');
             this.notif_eofnet();
@@ -1180,7 +1184,9 @@ define([
         },
 
         onUpdateActionButtons_client_GetAnimals: function (args) {
-            this.setDescriptionOnMyTurn(_('Select a blue animal acquisition zone, then place them into houses or enclosures'));
+            this.setDescriptionOnMyTurn(
+                _('Select a blue animal acquisition zone, then place them into houses or enclosures')
+            );
             args.canGetAnimals.forEach((id) => {
                 dojo.addClass(id, 'active_slot');
             });
@@ -1357,8 +1363,38 @@ define([
                             });
                         } else this.showError(_('No legal location'));
                     },
-                    pickcolor
+                    pickcolor,_('Place this animal now')
                 );
+            }
+
+            var choosableAnimals = Object.keys(args['choosableAnimals'] ?? []);
+            for (const anml of choosableAnimals) {
+                var pickcolor = 'gray';
+                debug('anml', anml);
+                gameui.addImageActionButton(
+                    'place_animal_' + anml,
+                    this.createDiv(anml + ' smallIcon'),
+                    () => {
+                        this.setClientStateAction('client_PlaceAnimal');
+                        this.clientStateArgs.animalType = anml;
+                        this.setDescriptionOnMyTurn(_('Place the ${animalType} in a house or with his friends'), {
+                            'animalType': anml,
+                        });
+
+                        args.choosableAnimals[anml].possibleTargets.forEach((id) => {
+                            dojo.addClass(id, 'active_slot');
+                        });
+                    },
+                    pickcolor,_('If you take this animal, you’ll get only one animal instead of the two from your acquisition zone (the blue ones)')
+                );
+            }
+            if (choosableAnimals?.length > 0) {
+                this.setDescriptionOnMyTurn(
+                    _('Place 2 blue animals OR 1 white animal'),
+                    {}
+                );
+            } else {
+                this.setDescriptionOnMyTurn(_('${you} can place an animal'), {});
             }
             if (args.canDismiss) {
                 gameui.addImageActionButton(
