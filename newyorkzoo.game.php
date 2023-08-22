@@ -153,7 +153,7 @@ class NewYorkZoo extends EuroGame {
         }
 
         $this->debugSetup();
-        
+
         /************ End of the game initialization *****/
     }
 
@@ -162,7 +162,7 @@ class NewYorkZoo extends EuroGame {
             return;
         }
         $this->dblBreeding();
-        $this->tokens->moveToken("token_neutral", "action_zone_1");
+        $this->tokens->moveToken("token_neutral", "action_zone_14");
     }
     function debugZoo() {
     }
@@ -260,7 +260,7 @@ class NewYorkZoo extends EuroGame {
         //place fake filler token at the top left corner
         for ($i = 0; $i < $players_nbr; $i++) {
             $order = $i + 1;
-            $this->tokens->moveToken("patch_1" . $players_nbr . $order, "square_" . $order . "_0_0");
+            $this->tokens->moveToken($this->getFillerId($players_nbr, $order), "square_" . $order . "_0_0");
         }
     }
     /*
@@ -312,6 +312,7 @@ class NewYorkZoo extends EuroGame {
         }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
+        $result['fillerSquares'] = self::getFillerSquares();
         return $result;
     }
 
@@ -337,7 +338,7 @@ class NewYorkZoo extends EuroGame {
             //total
             $fillerSize = substr_count($this->token_types["patch_1" . count($players) . $order]["mask"], "1");
             $totalToDo = $this->getGridHeight() * $this->getGridWidth() - $fillerSize;
-            
+
             $done[$player_id] = ($totalToDo - $unoccup_count) * 100 / $totalToDo;
         }
         return max($done);
@@ -347,6 +348,24 @@ class NewYorkZoo extends EuroGame {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
+    function getFillerId($players_nbr, $order) {
+        return "patch_1" . $players_nbr . $order;
+    }
+
+    /** Returns squares occupied by every upper left filler patch on each player board, to prevent actions on those. */
+    function getFillerSquares() {
+        $players = $this->loadPlayersBasicInfos();
+        $squares = [];
+        foreach ($players as $player_id => $info) {
+            $order = $this->getPlayerPosition($player_id);
+            $fenceKey = $this->getFillerId($this->getPlayersNumber(), $order);
+            $occupancy = $this->getOccupancyMatrixForPiece($order, $fenceKey);
+            $prefix = "square_${order}_";
+            $squares+= array_values($this->matrix->remap($occupancy, $prefix, 1));
+        }
+        return $squares;
+    }
+
     function action_endGame() {
         $this->checkAction('endGame');
         $this->gamestate->nextState('next');
@@ -721,7 +740,7 @@ class NewYorkZoo extends EuroGame {
 
             $canBuy  = $this->arg_canBuyPatches($order);
             $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
-            
+
             $this->saction_MoveNeutralToken($pos);
             $this->dbInsertContextLog(ACTION_POPULATE_FENCE, $token_id);
             $this->dbInsertContextLog(ACTION_PLACE_FENCE, $token_id);

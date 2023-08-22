@@ -555,6 +555,7 @@
     z-index: 30;
 }
 
+/*target*/
 .square:hover:after {
     content: '';
     background-image: url(img/tokens.png);
@@ -569,6 +570,12 @@
     position: absolute;
     pointer-events: none;
 }
+
+/*No target on fillers*/
+.filler.square{
+    pointer-events: none;
+}
+
 .square:not(.active_slot):hover:after {
     filter: invert(100%) sepia() saturate(100000%);
 }
