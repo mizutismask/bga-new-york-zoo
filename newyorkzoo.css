@@ -556,7 +556,7 @@
 }
 
 /*target*/
-.square:hover:after {
+.practice_mode .square:hover:after, .placingFence .square:hover:after {
     content: '';
     background-image: url(img/tokens.png);
     background-size: 18.2em auto;
@@ -568,11 +568,6 @@
     width: 100%;
     height: 100%;
     position: absolute;
-    pointer-events: none;
-}
-
-/*No target on fillers*/
-.filler.square{
     pointer-events: none;
 }
 

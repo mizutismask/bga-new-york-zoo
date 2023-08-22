@@ -312,7 +312,6 @@ class NewYorkZoo extends EuroGame {
         }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
-        $result['fillerSquares'] = self::getFillerSquares();
         return $result;
     }
 
@@ -350,20 +349,6 @@ class NewYorkZoo extends EuroGame {
     //////////// 
     function getFillerId($players_nbr, $order) {
         return "patch_1" . $players_nbr . $order;
-    }
-
-    /** Returns squares occupied by every upper left filler patch on each player board, to prevent actions on those. */
-    function getFillerSquares() {
-        $players = $this->loadPlayersBasicInfos();
-        $squares = [];
-        foreach ($players as $player_id => $info) {
-            $order = $this->getPlayerPosition($player_id);
-            $fenceKey = $this->getFillerId($this->getPlayersNumber(), $order);
-            $occupancy = $this->getOccupancyMatrixForPiece($order, $fenceKey);
-            $prefix = "square_${order}_";
-            $squares += array_values($this->matrix->remap($occupancy, $prefix, 1));
-        }
-        return $squares;
     }
 
     function action_endGame() {
