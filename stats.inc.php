@@ -107,12 +107,12 @@ $stats_type = array(
         ),
         "game_animals_kept_from_full_fence" => array(
             "id" => 16,
-            "name" => totranslate("Animals kept from full fence"),
+            "name" => totranslate("Animals kept from full enclosure"),
             "type" => "int"
         ),
         "game_animals_added_from_house" => array(
             "id" => 17,
-            "name" => totranslate("Additional animals added to fence from house"),
+            "name" => totranslate("Additional animals added to enclosure from house"),
             "type" => "int"
         ),
         /*

@@ -341,11 +341,11 @@ class PatchManager {
             if (!gameui.isCurrentPlayerActive()) {
                 gameui.showError(_('This is not your turn, turn on Practice Mode to practice placing'));
             } else if (!moves_info) {
-                gameui.showError(_('You cannot select this fence yet'));
+                gameui.showError(_('You cannot select this enclosure yet'));
             } else if (!moves_info.canPlace) {
-                gameui.showError(_('You cannot place this fence on your zoo, it would not fit'));
+                gameui.showError(_('You cannot place this enclosure on your zoo, it would not fit'));
             } else if (!moves_info.canUse) {
-                gameui.showError(_('You cannot place a fence on your zoo, you would have no animal to populate it'));
+                gameui.showError(_('You cannot place an enclosure on your zoo, you would have no animal to populate it'));
             } else {
                 has_error = false;
             }
@@ -967,11 +967,11 @@ define([
             if (args['bonusBreeding']) {
                 if (this.isCurrentPlayerActive()) {
                     this.setDescriptionOnMyTurn(
-                        _('Bonus breeding : ${you} can choose a fence that has not already breed this turn')
+                        _('Bonus breeding : ${you} can choose an enclosure that has not already breed this turn')
                     );
                 } else {
                     this.setDescriptionOnOthersTurn(
-                        _('Bonus breeding : ${actplayer} can choose a fence that has not already breed this turn')
+                        _('Bonus breeding : ${actplayer} can choose an enclosure that has not already breed this turn')
                     );
                 }
             }
@@ -981,18 +981,18 @@ define([
             if (this.isCurrentPlayerActive()) {
                 if (args.canDismiss) {
                     this.setDescriptionOnMyTurn(
-                        _('${you} can place another animal on your new fence (from houses or other fences)')
+                        _('${you} can place another animal on your new enclosure (from houses or other enclosures)')
                     );
                 } else {
                     this.setDescriptionOnMyTurn(
-                        _('${you} must place one animal on your new fence (from houses or other fences)')
+                        _('${you} must place one animal on your new enclosure (from houses or other enclosures)')
                     );
                 }
             } else {
                 if (args.canDismiss) {
-                    this.setDescriptionOnOthersTurn(_('${actplayer} can place another animal on the new fence'));
+                    this.setDescriptionOnOthersTurn(_('${actplayer} can place another animal on the new enclosure'));
                 } else {
-                    this.setDescriptionOnOthersTurn(_('${actplayer} must place one animal on the new fence'));
+                    this.setDescriptionOnOthersTurn(_('${actplayer} must place one animal on the new enclosure'));
                 }
             }
         },
@@ -1032,7 +1032,7 @@ define([
                         this.onUpdateActionButtons_client_PickPatch(args);
                     },
                     undefined,
-                    _('In this mode you can place any fences to practice fitting')
+                    _('In this mode you can place any enclosures to practice fitting')
                 );
             }
         },
@@ -1060,7 +1060,7 @@ define([
             if (!args.canPatch) pickcolor = 'red';
             gameui.addImageActionButton(
                 'b',
-                _('Pick fence'),
+                _('Pick enclosure'),
                 () => {
                     if (args.canPatch) this.setClientStateAction('client_PickPatch');
                     else this.showError(_('No legal moves'));
@@ -1199,7 +1199,7 @@ define([
             if (!args.canPatch) pickcolor = 'red';
             gameui.addImageActionButton(
                 'b',
-                _('Pick fence'),
+                _('Pick enclosure'),
                 () => {
                     if (args.canPatch) this.setClientStateAction('client_PickPatch');
                     else this.showError(_('No legal moves'));
@@ -1257,11 +1257,11 @@ define([
                 //this.removeClass('active_slot');
                 controls = true;
             } else if (sel) {
-                this.setDescriptionOnMyTurn(_('Place the fence on your zoo. You can drag and drop'));
+                this.setDescriptionOnMyTurn(_('Place the enclosure on your zoo. You can drag and drop'));
                 controls = true;
                 this.pm.updateActiveSquares();
             } else {
-                this.setDescriptionOnMyTurn(_('Select a fence, then place it. You can drag and drop'));
+                this.setDescriptionOnMyTurn(_('Select an enclosure, then place it. You can drag and drop'));
             }
             if (this.isPracticeMode()) {
                 this.setMainTitle(_('PRACTICE MODE:'), 'before');

@@ -377,19 +377,19 @@ $this->birthZones = [
 $this->token_types = [
   'action_zone' => [
     'type' => 'nyz_fence_action_zone',
-    'name' => clienttranslate("Place fence"),
-    'tooltip' => clienttranslate("You must be able to place the fence from the top of this pile to your board, and populate it with an animal from a free house or from a fence having at least two animals"),
+    'name' => clienttranslate("Place enclosure"),
+    'tooltip' => clienttranslate("You must be able to place the enclosure from the top of this pile to your board, and populate it with an animal from a free house or from a enclosure having at least two animals"),
   ],
   'action_zone_anml' => [
     'type' => 'nyz_animal_action_zone',
     'name' => clienttranslate("Take animals"),
-    'tooltip' => clienttranslate("You must be able to place at least one of those two animals on your board, either in a free house or a fence (free or with animals of the same specie)"),
+    'tooltip' => clienttranslate("You must be able to place at least one of those two animals on your board, either in a free house or a enclosure (free or with animals of the same specie)"),
   ],
   'birth_zone' => [
     'name' => clienttranslate("Breeding"),
-    'tooltip' => clienttranslate("When the elephant crosses this line, everyone may breed this type of animal in up to 2 eligible fences. To
-    be eligible, a fence must have at least 2 animals in it. For each of the [up to 2] eligible fences,
-    add 1 animal of the same type to an empty space of the fence."),
+    'tooltip' => clienttranslate("When the elephant crosses this line, everyone may breed this type of animal in up to 2 eligible enclosures. To
+    be eligible, an enclosure must have at least 2 animals in it. For each of the [up to 2] eligible enclosures,
+    add 1 animal of the same type to an empty space of the enclosure."),
   ],
   'house' => [
     'name' => clienttranslate("You can stock one animal per house"),

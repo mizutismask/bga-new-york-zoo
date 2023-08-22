@@ -95,7 +95,7 @@ $machinestates = array(
     ),
 
     STATE_GAME_START => [
-        "name" => "gameTurnStart", "description" => clienttranslate('Setup fences...'),
+        "name" => "gameTurnStart", "description" => clienttranslate('Setup enclosures...'),
         "type" => "game", 
         "action" => "st_gameTurnStart", //
         "updateGameProgression" => false,
@@ -123,8 +123,8 @@ $machinestates = array(
 
     STATE_PLAYER_POPULATE_NEW_FENCE => [
         "name" => "populateNewFence",
-        "description" => clienttranslate('${actplayer} must/can place one animal on the new fence'),
-        "descriptionmyturn" => clienttranslate('${you} must/can place one animal on your new fence (from houses or other fences)'),
+        "description" => clienttranslate('${actplayer} must/can place one animal on the new enclosure'),
+        "descriptionmyturn" => clienttranslate('${you} must/can place one animal on your new enclosure (from houses or other enclosures)'),
         "type" => "activeplayer",
         "args" => "arg_populateNewFence",
         "possibleactions" => ["dismiss", "placeAnimal"],
@@ -157,8 +157,8 @@ $machinestates = array(
 
     STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE => [
         "name" => "placeAnimalFromHouse",
-        "description" => clienttranslate('${actplayer} can add an animal from the houses to the same fence'),
-        "descriptionmyturn" => clienttranslate('Do ${you} want to add another animal from one of your houses to the same fence ?'),
+        "description" => clienttranslate('${actplayer} can add an animal from the houses to the same enclosure'),
+        "descriptionmyturn" => clienttranslate('Do ${you} want to add another animal from one of your houses to the same enclosure ?'),
         "type" => "activeplayer",
         "possibleactions" => ["dismiss", "placeAnimalFromHouse"],
         "transitions" => [
@@ -174,8 +174,8 @@ $machinestates = array(
 
     STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE => [
         "name" => "keepAnimalFromFullFence",
-        "description" => clienttranslate('${actplayer} can place an animal from the full fence to a house'),
-        "descriptionmyturn" => clienttranslate('Do ${you} want to place an animal from your full fence to a house ?'),
+        "description" => clienttranslate('${actplayer} can place an animal from the full enclosure to a house'),
+        "descriptionmyturn" => clienttranslate('Do ${you} want to place an animal from your full enclosure to a house ?'),
         "type" => "activeplayer",
         "args" => "arg_keep_animal",
         "possibleactions" => ["dismiss", "keepAnimalFromFullFence"],
@@ -207,8 +207,8 @@ $machinestates = array(
 
     STATE_PLAYER_CHOOSE_BREEDING_FENCE => [
         "name" => "chooseFence",
-        "description" => clienttranslate('${actplayer} can choose fences for breeding'),
-        "descriptionmyturn" => clienttranslate('${you} can choose at most one location within two different fences for breeding'),
+        "description" => clienttranslate('${actplayer} can choose enclosures for breeding'),
+        "descriptionmyturn" => clienttranslate('${you} can choose at most one location within two different enclosures for breeding'),
         "type" => "activeplayer",
         "args" => "arg_chooseFences",
         "possibleactions" => ["chooseFences", "dismiss"],
@@ -224,8 +224,8 @@ $machinestates = array(
 
     STATE_PLAYER_PLACE_START_FENCES => [
         "name" => "placeStartFences",
-        "description" => clienttranslate('Everyone has to place some fences before starting'),
-        "descriptionmyturn" => clienttranslate('${you} have to place some fences before starting'),
+        "description" => clienttranslate('Everyone has to place some enclosures before starting'),
+        "descriptionmyturn" => clienttranslate('${you} have to place some enclosures before starting'),
         "type" => "multipleactiveplayer",
         "args" => "arg_placeStartFences",
         "possibleactions" => ["placeStartFence", "resetStartFences"],

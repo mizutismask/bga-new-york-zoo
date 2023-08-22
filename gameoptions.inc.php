@@ -54,7 +54,7 @@ $game_options = array(
     FAST_GAME => array(
         'name' => totranslate('Fast game (2 players only)'),
         'values' => array(
-            ACTIVATED => array('name' => totranslate('Yes'), 'tmdisplay' => totranslate('Fast game'), 'description' => totranslate('Place some large fences in your zoo before starting the game')),
+            ACTIVATED => array('name' => totranslate('Yes'), 'tmdisplay' => totranslate('Fast game'), 'description' => totranslate('Place some large enclosures in your zoo before starting the game')),
             DEACTIVATED => array('name' => totranslate('No')),
         ),
         'default' => DEACTIVATED,
