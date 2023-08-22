@@ -1050,10 +1050,7 @@ define([
             }
 
             args.canGetAnimals.forEach((id) => {
-                //var canUse = args.patches[id].canUse;
                 dojo.addClass(id, 'active_slot');
-                //if (canUse == false)
-                //    dojo.addClass(id, 'cannot_use');
             });
 
             var pickcolor = 'blue';
@@ -1182,6 +1179,12 @@ define([
             }
         },
 
+        onUpdateActionButtons_client_GetAnimals: function (args) {
+            this.setDescriptionOnMyTurn(_('Select a blue animal acquisition zone, then place them into houses or enclosures'));
+            args.canGetAnimals.forEach((id) => {
+                dojo.addClass(id, 'active_slot');
+            });
+        },
         onUpdateActionButtons_client_PickPatch: function (args) {
             this.onUpdateActionButtons_commonClientPickPatch(args);
         },
@@ -1199,7 +1202,7 @@ define([
             if (!args.canPatch) pickcolor = 'red';
             gameui.addImageActionButton(
                 'b',
-                _('Pick enclosure'),
+                _('Pick attraction'),
                 () => {
                     if (args.canPatch) this.setClientStateAction('client_PickPatch');
                     else this.showError(_('No legal moves'));
