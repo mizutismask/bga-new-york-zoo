@@ -47,6 +47,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     // Create squares
     $this->page->reset_subblocks('square');
     $this->page->reset_subblocks('anml_square');
+    $this->page->reset_subblocks('highlight_square');
     $this->page->reset_subblocks('house');
     $hor_scale = CELL_WIDTH;
     $ver_scale = CELL_WIDTH;
@@ -75,6 +76,17 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       for ($y = 0; $y < $gridSize[1]; $y++) {
         $classes = '';
         $this->page->insert_block("anml_square", array(
+          'X' => $x, 'Y' => $y, 'LEFT' => round(($x) * $hor_scale),
+          'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "ORDER" => $order
+        ));
+      }
+    }
+
+    $gridSize = $this->game->getGridSize();
+    for ($x = 0; $x < $gridSize[0]; $x++) {
+      for ($y = 0; $y < $gridSize[1]; $y++) {
+        $classes = '';
+        $this->page->insert_block("highlight_square", array(
           'X' => $x, 'Y' => $y, 'LEFT' => round(($x) * $hor_scale),
           'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "ORDER" => $order
         ));
@@ -189,6 +201,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
 
     $this->page->begin_block($template, "square");
     $this->page->begin_block($template, "anml_square");
+    $this->page->begin_block($template, "highlight_square");
     $this->page->begin_block($template, "house");
     $this->page->begin_block($template, "player_board");
     // inner blocks in player blocks

@@ -90,6 +90,11 @@
     				<div id="anml_square_{ORDER}_{Y}_{X}" class="anml-square {CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
     				<!-- END anml_square -->
 				</div>
+				<div id="highlight_layer_{ORDER}" class="highlight-layer highlight-layer_{ORDER} squares">
+					<!-- BEGIN highlight_square -->
+    				<div id="highlight_square_{ORDER}_{Y}_{X}" class="highlight-square {CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+    				<!-- END highlight_square -->
+				</div>
 				<div class="board_houses">
 					<!-- BEGIN house -->
 					<div id="house_{PLAYER_ORDER}_{HOUSE_INDEX}" class="house {CLASSES}"></div>

@@ -51,11 +51,11 @@ class PatchManager {
         if (dropNode == null) return;
 
         if (gameui.curstate === 'client_PlaceAnimal') {
-            gameui.clientStateArgs.to = this.replaceGridSquareByAnimalSquare(dropNode.id);
+            gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(dropNode.id);
             gameui.ajaxClientStateAction();
         } else if (gameui.curstate === 'populateNewFence') {
             $(id).classList.toggle('selected');
-            gameui.clientStateArgs.to = this.replaceGridSquareByAnimalSquare(id);
+            gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(id);
             if (gameui.clientStateArgs.from && gameui.clientStateArgs.to) {
                 gameui.ajaxClientStateAction();
             }
@@ -64,7 +64,7 @@ class PatchManager {
             dojo.toggleClass(dropNode.id, 'animal-target-image');
             gameui.clientStateArgs.squares = gameui
                 .queryIds('.animal-target-image')
-                .map((sqre) => this.replaceGridSquareByAnimalSquare(sqre));
+                .map((sqre) => gameui.replaceGridSquareByAnimalSquare(sqre));
             debug('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares);
         } else {
             if (dropNode == gameui.clientStateArgs.dropTarget) {
@@ -79,10 +79,6 @@ class PatchManager {
             this.endPickPatch();
             //}
         }
-    }
-
-    replaceGridSquareByAnimalSquare(squareId) {
-        return squareId.replace('square_', 'anml_square_');
     }
 
     applyRotate(targetNode, dir) {
@@ -481,7 +477,7 @@ class PatchManager {
 
     updateActiveSquares() {
         document
-            .querySelectorAll('.square.drop-zone, .anml-square.active_slot')
+            .querySelectorAll('.square.drop-zone, .anml-square.active_slot, .highlight-square.active_slot')
             .forEach((item) => item.classList.remove('active_slot'));
         var curpatch = gameui.clientStateArgs.token;
 
@@ -500,7 +496,7 @@ class PatchManager {
                     //todo there is still pbs with animals
                     //when target mark is on another patch, activate only square_x_x won’t be seen since this patch is on top of it
                     //so we activate anml_square_x_x too to make it visible
-                    $(this.replaceGridSquareByAnimalSquare(x)).classList.add('active_slot');
+                    $(gameui.replaceGridSquareByHighlightSquare(x)).classList.add('active_slot');
                 }
             }
         }
@@ -1089,6 +1085,7 @@ define([
             possibleTargets.forEach((id) => {
                 debug('args.canGetAnimals', id);
                 dojo.addClass(id, 'active_slot');
+                $(this.replaceGridSquareByHighlightSquare(id))?.classList.add('active_slot');
             });
 
             if (args.canDismiss) {
@@ -1139,6 +1136,7 @@ define([
             squaresByFence.forEach(([fence, squares]) => {
                 squares.forEach((square) => {
                     dojo.addClass(square, 'active_slot');
+                    $(this.replaceGridSquareByHighlightSquare(square))?.classList.add('active_slot');
                 });
             });
             gameui.addImageActionButton(
@@ -1358,10 +1356,12 @@ define([
 
                             args.animals[anml].possibleTargets.forEach((id) => {
                                 dojo.addClass(id, 'active_slot');
+                                $(this.replaceGridSquareByHighlightSquare(id))?.classList.add('active_slot');
                             });
                         } else this.showError(_('No legal location'));
                     },
-                    pickcolor,_('Place this animal now')
+                    pickcolor,
+                    _('Place this animal now')
                 );
             }
 
@@ -1381,16 +1381,17 @@ define([
 
                         args.choosableAnimals[anml].possibleTargets.forEach((id) => {
                             dojo.addClass(id, 'active_slot');
+                            $(this.replaceGridSquareByHighlightSquare(id))?.classList.add('active_slot');
                         });
                     },
-                    pickcolor,_('If you take this animal, you’ll get only one animal instead of the two from your acquisition zone (the blue ones)')
+                    pickcolor,
+                    _(
+                        'If you take this animal, you’ll get only one animal instead of the two from your acquisition zone (the blue ones)'
+                    )
                 );
             }
             if (choosableAnimals?.length > 0) {
-                this.setDescriptionOnMyTurn(
-                    _('Place 2 blue animals OR 1 white animal'),
-                    {}
-                );
+                this.setDescriptionOnMyTurn(_('Place 2 blue animals OR 1 white animal'), {});
             } else {
                 this.setDescriptionOnMyTurn(_('${you} can place an animal'), {});
             }
@@ -1412,6 +1413,16 @@ define([
         },
 
         // UTILS
+        replaceGridSquareByAnimalSquare : function(squareId)  {
+            return squareId.replace('square_', 'anml_square_');
+        },
+    
+        replaceGridSquareByHighlightSquare: function (squareId) {
+            let hSquare;
+            if (squareId.startsWith('square_')) hSquare = squareId.replace('square_', 'highlight_square_');
+            else if (squareId.startsWith('anml_square_')) hSquare = squareId.replace('anml_square_', 'highlight_square_');
+            return hSquare;
+        },
 
         cancelLocalStateEffects: function () {
             //if (this.curstate == 'client_PickPatch') {
