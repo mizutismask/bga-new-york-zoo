@@ -116,12 +116,13 @@
 .active_slot {
     cursor: pointer;
 }
-.square.active_slot,.anml-square.active_slot,
+.square.active_slot,
+.anml-square.active_slot,
 .house.active_slot {
     /*outline: #4af056 solid 3px;*/
     /*background-color: rgba(215, 250, 14, 0.7);
     filter: drop-shadow(0px 0px 4px rgb(125, 247, 26)) !important;*/
-     box-shadow:  0px 4px 17px rgb(125, 247, 26) inset !important;
+    box-shadow: 0px 4px 17px rgb(125, 247, 26) inset !important;
 }
 
 .central {
@@ -158,7 +159,7 @@
     height: 100%;
 }
 
-.nyz_birth_zone{
+.nyz_birth_zone {
     position: absolute;
     border-radius: 50%;
     pointer-events: all;
@@ -246,39 +247,39 @@
     padding: 143px 0px 0px 62px;
 }
 .player_count_3.player_order_2 .pboard {
-    padding:142px 0px 0px 60px;
+    padding: 142px 0px 0px 60px;
 }
 .player_count_3.player_order_3 .pboard {
-    padding:142px 0px 0px 58px;
+    padding: 142px 0px 0px 58px;
 }
 
 .player_count_4.player_order_1 .pboard {
     padding: 141px 0px 0px 50px;
 }
 .player_count_4.player_order_2 .pboard {
-    padding:143px 0px 0px 54px;
+    padding: 143px 0px 0px 54px;
 }
 .player_count_4.player_order_3 .pboard {
-    padding:142px 0px 0px 53px;
+    padding: 142px 0px 0px 53px;
 }
 .player_count_4.player_order_4 .pboard {
-    padding:143px 0px 0px 52px;
+    padding: 143px 0px 0px 52px;
 }
 
 .player_count_5.player_order_1 .pboard {
     padding: 141px 0px 0px 50px;
 }
 .player_count_5.player_order_2 .pboard {
-    padding:143px 0px 0px 52px;
+    padding: 143px 0px 0px 52px;
 }
 .player_count_5.player_order_3 .pboard {
-    padding:145px 0px 0px 51px;
+    padding: 145px 0px 0px 51px;
 }
 .player_count_5.player_order_4 .pboard {
-    padding:143px 0px 0px 49px;
+    padding: 143px 0px 0px 49px;
 }
 .player_count_5.player_order_5 .pboard {
-    padding:143px 0px 0px 48px;
+    padding: 143px 0px 0px 48px;
 }
 
 .player_name {
@@ -292,7 +293,8 @@
     text-align: center;
 }
 
-.pieces, .animals-layer {
+.pieces,
+.animals-layer {
     position: absolute;
     /*top: var(--cellWidth);
 	left: var(--cellWidth);*/
@@ -303,7 +305,7 @@
     pointer-events: none;
 }
 
-.animals-layer{
+.animals-layer {
     z-index: 200;
 }
 
@@ -324,11 +326,11 @@
     height: var(--cellWidth);
     overflow: visible;
 }
-.placingFence .animal{
+.placingFence .animal {
     pointer-events: none !important;
 }
 
-.anml-square .animal{
+.anml-square .animal {
     pointer-events: all;
 }
 
@@ -375,20 +377,20 @@
 }
 
 /*Ensures order of the piles in the market*/
-.market .patch[data-order="1"]{
+.market .patch[data-order='1'] {
     z-index: 11;
 }
-.market .patch[data-order="2"]{
+.market .patch[data-order='2'] {
     z-index: 12;
 }
-.market .patch[data-order="3"]{
+.market .patch[data-order='3'] {
     z-index: 13;
 }
-.market .patch{
+.market .patch {
     filter: drop-shadow(2px 1px 1px rgba(0, 0, 0, 0.575));
 }
 
-.patch.animated{
+.patch.animated {
     filter: drop-shadow(0px 0px 10px rgb(243, 247, 17));
     transition-duration: 2s;
 }
@@ -559,7 +561,8 @@
 }
 
 /*target*/
-.practice_mode .square:hover:after, .placingFence .square:hover:after {
+.practice_mode .square:hover:after,
+.placingFence .square:hover:after {
     content: '';
     background-image: url(img/tokens.png);
     background-size: 18.2em auto;
@@ -578,12 +581,13 @@
     filter: invert(100%) sepia() saturate(100000%);
 }
 
-.hand_market{
-    display: flex;justify-content: center;
+.hand_market {
+    display: flex;
+    justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
 }
-.hand_market.opponent{
+.hand_market.opponent {
     display: none;
 }
 .original .patch-face {
@@ -677,16 +681,16 @@
 
 .tableau .rotate-image,
 .tableau .mirror-image {
-    /*filter: invert(1);*/
+    filter: saturate(0.5);
 }
 
 .tableau .rotate_control {
-    top: calc(50% - 2.5em / 2);
-    left: 0px;
+    top: calc((50% - 2.5em / 2) + 42px);
+    left: -1px;
 }
 .tableau .flip_control {
-    top: calc(50% - 2.5em / 2);
-    right: 8px;
+    top: calc((50% - 2.5em / 2) + 42px);
+    right: 1px;
 }
 .tableau .done_control {
     left: 30%;
@@ -744,7 +748,7 @@
 .map_scrollable_oversurface {
     pointer-events: none;
 }
-.map_scrollable_oversurface[data-auto-scroll='true']{
+.map_scrollable_oversurface[data-auto-scroll='true'] {
     transition: all 1s ease-in-out;
 }
 .practice_mode .map_scrollable_oversurface .patch,
@@ -859,7 +863,7 @@
     align-items: center;
 }
 
-.miniboard{
+.miniboard {
     margin-top: 6px;
 }
 
@@ -917,7 +921,7 @@
     /*align-content: center;*/
 }
 
-.nyz_action_zone:nth-child(13){
+.nyz_action_zone:nth-child(13) {
     align-content: center;
 }
 
@@ -928,7 +932,7 @@
 .smallIcon {
 }
 
-.breeding_time_wrapper{
+.breeding_time_wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -945,11 +949,11 @@
     border: 4px solid #f1f0ef;
     box-shadow: 1px 1px 4px 3px #555555;
     transition: all 100ms linear;
-    z-index:0;
+    z-index: 0;
     display: none;
 }
 .breeding-notif.animated {
-    z-index:1000;
+    z-index: 1000;
     -webkit-animation: rotate-scale-up 1s linear both;
     animation: rotate-scale-up 1s linear both;
     display: block;
@@ -966,13 +970,13 @@
     text-shadow: 3px 2px 0 #4d2f2f;
 }
 .breeding-notif.bonus.animated {
-    z-index:1000;
+    z-index: 1000;
     -webkit-animation: rotate-scale-up 1s linear both;
     animation: rotate-scale-up 1s linear both;
     display: flex;
 }
 .breeding-notif.animated.disabled {
-    filter: grayscale(.8);
+    filter: grayscale(0.8);
 }
 .breeding-notif.notif-flamingo {
     background-position: 0%;
@@ -1048,7 +1052,7 @@
     justify-content: center;
 }
 
-.group-counter{
+.group-counter {
     position: absolute;
     right: 2px;
     top: 2px;
@@ -1094,7 +1098,7 @@
 		padding:3px;*/
 }
 
-.bonus-mask-group{
+.bonus-mask-group {
     position: relative;
     display: grid;
 }
@@ -1195,7 +1199,7 @@
 }
 .player_count_4.player_order_3 .house_2 {
     top: 1.2%;
-    left: 3.0%;
+    left: 3%;
 }
 .player_count_4.player_order_3 .house_3 {
     top: 5.4%;
@@ -1311,16 +1315,20 @@
     background-size: auto 100%;
 }
 .flamingo {
-    background-position: 25% 50%;background-size: auto 100%;
+    background-position: 25% 50%;
+    background-size: auto 100%;
 }
 .fox {
-    background-position: 50% 50%;background-size: auto 100%;
+    background-position: 50% 50%;
+    background-size: auto 100%;
 }
 .kangaroo {
-    background-position: 75% 50%;background-size: auto 100%;
+    background-position: 75% 50%;
+    background-size: auto 100%;
 }
 .meerkat {
-    background-position: 100% 50%;background-size: auto 100%;
+    background-position: 100% 50%;
+    background-size: auto 100%;
 }
 .token_neutral {
     width: 40px;
