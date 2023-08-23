@@ -1143,9 +1143,23 @@ define([
                 'breed',
                 _('Confirm'),
                 () => {
-                    this.setClientStateAction('chooseFences');
-                    gameui.clientStateArgs.squares = gameui.clientStateArgs.squares.join(' ');
-                    gameui.ajaxClientStateAction();
+                    //check if selected fences matches possibles breedings
+                    if (gameui.clientStateArgs.squares.length != args.possibleBreedings) {
+                        this.confirmationDialog(
+                            _(
+                                'You did not select all the possible breedings, do you want to proceed ?'
+                            ),
+                            dojo.hitch(this, function () {
+                                this.setClientStateAction('chooseFences');
+                                gameui.clientStateArgs.squares = gameui.clientStateArgs.squares.join(' ');
+                                gameui.ajaxClientStateAction();
+                            })
+                        );
+                    } else {
+                        this.setClientStateAction('chooseFences');
+                        gameui.clientStateArgs.squares = gameui.clientStateArgs.squares.join(' ');
+                        gameui.ajaxClientStateAction();
+                    }
                 },
                 'blue'
             );
@@ -1413,14 +1427,15 @@ define([
         },
 
         // UTILS
-        replaceGridSquareByAnimalSquare : function(squareId)  {
+        replaceGridSquareByAnimalSquare: function (squareId) {
             return squareId.replace('square_', 'anml_square_');
         },
-    
+
         replaceGridSquareByHighlightSquare: function (squareId) {
             let hSquare;
             if (squareId.startsWith('square_')) hSquare = squareId.replace('square_', 'highlight_square_');
-            else if (squareId.startsWith('anml_square_')) hSquare = squareId.replace('anml_square_', 'highlight_square_');
+            else if (squareId.startsWith('anml_square_'))
+                hSquare = squareId.replace('anml_square_', 'highlight_square_');
             return hSquare;
         },
 

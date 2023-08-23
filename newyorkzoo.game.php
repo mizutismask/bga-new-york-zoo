@@ -162,7 +162,7 @@ class NewYorkZoo extends EuroGame {
             return;
         }
         $this->dblBreeding();
-        $this->tokens->moveToken("token_neutral", "action_zone_14");
+        $this->tokens->moveToken("token_neutral", "action_zone_16");
     }
     function debugZoo() {
     }
@@ -935,7 +935,7 @@ class NewYorkZoo extends EuroGame {
                 break;
             default:
                 //animal zone
-                $anmlTypeConst=$this->getAnimalType($animalType);
+                $anmlTypeConst = $this->getAnimalType($animalType);
                 if (self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) && self::getGameStateValue(GS_ANIMAL_TO_PLACE) != $anmlTypeConst && self::getGameStateValue(GS_OTHER_ANIMAL_TO_PLACE) != $anmlTypeConst) {
                     //choosen type not in the expected ones, so we skip the second animal, the player give up on him by choosing another one
                     $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
@@ -1796,11 +1796,18 @@ class NewYorkZoo extends EuroGame {
         return $fences;
     }
 
-    function getFreeSquaresAvailableForBreeding($playerOrder, $animalType) {
+    function getPossibleBreedingsCount($playerOrder, $animalType) {
+        return min(count($this->getFencesAvailableForBreeding($playerOrder, $animalType)), 2);
+    }
+
+    function getFencesAvailableForBreeding($playerOrder, $animalType) {
         $fences = $this->getFencesInfo($playerOrder);
-        $fences = array_filter($fences, function ($f) use ($animalType) {
+        return array_filter($fences, function ($f) use ($animalType) {
             return $f["animal_type"] == $animalType && count($f["animals"]) >= 2 && count($f["freeSquares"]) >= 0;
         });
+    }
+    function getFreeSquaresAvailableForBreeding($playerOrder, $animalType) {
+        $fences = $this->getFencesAvailableForBreeding($playerOrder, $animalType);
         //self::dump('*******************fences', $fences);
         $freeSquares = [];
         foreach ($fences as $fenceKey => $fence) {
@@ -1841,6 +1848,7 @@ class NewYorkZoo extends EuroGame {
             $args["squares"] = $this->getFreeSquaresAvailableForBonusBreeding($playerOrder);
         } else {
             $args["squares"] = $this->getFreeSquaresAvailableForBreeding($playerOrder, $anmlType);
+            $args["possibleBreedings"] = $this->getPossibleBreedingsCount($playerOrder, $anmlType);
         }
         return $args;
     }
