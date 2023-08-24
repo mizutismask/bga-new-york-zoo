@@ -1072,31 +1072,6 @@
     border-radius: 50%;
 }
 
-.bonus_market .state_1 {
-    order: -1;
-}
-.bonus_market .state_2 {
-    order: -2;
-}
-.bonus_market .state_3 {
-    order: -3;
-}
-.bonus_market .state_4 {
-    order: -4;
-}
-.bonus_market .state_5 {
-    order: -5;
-}
-.bonus_market .state_6 {
-    order: -6;
-}
-.bonus_market .state_7 {
-    order: -7;
-}
-.bonus_market .state_8 {
-    order: -8;
-}
-
 .bonus_market > * {
     /*display: inline-block;
 		padding:3px;*/
