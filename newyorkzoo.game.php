@@ -1846,6 +1846,7 @@ class NewYorkZoo extends EuroGame {
         $args["bonusBreeding"] = $this->isBonusBreeding();
         if ($args["bonusBreeding"]) {
             $args["squares"] = $this->getFreeSquaresAvailableForBonusBreeding($playerOrder);
+            $args["possibleBreedings"] = 1;
         } else {
             $args["squares"] = $this->getFreeSquaresAvailableForBreeding($playerOrder, $anmlType);
             $args["possibleBreedings"] = $this->getPossibleBreedingsCount($playerOrder, $anmlType);
