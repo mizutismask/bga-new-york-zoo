@@ -27,6 +27,7 @@ class PatchManager {
         var id = event.currentTarget.id;
         if (id == null) return;
         if (gameui.curstate === 'placeAnimal' || gameui.curstate === 'client_PlaceAnimal') return;
+        id = this.firefoxWorkaroundLastMonominoNotOnTop(event.currentTarget);
         if (!this.beginPickPatch(id)) return;
         gameui.onUpdateActionButtons_client_PickPatch(gameui.gamedatas.gamestate.args);
     }
@@ -318,6 +319,16 @@ class PatchManager {
         if (dropNode == null) return;
 
         //...
+    }
+
+    firefoxWorkaroundLastMonominoNotOnTop(clickTarget) {
+        let replacedTarget = clickTarget;
+        //if click on 1x1 square and exists other 1x1 square with .active-slot, simulate the click on the last one
+        if (!clickTarget.classList.contains('active_slot') && clickTarget.parentNode.dataset?.maskGroup == ':1') {
+            const shouldHaveBeenClickedInstead = gameui.queryFirstId(`#${clickTarget.parentNode.id} .patch.active_slot`);
+            if (shouldHaveBeenClickedInstead) replacedTarget = shouldHaveBeenClickedInstead;
+        }
+        return replacedTarget;
     }
 
     beginPickPatch(targetNode) {
@@ -643,6 +654,7 @@ define([
 
             this.inherited(arguments);
             this.updateAttractionCount();
+            this.setBonusZIndex();
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -1146,9 +1158,7 @@ define([
                     //check if selected fences matches possibles breedings
                     if (gameui.clientStateArgs.squares.length != args.possibleBreedings) {
                         this.confirmationDialog(
-                            _(
-                                'You did not select all the possible breedings, do you want to proceed ?'
-                            ),
+                            _('You did not select all the possible breedings, do you want to proceed ?'),
                             dojo.hitch(this, function () {
                                 this.setClientStateAction('chooseFences');
                                 gameui.clientStateArgs.squares = gameui.clientStateArgs.squares.join(' ');
@@ -1427,6 +1437,14 @@ define([
         },
 
         // UTILS
+        setBonusZIndex: function () {
+            for (let i = 0; i < 8; i++) {
+                dojo.forEach(dojo.query(`#bonus-mask-${i} .patch`), function (el, j) {
+                    el.style.zIndex = j;
+                });
+            }
+        },
+
         replaceGridSquareByAnimalSquare: function (squareId) {
             return squareId.replace('square_', 'anml_square_');
         },
