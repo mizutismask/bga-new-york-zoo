@@ -27,7 +27,7 @@ class PatchManager {
         var id = event.currentTarget.id;
         if (id == null) return;
         if (gameui.curstate === 'placeAnimal' || gameui.curstate === 'client_PlaceAnimal') return;
-        id = this.firefoxWorkaroundLastMonominoNotOnTop(event.currentTarget);
+        //id = this.firefoxWorkaroundLastMonominoNotOnTop(event.currentTarget);
         if (!this.beginPickPatch(id)) return;
         gameui.onUpdateActionButtons_client_PickPatch(gameui.gamedatas.gamestate.args);
     }
@@ -325,7 +325,9 @@ class PatchManager {
         let replacedTarget = clickTarget;
         //if click on 1x1 square and exists other 1x1 square with .active-slot, simulate the click on the last one
         if (!clickTarget.classList.contains('active_slot') && clickTarget.parentNode.dataset?.maskGroup == ':1') {
-            const shouldHaveBeenClickedInstead = gameui.queryFirstId(`#${clickTarget.parentNode.id} .patch.active_slot`);
+            const shouldHaveBeenClickedInstead = gameui.queryFirstId(
+                `#${clickTarget.parentNode.id} .patch.active_slot`
+            );
             if (shouldHaveBeenClickedInstead) replacedTarget = shouldHaveBeenClickedInstead;
         }
         return replacedTarget;
@@ -1221,7 +1223,14 @@ define([
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
                 dojo.addClass(id, 'active_slot');
-                if (canUse == false) dojo.addClass(id, 'cannot_use');
+                if (canUse == false) {
+                    dojo.addClass(id, 'cannot_use');
+                } else {
+                    if (dojo.query(`.bonus-mask-group[data-mask-group=":1"] #${id}`).length == 1) {
+                        //this is a 1x1 attraction, we activate them all
+                        dojo.query(`.bonus-mask-group[data-mask-group=":1"] .patch`).addClass('active_slot');
+                    }
+                }
             });
 
             var pickcolor = 'blue';
