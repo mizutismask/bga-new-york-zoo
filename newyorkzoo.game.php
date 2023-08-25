@@ -789,20 +789,26 @@ class NewYorkZoo extends EuroGame {
     function saction_MoveNeutralToken($pos) {
         $old = $this->tokens->getTokenLocation('token_neutral');
         $old = getPart($old, -1) + 0;
-        $new = getPart($pos, -1) + 0;
 
         $spaces = array_search($pos, $this->getNextActionZones()) + 1;
 
         $this->dbSetTokenLocation('token_neutral', $pos, null, '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
-        //breedings ?
-        $i = 0;
+        $this->checkIfBreedingLineCrossed($old, $spaces);
+
+        $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
+    }
+
+    function checkIfBreedingLineCrossed($oldPosition, $movesCount) {
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
 
+        $crossed = false;
+        $i = 0;
         foreach ($this->birthZones as $info) {
             $limit = $info['triggerZone'];
-            if ($old < $limit && $new >= $limit) {
+            if ($oldPosition < $limit && $oldPosition + $movesCount >= $limit) {
                 $animal = $info['animal'];
+                $crossed = true;
                 if ($i == 0) {
                     self::setGameStateValue(GS_BREEDING, $this->getAnimalType($animal));
                 } else {
@@ -811,8 +817,7 @@ class NewYorkZoo extends EuroGame {
                 $i++;
             }
         }
-
-        $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
+        return $crossed;
     }
 
     function action_getAnimals($animalZone) {

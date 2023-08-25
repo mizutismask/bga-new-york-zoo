@@ -64,7 +64,7 @@ class NewYorkZooTests  extends NewYorkZoo { // this is your game class defined i
 
         $next = $this->getNextActionZones();
 
-        $expected = ["action_zone_6", "action_zone_anml_7", "action_zone_8"];//3 zones for 5 players
+        $expected = ["action_zone_6", "action_zone_anml_7", "action_zone_8"]; //3 zones for 5 players
         $equal = $next === $expected;
 
         if ($equal) {
@@ -78,11 +78,21 @@ class NewYorkZooTests  extends NewYorkZoo { // this is your game class defined i
         }
     }
 
+    function testCheckIfBreedingLineCrossed() {
+        echo $this->checkIfBreedingLineCrossed(3, 1) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 1: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(23, 1) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 2: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(23, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 3: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(4, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 4: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(24, 2) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 5: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(14, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 6: FAILED\n";
+    }
+
     function testAll() {
         $this->testGetPartMinus();
         $this->testNextAnmlZoneAfterFenceZone();
         $this->testNextFenceZoneAfterAnmlZone();
         $this->testGetNextActionZones();
+        $this->testCheckIfBreedingLineCrossed();
     }
 }
 
