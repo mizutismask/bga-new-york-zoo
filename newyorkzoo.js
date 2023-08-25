@@ -343,10 +343,13 @@ class PatchManager {
         debug('begin ' + targetNode.id);
 
         if (!this.practiceMode) {
+            if (!gameui.isActiveSlot(targetNode)) {
+                //silent error -> ignore this click
+                return null;
+            }
             var has_error = true;
             var moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.id];
             dojo.query('.head_error').forEach(dojo.destroy); // remove stack of error popups
-
             if (!gameui.isCurrentPlayerActive()) {
                 gameui.showError(_('This is not your turn, turn on Practice Mode to practice placing'));
             } else if (!moves_info) {
