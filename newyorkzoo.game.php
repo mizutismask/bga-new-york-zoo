@@ -519,6 +519,9 @@ class NewYorkZoo extends EuroGame {
     function getNextActionZoneNumber(int $current) {
         return $current == ACTION_ZONES_COUNT ? 1 : $current + 1;
     }
+    function getPreviousActionZoneNumber(int $current) {
+        return $current == 1 ? ACTION_ZONES_COUNT : $current - 1;
+    }
 
     /**
      * Get actions zones (animal or patches) that can be reach within an elephant move.
@@ -789,16 +792,17 @@ class NewYorkZoo extends EuroGame {
     function saction_MoveNeutralToken($pos) {
         $old = $this->tokens->getTokenLocation('token_neutral');
         $old = getPart($old, -1) + 0;
+        $new = getPart($pos, -1) + 0;
 
         $spaces = array_search($pos, $this->getNextActionZones()) + 1;
 
         $this->dbSetTokenLocation('token_neutral', $pos, null, '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
-        $this->checkIfBreedingLineCrossed($old, $spaces);
+        $this->checkIfBreedingLineCrossed($old, $new);
 
         $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
 
-    function checkIfBreedingLineCrossed($oldPosition, $movesCount) {
+    function checkIfBreedingLineCrossed($oldPosition, $newPosition) {
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
 
@@ -806,8 +810,10 @@ class NewYorkZoo extends EuroGame {
         $i = 0;
         foreach ($this->birthZones as $info) {
             $limit = $info['triggerZone'];
-            if ($oldPosition < $limit && $oldPosition + $movesCount >= $limit) {
-                $animal = $info['animal'];
+            $animal = $info['animal'];
+            self::dump('*******************$animal', $animal);
+            self::dump('*******************$elephantPos', $oldPosition);
+            if ($this->elephantWasBeforeBreedingLine($oldPosition, $limit) && $this->elephantIsAfterBreedingLine($newPosition, $limit)) {
                 $crossed = true;
                 if ($i == 0) {
                     self::setGameStateValue(GS_BREEDING, $this->getAnimalType($animal));
@@ -818,6 +824,24 @@ class NewYorkZoo extends EuroGame {
             }
         }
         return $crossed;
+    }
+
+    function elephantWasBeforeBreedingLine($elephantPos, $triggerLine) {
+        $beforeZones = [];
+        for ($i = 1; $i <= 4; $i++) { //4 is max move
+            $beforeZones[] = $this->getPreviousActionZoneNumber($triggerLine - $i + 1);
+        };
+        self::dump('*******************$beforeZones', $beforeZones);
+        return array_search($elephantPos, $beforeZones) !== false;
+    }
+
+    function elephantIsAfterBreedingLine($elephantPos, $triggerLine) {
+        $afterZones = [$triggerLine];
+        for ($i = 1; $i < 4; $i++) {
+            $afterZones[] = $this->getNextActionZoneNumber(($triggerLine + $i - 1) % 25);
+        };
+        self::dump('*******************$afterZones', $afterZones);
+        return array_search($elephantPos, $afterZones) !== false;
     }
 
     function action_getAnimals($animalZone) {
