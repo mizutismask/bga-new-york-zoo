@@ -79,15 +79,32 @@ class NewYorkZooTests  extends NewYorkZoo { // this is your game class defined i
     }
 
     function testCheckIfBreedingLineCrossed() {
-       /* echo $this->checkIfBreedingLineCrossed(3, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 1: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(3, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 1: FAILED\n";
         echo $this->checkIfBreedingLineCrossed(23, 24) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 2: FAILED\n";
         echo $this->checkIfBreedingLineCrossed(23, 2) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 3: FAILED\n";
         echo !$this->checkIfBreedingLineCrossed(4, 8) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 4: FAILED\n";
         echo !$this->checkIfBreedingLineCrossed(24, 1) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 5: FAILED\n";
         echo !$this->checkIfBreedingLineCrossed(14, 18) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 6: FAILED\n";
         echo $this->checkIfBreedingLineCrossed(25, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 7: FAILED\n";
-        echo !$this->checkIfBreedingLineCrossed(24, 3) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 8: FAILED\n";*/
+        echo !$this->checkIfBreedingLineCrossed(24, 3) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 8: FAILED\n";
         echo $this->checkIfBreedingLineCrossed(24, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 9: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(8, 10) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 10: FAILED\n";
+    }
+
+    function testRelativeDistanceFromBreedingLineToOldPosition() {
+        //move 23->4
+        echo $this->relativeDistanceFromBreedingLineToOldPosition(23, 4) == -6 ? "CheckRelativeDistance: PASSED\n" : "CheckRelativeDistance 1: FAILED\n"; //kangaroo
+        echo $this->relativeDistanceFromBreedingLineToOldPosition(4, 4) == 0 ? "CheckRelativeDistance: PASSED\n" : "CheckRelativeDistance 2: FAILED\n"; //kangaroo
+        echo $this->relativeDistanceFromBreedingLineToOldPosition(1, 4) == -3 ? "CheckRelativeDistance: PASSED\n" : "CheckRelativeDistance 3: FAILED\n"; //kangaroo
+
+        echo $this->relativeDistanceFromBreedingLineToOldPosition(23, 24) == -1 ? "CheckRelativeDistance: PASSED\n" : "CheckRelativeDistance 4: FAILED\n"; //flamingo
+        echo $this->relativeDistanceFromBreedingLineToNewPosition(2, 24) == 3 ? "CheckRelativeDistance: PASSED\n" : "CheckRelativeDistance 5: FAILED\n"; //flamingo
+    }
+
+    function testGetShortestDistance() {
+        echo $this->getShortestDistance(1) == 1 ? "testGetShortestDistance: PASSED\n" : "testGetShortestDistance 1: FAILED\n";
+        echo $this->getShortestDistance(-1) == -1 ? "testGetShortestDistance: PASSED\n" : "testGetShortestDistance 2: FAILED\n";
+        echo $this->getShortestDistance(-24) == 1 ? "testGetShortestDistance: PASSED\n" : "testGetShortestDistance 3: FAILED\n";
     }
 
     function testAll() {
@@ -96,6 +113,8 @@ class NewYorkZooTests  extends NewYorkZoo { // this is your game class defined i
         $this->testNextFenceZoneAfterAnmlZone();
         $this->testGetNextActionZones();
         $this->testCheckIfBreedingLineCrossed();
+        $this->testRelativeDistanceFromBreedingLineToOldPosition();
+        $this->testGetShortestDistance();
     }
 }
 

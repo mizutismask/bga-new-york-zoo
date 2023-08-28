@@ -811,9 +811,13 @@ class NewYorkZoo extends EuroGame {
         foreach ($this->birthZones as $info) {
             $limit = $info['triggerZone'];
             $animal = $info['animal'];
-            self::dump('*******************$animal', $animal);
-            self::dump('*******************$elephantPos', $oldPosition);
-            if ($this->elephantWasBeforeBreedingLine($oldPosition, $limit) && $this->elephantIsAfterBreedingLine($newPosition, $limit)) {
+            // self::dump('*******************$animal', $animal);
+            //self::dump('*******************$elephantPos', $oldPosition);
+            $before = $this->relativeDistanceFromBreedingLineToOldPosition($oldPosition, $limit);
+            $after = $this->relativeDistanceFromBreedingLineToNewPosition($newPosition, $limit);
+            // self::dump('*******************$before', $before);
+            //self::dump('*******************$after', $after);
+            if ($before < 0 && $after >= 0) {
                 $crossed = true;
                 if ($i == 0) {
                     self::setGameStateValue(GS_BREEDING, $this->getAnimalType($animal));
@@ -826,22 +830,46 @@ class NewYorkZoo extends EuroGame {
         return $crossed;
     }
 
-    function elephantWasBeforeBreedingLine($elephantPos, $triggerLine) {
-        $beforeZones = [];
-        for ($i = 1; $i <= 4; $i++) { //4 is max move
-            $beforeZones[] = $this->getPreviousActionZoneNumber($triggerLine - $i + 1);
-        };
-        self::dump('*******************$beforeZones', $beforeZones);
-        return array_search($elephantPos, $beforeZones) !== false;
+    function relativeDistanceFromBreedingLineToOldPosition($elephantPos, $triggerLine) {
+        $distance = 0;
+        $i = $triggerLine;
+        while ($i != $elephantPos) {
+            $distance--;
+            $i = $this->getPreviousActionZoneNumber($i);
+            //self::dump('*******************i', $i);
+        }
+        //self::dump('******************previous *distance', $distance);
+        return $this->getShortestDistance($distance);
+    }
+    function relativeDistanceFromBreedingLineToNewPosition($elephantPos, $triggerLine) {
+        $distance = 0;
+        $i = $triggerLine;
+        while ($i != $elephantPos) {
+            $distance++;
+            $i = $this->getNextActionZoneNumber($i);
+            //self::dump('*******************i', $i);
+        }
+        //self::dump('*******************next distance', $distance);
+        return  $this->getShortestDistance($distance);
     }
 
-    function elephantIsAfterBreedingLine($elephantPos, $triggerLine) {
-        $afterZones = [$triggerLine];
-        for ($i = 1; $i < 4; $i++) {
-            $afterZones[] = $this->getNextActionZoneNumber(($triggerLine + $i - 1) % 25);
-        };
-        self::dump('*******************$afterZones', $afterZones);
-        return array_search($elephantPos, $afterZones) !== false;
+    /**
+     * A breeding line can be reached for calcul purposes by turning right or left, this returns the minimal moves needed, positive in clockwise order, negative in counterclockwise.
+     * Ex: Trigger line 4 for kangooroo can be reached from zone 2 either by advancing +2 or going back -23, this will return +2 since it’s shorter 
+     * @distance distance in one direction, will find the matching count in the opposite direction and compare both
+     */
+    function getShortestDistance($distance) {
+        $reverse = $distance > 0 ? ((ACTION_ZONES_COUNT - $distance)) * -1 : ACTION_ZONES_COUNT + $distance;
+
+        // self::dump('*******************reverse', $reverse);
+        //self::dump('******************* min($distance, $reverse)', min(abs($distance), abs($reverse)));
+        $minimalMove = min(abs($distance), abs($reverse));
+        if ($distance < 0 && $minimalMove == abs($distance))
+            $signedDistance = $distance;
+        else if ($reverse < 0 && $minimalMove == abs($reverse))
+            $signedDistance = $reverse;
+        else $signedDistance = $minimalMove;
+        return $signedDistance;
     }
 
     function action_getAnimals($animalZone) {
