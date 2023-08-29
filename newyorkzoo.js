@@ -1055,14 +1055,7 @@ define([
         onUpdateActionButtons_playerTurn: function (args) {
             this.clientStateArgs.action = 'place';
 
-            if (args.hasOwnProperty('patches')) {
-                var canBuy = Object.keys(args.patches);
-                canBuy.forEach((id) => {
-                    var canUse = args.patches[id].canUse;
-                    if (canUse == false) dojo.addClass(id, 'cannot_use');
-                    else dojo.addClass(id, 'active_slot');
-                });
-            }
+            this.addActiveSlots(args);
 
             args.canGetAnimals.forEach((id) => {
                 dojo.addClass(id, 'active_slot');
@@ -1192,6 +1185,7 @@ define([
         },
 
         onUpdateActionButtons_placeStartFences: function (args) {
+            this.addActiveSlots(args);
             const playerOrder = this.gamedatas.players[this.player_id].no;
             const placedPatchesCount = this.queryIds(`.pieces_${playerOrder} .patch`).length;
             if (placedPatchesCount > 1) {
@@ -1449,6 +1443,17 @@ define([
         },
 
         // UTILS
+        addActiveSlots: function (args) {
+            if (args.hasOwnProperty('patches')) {
+                var canBuy = Object.keys(args.patches);
+                canBuy.forEach((id) => {
+                    var canUse = args.patches[id].canUse;
+                    if (canUse == false) dojo.addClass(id, 'cannot_use');
+                    else dojo.addClass(id, 'active_slot');
+                });
+            }
+        },
+
         setBonusZIndex: function () {
             for (let i = 0; i < 8; i++) {
                 dojo.forEach(dojo.query(`#bonus-mask-${i} .patch`), function (el, j) {
