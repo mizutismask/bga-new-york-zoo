@@ -1110,20 +1110,29 @@ class NewYorkZoo extends EuroGame {
         return $nextState;
     }
 
+    function isBreedingPlanned() {
+        return self::getGameStateValue(GS_BREEDING) || self::getGameStateValue(GS_BREEDING_2_LONG_MOVE);
+    }
+
     function isBreedingNeeded() {
+        if (!$this->isBreedingPlanned()) return false;
+
+        //it’s planned and someone can place one animal
         $normalBreeding  = $this->isAnyBreedingNeeded(self::getGameStateValue(GS_BREEDING));
         $longMoveBreeding  = $this->isAnyBreedingNeeded(self::getGameStateValue(GS_BREEDING_2_LONG_MOVE));
         //self::dump('*******************normalBreeding', $normalBreeding);
         //self::dump('*******************longMoveBreeding', $longMoveBreeding);
+        $needed = $normalBreeding || $longMoveBreeding;
+
+        //if necessary, slides the long move breeding value into normal breeding to follow the same path of resolving actions
         if (!self::getGameStateValue(GS_BREEDING) && self::getGameStateValue(GS_BREEDING_2_LONG_MOVE)) {
             //self::dump('*******************slide', self::getGameStateValue(GS_BREEDING_2_LONG_MOVE));
-            //slide the long move breeding value into normal breeding to follow the same path of resolving actions
             self::setGameStateValue(GS_BREEDING, self::getGameStateValue(GS_BREEDING_2_LONG_MOVE));
             self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
         }
-        $needed = $normalBreeding || $longMoveBreeding;
         //self::dump('*******************self::getGameStateValue(GS_BREEDING)', self::getGameStateValue(GS_BREEDING));
         //self::dump('*******************self::getGameStateValue(GS_BREEDING_2_LONG_MOVE)', self::getGameStateValue(GS_BREEDING_2_LONG_MOVE));
+
         //notifies breeding, whether it’s going to be resolved or not
         $animalType = $this->getAnimalName(self::getGameStateValue(GS_BREEDING));
         $players = $this->getPlayingPlayersInOrder($this->getMostlyActivePlayerId());
@@ -1142,7 +1151,7 @@ class NewYorkZoo extends EuroGame {
             'bonus' => false,
         ));
 
-        
+
         if ($needed) {
             foreach ($notBreeding as $player) {
                 $this->notifyAllPlayers("msg", clienttranslate('${player_name} has no fence where to breed ${animals}'), array(
@@ -1171,9 +1180,9 @@ class NewYorkZoo extends EuroGame {
                 $nb = count(array_keys($squaresByFence));
                 $needed = $needed || $nb > 0;
             }
-            //self::dump("isAnyBreedingNeeded", compact('animalToBreed', 'animalType', 'needed'));
+            self::dump("isAnyBreedingNeeded", compact('animalToBreed', 'animalType', 'needed'));
         } else {
-            //self::dump("isAnyBreedingNeedednot", compact('animalToBreed', 'needed'));
+            self::dump("isAnyBreedingNeedednot", compact('animalToBreed', 'needed'));
         }
         return $needed;
     }
@@ -1957,7 +1966,7 @@ class NewYorkZoo extends EuroGame {
             $this->gamestate->setAllPlayersMultiactive();
             $this->gamestate->nextState(TRANSITION_PLACE_START_FENCES);
         } else {
-        $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
         }
     }
 
