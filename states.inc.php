@@ -253,6 +253,7 @@ $machinestates = array(
         "transitions" => [
             TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE,
             TRANSITION_NEXT_PLAYER => STATE_GAME_TURN_NEXT_PLAYER,
+            TRANSITION_NEXT_BREEDER=>STATE_GAME_NEXT_BREEDER,//2 breedings in a row
             TRANSITION_NEXT_BONUS_BREEDER=>STATE_GAME_NEXT_BONUS_BREEDER,
         ],
     ],
