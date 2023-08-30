@@ -1157,7 +1157,10 @@ define([
                 _('Confirm'),
                 () => {
                     //check if selected fences matches possibles breedings
-                    if (gameui.clientStateArgs.squares.length != args.possibleBreedings) {
+                    if (gameui.clientStateArgs.squares.length > args.possibleBreedings) {
+                        this.showError(_('You selected too many locations'));
+                    }
+                    else if (gameui.clientStateArgs.squares.length != args.possibleBreedings) {
                         this.confirmationDialog(
                             _('You did not select all the possible breedings, do you want to proceed ?'),
                             dojo.hitch(this, function () {
