@@ -440,6 +440,12 @@
     stroke-dasharray: 8, 2;
 }
 
+/*Improves visibility when the highlight is present*/
+.current_player_is_active .gamestate_client_PlaceAnimal .patch-outline-poligon, .current_player_is_active .gamestate_chooseFence .patch-outline-poligon {
+    stroke-width: 2;
+    stroke:#3d1704;
+}
+
 .drag-shadow .patch-outline-poligon {
     stroke: green;
     stroke-width: 2;
