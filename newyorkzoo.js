@@ -992,6 +992,10 @@ define([
             }
         },
 
+        onEnteringState_placeStartFences(args) {
+            this.addActiveSlots(args);
+        },
+
         onEnteringState_populateNewFence(args) {
             if (this.isCurrentPlayerActive()) {
                 if (args.canDismiss) {
@@ -1043,7 +1047,6 @@ define([
                     _('Practice Mode'),
                     () => {
                         $('ebd-body').classList.add('practice_mode');
-                        //this.onUpdateActionButtons_client_PickPatch(stateName == 'placeStartFences'?args[this.player_id]:args);
                         this.onUpdateActionButtons_client_PickPatch(args);
                     },
                     undefined,
@@ -1185,7 +1188,6 @@ define([
         },
 
         onUpdateActionButtons_placeStartFences: function (args) {
-            this.addActiveSlots(args);
             const playerOrder = this.gamedatas.players[this.player_id].no;
             const placedPatchesCount = this.queryIds(`.pieces_${playerOrder} .patch`).length;
             if (placedPatchesCount > 1) {
