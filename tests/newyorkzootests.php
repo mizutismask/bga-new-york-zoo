@@ -79,17 +79,18 @@ class NewYorkZooTests  extends NewYorkZoo { // this is your game class defined i
     }
 
     function testCheckIfBreedingLineCrossed() {
-        echo $this->checkIfBreedingLineCrossed(3, 4, 1) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 1: FAILED\n";
-        echo $this->checkIfBreedingLineCrossed(23, 24, 1) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 2: FAILED\n";
-        echo $this->checkIfBreedingLineCrossed(23, 2, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 3: FAILED\n";
-        echo !$this->checkIfBreedingLineCrossed(4, 8, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 4: FAILED\n";
-        echo !$this->checkIfBreedingLineCrossed(24, 1, 2) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 5: FAILED\n";
-        echo !$this->checkIfBreedingLineCrossed(14, 18, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 6: FAILED\n";
-        echo $this->checkIfBreedingLineCrossed(25, 4, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 7: FAILED\n";
-        echo !$this->checkIfBreedingLineCrossed(24, 3, 4) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 8: FAILED\n";
-        echo $this->checkIfBreedingLineCrossed(24, 4, 5) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 9: FAILED\n";
-        echo $this->checkIfBreedingLineCrossed(8, 10, 2) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 10: FAILED\n";
-        echo !$this->checkIfBreedingLineCrossed(9, 12, 3) ? "CheckIfBreedingLineCrossed: PASSED\n" : "CheckIfBreedingLineCrossed 11: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(3, 4, 1) ? "CheckIfBreedingLineCrossed 1: PASSED\n" : "CheckIfBreedingLineCrossed 1: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(23, 24, 1) ? "CheckIfBreedingLineCrossed 2: PASSED\n" : "CheckIfBreedingLineCrossed 2: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(23, 2, 4) ? "CheckIfBreedingLineCrossed 3: PASSED\n" : "CheckIfBreedingLineCrossed 3: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(4, 8, 4) ? "CheckIfBreedingLineCrossed 4: PASSED\n" : "CheckIfBreedingLineCrossed 4: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(24, 1, 2) ? "CheckIfBreedingLineCrossed 5: PASSED\n" : "CheckIfBreedingLineCrossed 5: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(14, 18, 4) ? "CheckIfBreedingLineCrossed 6: PASSED\n" : "CheckIfBreedingLineCrossed 6: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(25, 4, 4) ? "CheckIfBreedingLineCrossed 7: PASSED\n" : "CheckIfBreedingLineCrossed 7: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(24, 3, 4) ? "CheckIfBreedingLineCrossed 8: PASSED\n" : "CheckIfBreedingLineCrossed 8: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(24, 4, 5) ? "CheckIfBreedingLineCrossed 9: PASSED\n" : "CheckIfBreedingLineCrossed 9: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(8, 10, 2) ? "CheckIfBreedingLineCrossed 10: PASSED\n" : "CheckIfBreedingLineCrossed 10: FAILED\n";
+        echo !$this->checkIfBreedingLineCrossed(9, 12, 3) ? "CheckIfBreedingLineCrossed 11: PASSED\n" : "CheckIfBreedingLineCrossed 11: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(5, 9, 4) ? "CheckIfBreedingLineCrossed 12: PASSED\n" : "CheckIfBreedingLineCrossed 11: FAILED\n";
     }
 
     function testAll() {
