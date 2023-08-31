@@ -27,7 +27,6 @@ class PatchManager {
         var id = event.currentTarget.id;
         if (id == null) return;
         if (gameui.curstate === 'placeAnimal' || gameui.curstate === 'client_PlaceAnimal') return;
-        //id = this.firefoxWorkaroundLastMonominoNotOnTop(event.currentTarget);
         if (!this.beginPickPatch(id)) return;
         gameui.onUpdateActionButtons_client_PickPatch(gameui.gamedatas.gamestate.args);
     }
@@ -321,18 +320,6 @@ class PatchManager {
         //...
     }
 
-    firefoxWorkaroundLastMonominoNotOnTop(clickTarget) {
-        let replacedTarget = clickTarget;
-        //if click on 1x1 square and exists other 1x1 square with .active-slot, simulate the click on the last one
-        if (!clickTarget.classList.contains('active_slot') && clickTarget.parentNode.dataset?.maskGroup == ':1') {
-            const shouldHaveBeenClickedInstead = gameui.queryFirstId(
-                `#${clickTarget.parentNode.id} .patch.active_slot`
-            );
-            if (shouldHaveBeenClickedInstead) replacedTarget = shouldHaveBeenClickedInstead;
-        }
-        return replacedTarget;
-    }
-
     beginPickPatch(targetNode) {
         // 1) we selected original patch
         // 1.1) shadow exists
@@ -446,7 +433,7 @@ class PatchManager {
         debug('restoreOriginalPatch', $(targetNode));
         if (!targetNode.id.startsWith('patch_0')) {
             let dest = 'market';
-            if (targetNode.dataset?.startFence == 'true') {
+            if (targetNode.dataset.startFence == 'true') {
                 dest = 'hand_' + gameui.player_id;
                 gameui.stripPosition(targetNode);
             }
@@ -1098,7 +1085,8 @@ define([
             possibleTargets.forEach((id) => {
                 debug('args.canGetAnimals', id);
                 dojo.addClass(id, 'active_slot');
-                $(this.replaceGridSquareByHighlightSquare(id))?.classList.add('active_slot');
+                const div = $(this.replaceGridSquareByHighlightSquare(id));
+                if (div) div.classList.add('active_slot');
             });
 
             if (args.canDismiss) {
@@ -1149,7 +1137,8 @@ define([
             squaresByFence.forEach(([fence, squares]) => {
                 squares.forEach((square) => {
                     dojo.addClass(square, 'active_slot');
-                    $(this.replaceGridSquareByHighlightSquare(square))?.classList.add('active_slot');
+                    const div = $(this.replaceGridSquareByHighlightSquare(square));
+                    if (div) div.classList.add('active_slot');
                 });
             });
             gameui.addImageActionButton(
@@ -1159,8 +1148,7 @@ define([
                     //check if selected fences matches possibles breedings
                     if (gameui.clientStateArgs.squares.length > args.possibleBreedings) {
                         this.showError(_('You selected too many locations'));
-                    }
-                    else if (gameui.clientStateArgs.squares.length != args.possibleBreedings) {
+                    } else if (gameui.clientStateArgs.squares.length != args.possibleBreedings) {
                         this.confirmationDialog(
                             _('You did not select all the possible breedings, do you want to proceed ?'),
                             dojo.hitch(this, function () {
@@ -1281,7 +1269,7 @@ define([
             }
             //todo différencier bonus et patch
             debug('args.patches', args['patches']);
-            var canBuy = Object.keys(args['patches'] ?? []);
+            var canBuy = Object.keys(args['patches']);
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
@@ -1391,7 +1379,8 @@ define([
 
                             args.animals[anml].possibleTargets.forEach((id) => {
                                 dojo.addClass(id, 'active_slot');
-                                $(this.replaceGridSquareByHighlightSquare(id))?.classList.add('active_slot');
+                                const div = $(this.replaceGridSquareByHighlightSquare(id));
+                                if (div) div.classList.add('active_slot');
                             });
                         } else this.showError(_('No legal location'));
                     },
@@ -1400,7 +1389,7 @@ define([
                 );
             }
 
-            var choosableAnimals = Object.keys(args['choosableAnimals'] ?? []);
+            var choosableAnimals = Object.keys(args['choosableAnimals']);
             for (const anml of choosableAnimals) {
                 var pickcolor = 'gray';
                 debug('anml', anml);
@@ -1416,7 +1405,8 @@ define([
 
                         args.choosableAnimals[anml].possibleTargets.forEach((id) => {
                             dojo.addClass(id, 'active_slot');
-                            $(this.replaceGridSquareByHighlightSquare(id))?.classList.add('active_slot');
+                            const div = $(this.replaceGridSquareByHighlightSquare(id));
+                            if (div) div.classList.add('active_slot');
                         });
                     },
                     pickcolor,
@@ -1425,7 +1415,7 @@ define([
                     )
                 );
             }
-            if (choosableAnimals?.length > 0) {
+            if (choosableAnimals && choosableAnimals.length > 0) {
                 this.setDescriptionOnMyTurn(_('Place 2 blue animals OR 1 white animal'), {});
             } else {
                 this.setDescriptionOnMyTurn(_('${you} can place an animal'), {});
