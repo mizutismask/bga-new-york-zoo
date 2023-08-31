@@ -1796,6 +1796,7 @@ define([
                 if (Object.values(notif.args.cantBreed).indexOf(this.player_id + '') !== -1) {
                     classes.push('disabled');
                 }
+                playSound(animal, false);
             }
             notifDiv.classList.add(...classes);
             setTimeout(() => notifDiv.classList.remove('animated', 'disabled', 'bonus', 'notif-' + animal), 1000);
@@ -1804,6 +1805,7 @@ define([
         notif_fenceFull(notif) {
             debug('notif_fenceFull', notif);
             $(notif.args.fence).classList.toggle('animated', !notif.args.resolved);
+            playSound(notif.args.animal, false);
         },
 
         notif_placeStartFenceArgs(notif) {

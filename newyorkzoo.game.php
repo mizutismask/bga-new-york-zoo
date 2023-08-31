@@ -701,7 +701,7 @@ class NewYorkZoo extends EuroGame {
         $context = $this->dbGetLastContextToResolve();
         if ($context["action"] == CHECK_FENCE_FULL) {
             $this->dbResolveContextLog($context["id"]);
-            $this->notifyWithName("fenceFull", "", ["fence" => $context["param1"], "resolved" => true]);
+            $this->notifyWithName("fenceFull", "", ["fence" => $context["param1"], "resolved" => true, "animal" => $context["param2"]]);
         }
     }
 
@@ -1001,8 +1001,8 @@ class NewYorkZoo extends EuroGame {
             $this->dbUpdateFenceType($patch, $animalType);
             $this->dbIncFenceAnimalsAddedNumber($patch);
             if ($this->isFenceFull($patch)) {
-                $this->notifyWithName("fenceFull", "", ["fence" => $patch, "resolved" => false]);
-                $this->dbInsertContextLog(CHECK_FENCE_FULL, $patch);
+                $this->notifyWithName("fenceFull", "", ["fence" => $patch, "resolved" => false, "animal" => $animalType]);
+                $this->dbInsertContextLog(CHECK_FENCE_FULL, $patch, $animalType);
                 $this->giveExtraTime($this->getMostlyActivePlayerId());
             } else {
                 if ($state['name'] !== 'populateNewFence' && $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch)) {
@@ -1380,7 +1380,7 @@ class NewYorkZoo extends EuroGame {
                         }
                     }
                     if ($this->isFenceFull($patch)) {
-                        $this->notifyWithName("fenceFull", "", ["fence" => $patch, "resolved" => false]);
+                        $this->notifyWithName("fenceFull", "", ["fence" => $patch, "resolved" => false, "animal" => $animalType]);
                         $this->dbInsertContextLog(CHECK_FENCE_FULL, $patch);
                     }
                 }

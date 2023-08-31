@@ -2,28 +2,28 @@ var isDebug = window.location.host == 'studio.boardgamearena.com' || window.loca
 var debug = isDebug ? console.info.bind(window.console) : function () { };
 
 function joinId(first, second) {
-	return first + '_' + second;
+    return first + '_' + second;
 };
 function getIntPart(word, i) {
-	var arr = word.split('_');
-	return parseInt(arr[i]);
+    var arr = word.split('_');
+    return parseInt(arr[i]);
 };
 function getPart(word, i) {
-	var arr = word.split('_');
-	return arr[i];
+    var arr = word.split('_');
+    return arr[i];
 };
 function getFirstParts(word, count) {
-	var arr = word.split('_');
-	var res = arr[0];
-	for (var i = 1; i < arr.length && i < count; i++) {
-		res += "_" + arr[i];
-	}
-	return res;
+    var arr = word.split('_');
+    var res = arr[0];
+    for (var i = 1; i < arr.length && i < count; i++) {
+        res += "_" + arr[i];
+    }
+    return res;
 };
 function getParentParts(word) {
-	var arr = word.split('_');
-	if (arr.length <= 1) return "";
-	return getFirstParts(word, arr.length - 1);
+    var arr = word.split('_');
+    if (arr.length <= 1) return "";
+    return getFirstParts(word, arr.length - 1);
 };
 function reloadCss() {
     var links = document.getElementsByTagName('link');
@@ -1432,6 +1432,22 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
             this.addActionButton('button_done', text, callback);
             return $('button_done');
         },
+        /*
+         * Play a given sound that should be first added in the tpl file
+         */
+        playSound: function (sound, playNextMoveSound = true) {
+            if (soundManager.bMuteSound == false) {
+                if (this.isSoundOn()) {
+                    playSound(sound);
+                    playNextMoveSound && this.disableNextMoveSound();
+                }
+            }
+        },
+
+        isSoundOn: function () {
+            return true;
+        },
+
         // /////////////////////////////////////////////////
         // // Player's action
         /**

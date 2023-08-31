@@ -1,5 +1,17 @@
 {OVERALL_GAME_HEADER}
 
+<audio id="audiosrc_flamingo" src="{GAMETHEMEURL}/img/flamingo.mp3" autobuffer></audio>
+<audio id="audiosrc_fox" src="{GAMETHEMEURL}/img/fox.mp3" autobuffer></audio>
+<audio id="audiosrc_kangaroo" src="{GAMETHEMEURL}/img/kangaroo.mp3" autobuffer></audio>
+<audio id="audiosrc_meerkat" src="{GAMETHEMEURL}/img/meerkat.mp3" autobuffer></audio>
+<audio id="audiosrc_penguin" src="{GAMETHEMEURL}/img/penguin.mp3" autobuffer></audio>
+
+<audio id="audiosrc_o_flamingo" src="{GAMETHEMEURL}/img/flamingo.ogg" autobuffer></audio>
+<audio id="audiosrc_o_fox" src="{GAMETHEMEURL}/img/fox.ogg" autobuffer></audio>
+<audio id="audiosrc_o_kangaroo" src="{GAMETHEMEURL}/img/kangaroo.ogg" autobuffer></audio>
+<audio id="audiosrc_o_meerkat" src="{GAMETHEMEURL}/img/meerkat.ogg" autobuffer></audio>
+<audio id="audiosrc_o_penguin" src="{GAMETHEMEURL}/img/penguin.ogg" autobuffer></audio>
+
 <!-- 
 --------
 -- BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
