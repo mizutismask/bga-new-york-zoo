@@ -1470,9 +1470,9 @@ class NewYorkZoo extends EuroGame {
             //tie breaker
             $animalCount = 0;
             foreach ($this->animals as $type) {
-                $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "square_" . $order));
+                $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "anml_square_" . $order."%"));
             }
-            $animalCount += $this->tokens->countTokensInLocation("house_" . $player_id);
+            $animalCount += $this->tokens->countTokensInLocation("house_" . $order."%");
             $this->dbSetAuxScore($player_id, $animalCount);
         }
     }
