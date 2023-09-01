@@ -1269,7 +1269,8 @@ define([
             }
             //todo différencier bonus et patch
             debug('args.patches', args['patches']);
-            var canBuy = Object.keys(args['patches']);
+            var canBuyArgs = 'patches' in args ? args['patches'] : [];
+            var canBuy = Object.keys(canBuyArgs);
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
@@ -1389,7 +1390,8 @@ define([
                 );
             }
 
-            var choosableAnimals = Object.keys(args['choosableAnimals']);
+            var animalArgs = 'choosableAnimals' in args ? args['choosableAnimals'] : [];
+            var choosableAnimals = Object.keys(animalArgs);
             for (const anml of choosableAnimals) {
                 var pickcolor = 'gray';
                 debug('anml', anml);
