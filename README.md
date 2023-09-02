@@ -17,5 +17,8 @@ You can play here : https://boardgamearena.com
  | Ipad 6| 11 | ok but had to remove the use of chaining operator (?.) and null coalescing operator (??) |
 | Ipad 7| 13 | ok |
 | Ipad mini 2| 12 | ok |
+| Ipad air 4| 14 | ok |
+| Ipad air 2019 3?| 13 | ok |
+| Ipad air 2| 8 | even bga does not work |
 | Iphone 13 pro| 15 | ok but people say ko |
 | Ipad 10| 16 | ok |
