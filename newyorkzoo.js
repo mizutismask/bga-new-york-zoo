@@ -795,16 +795,16 @@ define([
                 this.updateTooltip(node.id, node.parentNode);
             });
 
-            this.pm.setupDragAndDropSupport();
-
+            
             /*const animalZonesQuery = document.querySelectorAll('.nyz_animal_action_zone');
-                for (const item of animalZonesQuery) {
-                    item.addEventListener("click", event => this.onClickAnimalZone(event), false)
-                }*/
-            this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
-            const playerOrder = this.gamedatas.players[this.player_id].no;
-            dojo.query(`.pboard_${playerOrder} .house`).connect('onclick', this, 'onHouse');
-
+            for (const item of animalZonesQuery) {
+                item.addEventListener("click", event => this.onClickAnimalZone(event), false)
+            }*/
+            if (!this.isSpectator) {
+                this.pm.setupDragAndDropSupport();
+                this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
+                dojo.query(`.pboard_${this.player_no} .house`).connect('onclick', this, 'onHouse');
+            }
             //this.connectClass('token_neutral', 'onclick', 'onZoomPlus');
             this.notif_eofnet();
 
@@ -1028,6 +1028,7 @@ define([
             this.inherited(arguments);
         },
         onUpdateActionButtons_common: function (stateName, args, ret) {
+            if (this.isSpectator) return;
             if (stateName == 'playerTurn' || stateName == 'placeStartFences') {
                 gameui.addImageActionButton(
                     'practice',
@@ -1797,7 +1798,7 @@ define([
         notif_fenceFull(notif) {
             debug('notif_fenceFull', notif);
             $(notif.args.fence).classList.toggle('animated', !notif.args.resolved);
-            playSound(notif.args.animal, false);
+            if (!notif.args.resolved) playSound(notif.args.animal, false);
         },
 
         notif_placeStartFenceArgs(notif) {
