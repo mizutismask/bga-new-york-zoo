@@ -1,0 +1,9 @@
+230825-0921 KO boite chrome
+230823-1506 KO pas boite chrome
+230822-1742 ok safari
+
+
+feat: ask confirmation if you don’t select all the breedings you could have 2901b09 KO
+feat: add new highlight layer on top of everything to prevent double highlight on square and anml_square, only the top layer highlights  6c6f2bb kO
+style(controls): makes mirror and rotate buttons more visible 6832cfd ok
+style(fenceActionZone): add shadows to see the depth better
