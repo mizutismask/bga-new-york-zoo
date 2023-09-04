@@ -81,6 +81,7 @@ if (!defined('STATE_END_GAME')) { // guard since this included multiple times
     define("TRANSITION_NEXT_BONUS_BREEDER", "nextBonusBreeder");
     define("TRANSITION_BONUS_BREED", "bonusBreed");
     define("TRANSITION_PLACE_START_FENCES", "placeStartFences");
+    define("TRANSITION_UNDO_ELEPHANT_MOVE_TO_ANIMALS", "undoElephantMoveToAnimals");
 }
 
 $machinestates = array(
@@ -96,12 +97,12 @@ $machinestates = array(
 
     STATE_GAME_START => [
         "name" => "gameTurnStart", "description" => clienttranslate('Setup enclosures...'),
-        "type" => "game", 
+        "type" => "game",
         "action" => "st_gameTurnStart", //
         "updateGameProgression" => false,
         "transitions" => [
             TRANSITION_NEXT_PLAYER => STATE_PLAYER_TURN,
-            TRANSITION_PLACE_START_FENCES=>STATE_PLAYER_PLACE_START_FENCES,
+            TRANSITION_PLACE_START_FENCES => STATE_PLAYER_PLACE_START_FENCES,
         ],
     ],
 
@@ -142,7 +143,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} can place an animal'),
         "type" => "activeplayer",
         "args" => "arg_placeAnimal",
-        "possibleactions" => ["dismiss", "placeAnimal"],
+        "possibleactions" => ["dismiss", "placeAnimal", "undoElephantMoveToAnimals"],
         "transitions" => [
             "next" => STATE_GAME_TURN_NEXT_PLAYER,
             "last" => STATE_PLAYER_GAME_END,
@@ -151,7 +152,8 @@ $machinestates = array(
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
             TRANSITION_NEXT_BREEDER => STATE_GAME_NEXT_BREEDER,
-            TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE
+            TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE,
+            TRANSITION_UNDO_ELEPHANT_MOVE_TO_ANIMALS => STATE_PLAYER_TURN,
         ] // 
     ],
 
@@ -199,10 +201,10 @@ $machinestates = array(
             TRANSITION_PLACE_ATTRACTION => STATE_PLAYER_PLACE_ATTRACTION,
             TRANSITION_DISMISS => STATE_GAME_TURN_NEXT_PLAYER,
             TRANSITION_KEEP_ANIMAL => STATE_PLAYER_KEEP_ANIMAL_FROM_FULL_FENCE, //when dbl breeding and dbl full
-            TRANSITION_PLACE_FROM_HOUSE =>STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE, //when dbl breeding and 1 full
+            TRANSITION_PLACE_FROM_HOUSE => STATE_PLAYER_PLACE_ANIMAL_FROM_HOUSE, //when dbl breeding and 1 full
             TRANSITION_NEXT_BREEDER => STATE_GAME_NEXT_BREEDER,
             TRANSITION_NEXT_BONUS_BREEDER => STATE_GAME_NEXT_BONUS_BREEDER,
-        ] 
+        ]
     ],
 
     STATE_PLAYER_CHOOSE_BREEDING_FENCE => [
@@ -231,7 +233,7 @@ $machinestates = array(
         "possibleactions" => ["placeStartFence", "resetStartFences"],
         "transitions" => [
             "" => STATE_PLAYER_TURN,
-        ] 
+        ]
     ],
 
     STATE_GAME_TURN_NEXT_PLAYER => [ // next player state
@@ -253,8 +255,8 @@ $machinestates = array(
         "transitions" => [
             TRANSITION_CHOOSE_FENCE => STATE_PLAYER_CHOOSE_BREEDING_FENCE,
             TRANSITION_NEXT_PLAYER => STATE_GAME_TURN_NEXT_PLAYER,
-            TRANSITION_NEXT_BREEDER=>STATE_GAME_NEXT_BREEDER,//2 breedings in a row
-            TRANSITION_NEXT_BONUS_BREEDER=>STATE_GAME_NEXT_BONUS_BREEDER,
+            TRANSITION_NEXT_BREEDER => STATE_GAME_NEXT_BREEDER, //2 breedings in a row
+            TRANSITION_NEXT_BONUS_BREEDER => STATE_GAME_NEXT_BONUS_BREEDER,
         ],
     ],
 

@@ -42,6 +42,8 @@ if (!defined('OFFSET')) {
     define("GS_BREED2_TO", "breed2To");
     define("GS_BREED_TRIGGER", "breedTrigger");
     define("GS_RESOLVING_BREEDING", "resolvingBreeding");
+    define("GS_PREVIOUS_NEUTRAL_LOCATION", "previousNeutralLocation");
+    define("GS_CAN_UNDO_ACQUISITION_MOVE", "canUndoAcquisitionMove");
 
     //context_log actions
     define("ACTION_GET_ANIMALS", 'getAnimals');
@@ -86,6 +88,8 @@ class NewYorkZoo extends EuroGame {
             GS_RESOLVING_BREEDING => 19, //0=no breeding, 1 or 2=order of the breeding being resolved
             GS_BONUS_BREEDING => 20, //boolean
             GS_BREEDING_2_LONG_MOVE => 21, //when fences spaces are empty, a 4 move can cross 2 birth lines
+            GS_PREVIOUS_NEUTRAL_LOCATION => 22, //need to store elephant position prior to a move to acquisition zone since it can be canceled
+            GS_CAN_UNDO_ACQUISITION_MOVE => 23, //can undo only if no animal has been placed (just meant to prevent misclicks)
         ));
 
         $this->tokens = new Tokens();
@@ -140,6 +144,8 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_BREED2_TO, 0);
             self::setGameStateInitialValue(GS_RESOLVING_BREEDING, 0);
             self::setGameStateInitialValue(GS_BONUS_BREEDING, 0);
+            self::setGameStateInitialValue(GS_CAN_UNDO_ACQUISITION_MOVE, 0);
+            self::setGameStateInitialValue(GS_PREVIOUS_NEUTRAL_LOCATION, 0);
 
             $this->initStats();
 
@@ -556,11 +562,15 @@ class NewYorkZoo extends EuroGame {
             $origin = $this->getNeutralPositionNumber();
         }
         $nextZone = $this->getNextActionZoneNumber(intval($origin));
-        $zoneId = ACTION_ZONE_PREFIX . $nextZone;
+        return $this->getActionZoneName($nextZone);
+    }
+
+    function getActionZoneName($number) {
+        $zoneId = ACTION_ZONE_PREFIX . $number;
         if (array_key_exists($zoneId, $this->actionStripZones)) {
             return $zoneId;
         } else {
-            return ACTION_ZONE_ANML_PREFIX . $nextZone;
+            return ACTION_ZONE_ANML_PREFIX . $number;
         }
     }
 
@@ -789,6 +799,18 @@ class NewYorkZoo extends EuroGame {
         return self::getUniqueValueFromDB("SELECT max(id) FROM fence");
     }
 
+    function action_undoElephantMoveToAnimals() {
+        $this->dbSetTokenLocation('token_neutral', $this->getActionZoneName(self::getGameStateValue(GS_PREVIOUS_NEUTRAL_LOCATION)), null, '${player_name} cancels the elephant move', []);
+        self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
+        self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
+        $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
+        $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
+        self::setGameStateValue(GS_BREEDING, 0);
+        self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
+        $this->gamestate->nextState(TRANSITION_UNDO_ELEPHANT_MOVE_TO_ANIMALS);
+        $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
+    }
+
     function saction_MoveNeutralToken($pos) {
         $old = $this->tokens->getTokenLocation('token_neutral');
         $old = getPart($old, -1) + 0;
@@ -866,6 +888,8 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_ANIMAL_TO_PLACE, $this->getAnimalType($animal1));
         self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, $this->getAnimalType($animal2));
         $this->insertGetAnimalsContextLog($animal1, $animal2);
+        self::setGameStateValue(GS_CAN_UNDO_ACQUISITION_MOVE, 1);
+        self::setGameStateValue(GS_PREVIOUS_NEUTRAL_LOCATION, getPart($this->tokens->getTokenLocation('token_neutral'), -1, true));
 
         $this->saction_MoveNeutralToken($animalZone);
 
@@ -909,6 +933,7 @@ class NewYorkZoo extends EuroGame {
                     $this->userAssertTrue(self::_("Animal not allowed here"), array_search($to, $canGo) !== false);
                 }
                 $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
+                self::setGameStateValue(GS_CAN_UNDO_ACQUISITION_MOVE, 0);
                 break;
         }
         //self::dump('*******************animalId', $animalId, $state['name']);
@@ -1470,9 +1495,9 @@ class NewYorkZoo extends EuroGame {
             //tie breaker
             $animalCount = 0;
             foreach ($this->animals as $type) {
-                $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "anml_square_" . $order."%"));
+                $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "anml_square_" . $order . "%"));
             }
-            $animalCount += $this->tokens->countTokensInLocation("house_" . $order."%");
+            $animalCount += $this->tokens->countTokensInLocation("house_" . $order . "%");
             $this->dbSetAuxScore($player_id, $animalCount);
         }
     }
@@ -1793,7 +1818,7 @@ class NewYorkZoo extends EuroGame {
         } else {
             $args["canDismiss"] = true;
         }
-
+        $args["canUndoElephantMoveToAnimals"] = boolval(self::getGameStateValue(GS_CAN_UNDO_ACQUISITION_MOVE));
         $args["houses"] = $this->args_getHousesByAnimal($order);
 
         return $args;

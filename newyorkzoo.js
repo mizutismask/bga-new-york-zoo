@@ -1433,6 +1433,16 @@ define([
                     'blue'
                 );
             }
+            if (args.canUndoElephantMoveToAnimals) {
+                gameui.addImageActionButton(
+                    'c',
+                    _('Undo'),
+                    () => {
+                        gameui.ajaxClientStateAction('undoElephantMoveToAnimals');
+                    },
+                    'red'
+                );
+            }
         },
 
         // debug state

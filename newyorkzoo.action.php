@@ -84,6 +84,12 @@ class action_newyorkzoo extends APP_GameAction {
     self::ajaxResponse();
   }
 
+  public function undoElephantMoveToAnimals() {
+    self::setAjaxMode();
+    $this->game->action_undoElephantMoveToAnimals();
+    self::ajaxResponse();
+  }
+
   public function keepAnimalFromFullFence() {
     self::setAjaxMode();
     $this->game->action_keepAnimalFromFullFence();
