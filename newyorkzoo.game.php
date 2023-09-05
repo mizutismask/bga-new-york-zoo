@@ -1674,15 +1674,18 @@ class NewYorkZoo extends EuroGame {
         foreach ($nextZones as $nz) {
             //actionStripZones
             $zoneType = $this->actionStripZones[$nz]["type"];
-            if (
-                $zoneType == ANIMAL &&
-                ($this->arg_possibleTargetsForAnimal($order, $this->actionStripZones[$nz]["animals"][0])
-                    || $this->arg_possibleTargetsForAnimal($order, $this->actionStripZones[$nz]["animals"][1]))
-            ) {
-                $from[] = $nz;
+            if ($zoneType == ANIMAL) {
+                $animal1 = $this->actionStripZones[$nz]["animals"][0];
+                $animal2 = $this->actionStripZones[$nz]["animals"][1];
+                if (
+                    $this->arg_possibleTargetsForAnimal($order, $animal1)
+                    || $this->arg_possibleTargetsForAnimal($order,  $animal2)
+                    || $this->arg_dismissToChooseAnimalType([$animal1, $animal2], $order)//choosable animals
+                ) {
+                    $from[] = $nz;
+                }
             }
-        }
-        //self::dump("*****************arg_canGetAnimals*", $from);
+            //self::dump("*****************arg_canGetAnimals*", $from);
         return $from;
     }
 
@@ -1824,6 +1827,9 @@ class NewYorkZoo extends EuroGame {
         return $args;
     }
 
+    /**
+     * Returns an array of choosable animals and their possible targets.
+     */
     function arg_dismissToChooseAnimalType($toExclude, $playerOrder) {
         $args = [];
         foreach ($this->animals as $anmlType) {
