@@ -834,7 +834,7 @@ $this->token_types = [
     'w' => 1,
     'h' => 1,
     'color' => 'bonus',
-    'occurrences' => 16,
+    'occurrences' => 6,
   ],
   'patch_26' => [
     'num' => 26,
@@ -1034,7 +1034,7 @@ $this->token_types = [
     'w' => 1,
     'h' => 1,
     'color' => 'bonus',
-    'occurrences' => 15,
+    'occurrences' => 5,
   ],
   'patch_46' => [
     'num' => 46,
@@ -1124,7 +1124,7 @@ $this->token_types = [
     'w' => 1,
     'h' => 1,
     'color' => 'bonus',
-    'occurrences' => 15,
+    'occurrences' => 5,
   ],
   'patch_55' => [
     'num' => 55,
