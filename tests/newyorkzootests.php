@@ -91,6 +91,7 @@ class NewYorkZooTests  extends NewYorkZoo { // this is your game class defined i
         echo $this->checkIfBreedingLineCrossed(8, 10, 2) ? "CheckIfBreedingLineCrossed 10: PASSED\n" : "CheckIfBreedingLineCrossed 10: FAILED\n";
         echo !$this->checkIfBreedingLineCrossed(9, 12, 3) ? "CheckIfBreedingLineCrossed 11: PASSED\n" : "CheckIfBreedingLineCrossed 11: FAILED\n";
         echo $this->checkIfBreedingLineCrossed(5, 9, 4) ? "CheckIfBreedingLineCrossed 12: PASSED\n" : "CheckIfBreedingLineCrossed 11: FAILED\n";
+        echo $this->checkIfBreedingLineCrossed(17, 20, 3) ? "CheckIfBreedingLineCrossed 13: PASSED\n" : "CheckIfBreedingLineCrossed 13: FAILED\n";
     }
 
     function testAll() {

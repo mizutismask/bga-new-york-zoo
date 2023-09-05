@@ -168,7 +168,7 @@ class NewYorkZoo extends EuroGame {
             return;
         }
         $this->dblBreeding();
-        $this->tokens->moveToken("token_neutral", "action_zone_16");
+        $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
     }
     function debugZoo() {
     }
@@ -1343,7 +1343,7 @@ class NewYorkZoo extends EuroGame {
                 self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
                 self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
                 $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
-                $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+                $this->changeNextStateFromContext();
                 break;
         }
     }
