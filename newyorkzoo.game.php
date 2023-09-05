@@ -1680,12 +1680,13 @@ class NewYorkZoo extends EuroGame {
                 if (
                     $this->arg_possibleTargetsForAnimal($order, $animal1)
                     || $this->arg_possibleTargetsForAnimal($order,  $animal2)
-                    || $this->arg_dismissToChooseAnimalType([$animal1, $animal2], $order)//choosable animals
+                    || $this->arg_dismissToChooseAnimalType([$animal1, $animal2], $order) //choosable animals
                 ) {
                     $from[] = $nz;
                 }
             }
-            //self::dump("*****************arg_canGetAnimals*", $from);
+        }
+        //self::dump("*****************arg_canGetAnimals*", $from);
         return $from;
     }
 
