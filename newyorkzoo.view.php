@@ -71,7 +71,6 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       }
     }
 
-    $gridSize = $this->game->getGridSize();
     for ($x = 0; $x < $gridSize[0]; $x++) {
       for ($y = 0; $y < $gridSize[1]; $y++) {
         $classes = '';
@@ -82,18 +81,19 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       }
     }
 
-    $gridSize = $this->game->getGridSize();
-    for ($x = 0; $x < $gridSize[0]; $x++) {
-      for ($y = 0; $y < $gridSize[1]; $y++) {
-        $classes = '';
-        $this->page->insert_block("highlight_square", array(
-          'X' => $x, 'Y' => $y, 'LEFT' => round(($x) * $hor_scale),
-          'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "ORDER" => $order
-        ));
+    $own = $player_id == $current_player;
+    if($own){
+      for ($x = 0; $x < $gridSize[0]; $x++) {
+        for ($y = 0; $y < $gridSize[1]; $y++) {
+          $classes = '';
+          $this->page->insert_block("highlight_square", array(
+            'X' => $x, 'Y' => $y, 'LEFT' => round(($x) * $hor_scale),
+            'TOP' => round(($y) * $ver_scale), 'CLASSES' => $classes, "ORDER" => $order
+          ));
+        }
       }
     }
 
-    $own = $player_id == $current_player;
     $this->page->insert_block("player_board", array(
       "ORDER" => $order, "PLAYER_NAME" => $name,
       "PLAYER_ID" => $player_id, "OWN" => $own ? "own" : "",
