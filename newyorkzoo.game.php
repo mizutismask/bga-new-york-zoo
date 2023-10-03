@@ -56,6 +56,7 @@ if (!defined('OFFSET')) {
     define("ADD_FROM_HOUSE", 'addFromHouse');
     define("BREEDING", 'breeding');
     define("BONUS_BREEDING", 'bonusBreeding');
+    define("ATTRACTION_1x1_PACK_QUANTITY", 5);
 }
 
 class NewYorkZoo extends EuroGame {
@@ -167,7 +168,9 @@ class NewYorkZoo extends EuroGame {
         if ($this->getBgaEnvironment() != 'studio') {
             return;
         }
-        $this->dblBreeding();
+        //$this->dblBreeding(FLAMINGO, 1);
+        $this->dblBreeding(MEERKAT, 1);
+
         $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
     }
     function debugZoo() {
@@ -203,7 +206,15 @@ class NewYorkZoo extends EuroGame {
                 $dest = $patchColor === "bonus" ? "bonus_market" : "limbo";
                 $state = $patchColor === "bonus" ? $this->getRulesFor($id, "spaces") : 0;
                 if ($occ > 1) {
-                    $this->tokens->createTokensPack($id . "_{INDEX}", $dest, $occ, 1, null, $state);
+                    $mask = $this->getRulesFor($id, "mask");
+                    if ($mask === ":1") {
+                        $this->tokens->createTokensPack($id . "_{INDEX}", $dest, min($occ, ATTRACTION_1x1_PACK_QUANTITY), 1, null, $state);
+                        if ($occ > ATTRACTION_1x1_PACK_QUANTITY) {
+                            $this->tokens->createTokensPack($id . "_{INDEX}", "limbo", $occ - ATTRACTION_1x1_PACK_QUANTITY, 1 + ATTRACTION_1x1_PACK_QUANTITY, null, $state);
+                        }
+                    } else {
+                        $this->tokens->createTokensPack($id . "_{INDEX}", $dest, $occ, 1, null, $state);
+                    }
                 } else {
                     $this->tokens->createToken($id, $dest, $state);
                 }
@@ -217,6 +228,39 @@ class NewYorkZoo extends EuroGame {
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createToken("token_neutral", "action_zone_anml_10", 0);
+    }
+
+    /**
+     * 1x1 Attractions are in infinite number. We can’t just create a large bunch at the beginning of the game,
+     * because safari won’t handle them correctly if there are too many. So we add them when needed, 5 by 5.
+     */
+    function addMore1x1AttractionsIfNeeded() {
+        $remaining = 0;
+        $remaining += count($this->tokens->getTokensOfTypeInLocation("patch_25%", "bonus_market"));
+        $remaining += count($this->tokens->getTokensOfTypeInLocation("patch_45%", "bonus_market"));
+        $remaining += count($this->tokens->getTokensOfTypeInLocation("patch_54%", "bonus_market"));
+        if ($remaining < 2) {
+            /*$newTokens = [];
+            $idAttraction = 'patch_25';
+            $state = $this->getRulesFor($idAttraction, "spaces");
+            for ($i = 0; $i < 5; $i++) {
+                $newTokens[] = $this->tokens->createTokenAutoInc($idAttraction, "bonus_market", $state);
+            }
+            $this->dbSyncInfo($newTokens);*/
+
+            $stock = $this->tokens->getTokensOfTypeInLocation("patch_25%", "limbo");
+            $stock = array_merge($stock, $this->tokens->getTokensOfTypeInLocation("patch_45%", "limbo"));
+            $stock = array_merge($this->tokens->getTokensOfTypeInLocation("patch_54%", "limbo"));
+            $toMove = array_keys(array_slice($stock, 0, ATTRACTION_1x1_PACK_QUANTITY));
+            //self::dump('*******************toMove', $toMove);
+            if ($toMove) {
+                $this->tokens->moveTokens($toMove, "bonus_market");
+                $this->dbSyncInfo($toMove);
+            }
+            else{
+                $this->error("No more 1x1 attraction in stock");
+            }
+        }
     }
 
     function setupPatchesOnBoard() {
@@ -730,6 +774,7 @@ class NewYorkZoo extends EuroGame {
             self::incStat(1, "game_attractions", $player_id);
             $mask = $this->getRulesFor($token_id, "mask");
             self::incStat(substr_count($mask, "1"), "game_attractions_squares", $player_id);
+            $this->addMore1x1AttractionsIfNeeded();
 
             $this->resolveLastFullFenceContext();
         } else {
@@ -1544,10 +1589,11 @@ class NewYorkZoo extends EuroGame {
         return !empty($this->getAnimalsByFenceHavingMinimalAnimalCount($order, 2)) || count($this->getFreeHouses($order)) != count($this->getPlayerHouses($order));
     }
 
-    function arg_possibleMovesByPatch($patches, $player_id) {
+    function arg_possibleMovesByPatch($patches, $player_id, $bonuses = false) {
         $res = [];
         $playerOrder = $this->getPlayerPosition($player_id);
-        $patches = $this->getUniqueMasks($patches);
+        if ($bonuses)
+            $patches = $this->getUniqueMasks($patches);
         //self::dump('*************arg_placeAttraction***patches***', $patches);
         $canUseAny = false;
         $occupancy = $this->getOccupancyMatrix($playerOrder);
@@ -1560,20 +1606,34 @@ class NewYorkZoo extends EuroGame {
                     break;
                 }
             }
-            $res['patches'][$patch]['moves'] = $moves;
-            $res['patches'][$patch]['canPlace'] = $canPlace;
-
+            //$key = $bonuses ? $this->getRulesFor($patch, "mask") : $patch;
+            $key = $patch;
+            $res['patches'][$key]['moves'] = $moves;
+            $res['patches'][$key]['canPlace'] = $canPlace;
             $canUse = $canPlace;
-            $res['patches'][$patch]['canUse'] = $canUse;
+            $res['patches'][$key]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
 
         $res['canPatch'] = true; //$canUseAny;
+
+        if ($bonuses)
+            foreach ($res['patches'] as $key => &$info) {
+                $info['equivalentPatches'] = $this->getEquivalentAttractions($key);
+            }
         return $res;
     }
 
+    function getEquivalentAttractions($patchId): array {
+        $mask = $this->getRulesFor($patchId, "mask");
+        $available = array_keys($this->tokens->getTokensOfTypeInLocation("patch_%", "bonus_market"));
+        $equivalent = array_filter($available, fn ($p) => $this->getRulesFor($p, "mask") == $mask);
+        $equivalent = array_diff($equivalent, [$patchId]);
+        return $equivalent;
+    }
+
     function arg_placeAttraction() {
-        $res = $this->arg_possibleMovesByPatch(array_keys($this->tokens->getTokensInLocation("bonus_market")), $this->getActivePlayerId());
+        $res = $this->arg_possibleMovesByPatch(array_keys($this->tokens->getTokensInLocation("bonus_market")), $this->getActivePlayerId(), true);
         return $res;
     }
 
@@ -2247,8 +2307,9 @@ class NewYorkZoo extends EuroGame {
     }
 
     /** Setup a double breeding situation */
-    function dblBreeding($animalType = "meerkat") {
-        $playerOrder = $this->getMostlyActivePlayerOrder();
+    function dblBreeding($animalType = "meerkat", $playerOrder = null) {
+        if (!$playerOrder)
+            $playerOrder = $this->getMostlyActivePlayerOrder();
 
         $turn = $this->arg_playerTurn();
         $fences = $this->arg_canBuyPatches($playerOrder);

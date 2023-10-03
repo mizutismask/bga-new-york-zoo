@@ -16,24 +16,20 @@
 require_once('APP_Extended.php');
 require_once('tokens.php');
 
-abstract class EuroGame extends APP_Extended
-{
+abstract class EuroGame extends APP_Extended {
     public $tokens;
     public $token_types;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         $this->tokens = new Tokens();
     }
 
-    protected function setCounter(&$array, $key, $value)
-    {
+    protected function setCounter(&$array, $key, $value) {
         $array[$key] = array('counter_value' => $value, 'counter_name' => $key);
     }
 
-    protected function fillCounters(&$array, $locs, $create = true)
-    {
+    protected function fillCounters(&$array, $locs, $create = true) {
         foreach ($locs as $location => $count) {
             $key = $location . "_counter";
             if ($create || array_key_exists($key, $array))
@@ -41,16 +37,14 @@ abstract class EuroGame extends APP_Extended
         }
     }
 
-    protected function fillTokensFromArray(&$array, $cards)
-    {
+    protected function fillTokensFromArray(&$array, $cards) {
         foreach ($cards as $pos => $card) {
             $id = $card['key'];
             $array[$id] = $card;
         }
     }
 
-    protected function getTokenName($token_id)
-    {
+    protected function getTokenName($token_id) {
         if (is_array($token_id))
             return $token_id;
         if ($token_id == null)
@@ -68,8 +62,7 @@ abstract class EuroGame extends APP_Extended
         return "? $token_id  $type";
     }
 
-    protected function getAllDatas()
-    {
+    protected function getAllDatas() {
         $result = array();
         $current_player_id = self::getCurrentPlayerId(); // !! We must only return informations visible by this player !!
         // Get information about players
@@ -105,8 +98,7 @@ abstract class EuroGame extends APP_Extended
         return $result;
     }
 
-    protected function getDefaultCounters()
-    {
+    protected function getDefaultCounters() {
         $types = $this->token_types;
         $res = [];
         $players_basic = $this->loadPlayersBasicInfos();
@@ -126,8 +118,7 @@ abstract class EuroGame extends APP_Extended
         return $res;
     }
 
-    protected function isContentAllowedForLocation($player_id, $location)
-    {
+    protected function isContentAllowedForLocation($player_id, $location) {
         if ($location === 'dev_null')
             return false;
         $key = $location;
@@ -162,8 +153,7 @@ abstract class EuroGame extends APP_Extended
         return false;
     }
 
-    protected function isCounterAllowedForLocation($player_id, $location)
-    {
+    protected function isCounterAllowedForLocation($player_id, $location) {
         if ($location === 'dev_null')
             return false;
         $key = $location;
@@ -187,8 +177,7 @@ abstract class EuroGame extends APP_Extended
         return false;
     }
 
-    function getRulesFor($token_id, $field = 'r')
-    {
+    function getRulesFor($token_id, $field = 'r') {
         $key = $token_id;
         while ($key) {
             //$this->warn("searching for $key|");
@@ -206,8 +195,7 @@ abstract class EuroGame extends APP_Extended
         return '';
     }
 
-    function dbSetTokenState($token_id, $state = null, $notif = '*', $args = null)
-    {
+    function dbSetTokenState($token_id, $state = null, $notif = '*', $args = null) {
         $this->dbSetTokenLocation($token_id, null, $state, $notif, $args);
     }
 
@@ -247,8 +235,7 @@ abstract class EuroGame extends APP_Extended
      * @param string $notif
      * @param array $args
      */
-    function dbSetTokensLocation($token_arr, $place_id, $state = null, $notif = '*', $args = [])
-    {
+    function dbSetTokensLocation($token_arr, $place_id, $state = null, $notif = '*', $args = []) {
         $type = $this->tokens->checkListOrTokenArray($token_arr);
         if ($type == 0)
             return;
@@ -332,15 +319,14 @@ abstract class EuroGame extends APP_Extended
         }
     }
 
-    function formatPlaceName($placeName){
+    function formatPlaceName($placeName) {
         return $placeName;
     }
 
-    function dbSetTokenLocation($token_id, $place_id, $state = null, $notif = '*', $args = null)
-    {
+    function dbSetTokenLocation($token_id, $place_id, $state = null, $notif = '*', $args = null) {
         $this->systemAssertTrue("token_id cannot be array " . toJson($token_id), !is_array($token_id));
         $this->systemAssertTrue("token_id is null/empty $token_id, $place_id $notif", $token_id != null && $token_id != '');
-        
+
         $place_from = $this->tokens->getTokenLocation($token_id);
         $this->systemAssertTrue("token_id does not exists, create first: $token_id", $place_from);
         if ($place_id === null) {
@@ -393,10 +379,9 @@ abstract class EuroGame extends APP_Extended
      * @param string $place - optional $place, only used in notification to show where "resource" 
      *   is gain or where it "goes" when its paid, used in client for animation
      */
-    function dbResourceInc($token_id, $num, $place = null)
-    {
+    function dbResourceInc($token_id, $num, $place = null) {
         $player_id = $this->getActivePlayerId();
-       // $color = $this->getPlayerPosition($player_id);
+        // $color = $this->getPlayerPosition($player_id);
 
         $current = $this->tokens->getTokenState($token_id);
         $value = $this->tokens->setTokenState($token_id, $current + $num);
@@ -435,23 +420,20 @@ abstract class EuroGame extends APP_Extended
         ]);
     }
 
-    function notifyCounter($location, $notifyArgs = null)
-    {
+    function notifyCounter($location, $notifyArgs = null) {
         $key = $location . "_counter";
         $value = ($this->tokens->countTokensInLocation($location));
         $this->notifyCounterDirect($key, $value, '', $notifyArgs);
     }
 
-    function notifyCounterDirect($key, $value, $message, $notifyArgs = null)
-    {
+    function notifyCounterDirect($key, $value, $message, $notifyArgs = null) {
         $args = ['counter_name' => $key, 'counter_value' => $value];
         if ($notifyArgs != null)
             $args = array_merge($notifyArgs, $args);
         $this->notifyWithName("counter", $message, $args);
     }
 
-    function notifyCounterInc($key, $value, $message, $notifyArgs = null)
-    {
+    function notifyCounterInc($key, $value, $message, $notifyArgs = null) {
         $args = ['counter_name' => $key, 'counter_inc' => $value];
         if ($notifyArgs != null)
             $args = array_merge($notifyArgs, $args);

@@ -123,7 +123,7 @@ class Tokens extends APP_GameClass {
      */
     function createTokenAutoInc($type, $location = 'limbo', $token_state = 0) {
         $allsuf = $this->getTokensOfTypeInLocation($type);
-        $resnum = count($allsuf);
+        $resnum = count($allsuf) + 1;
         try {
             return $this->createToken("${type}_${resnum}", $location, $token_state);
         } catch (Exception $e) {
@@ -133,6 +133,7 @@ class Tokens extends APP_GameClass {
     }
 
     function createTokensPack($key, $location, $nbr = 1, $nbr_start = 1, $iterArr = null, $token_state = null) {
+        if ($nbr <= 0) return [];
         if ($iterArr == null)
             $iterArr = array('');
         if (!is_array($iterArr))

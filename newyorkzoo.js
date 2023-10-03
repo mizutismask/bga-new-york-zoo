@@ -155,7 +155,7 @@ class PatchManager {
         this.createPatchControl('done_control', pboard, '_a');
         this.createPatchControl('cancel_control', pboard, '_a');
 
-        const patchQuery = document.querySelectorAll('.market .patch, .bonus_market .patch');
+        const patchQuery = document.querySelectorAll('.market .patch, .bonus_market .patch, .limbo .patch');
         for (const item of patchQuery) {
             this.addDragListeners(item, false);
             item.addEventListener('click', (event) => this.onClickPatch(event), false);
@@ -335,8 +335,13 @@ class PatchManager {
                 return null;
             }
             var has_error = true;
-            var moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.id];
             dojo.query('.head_error').forEach(dojo.destroy); // remove stack of error popups
+            var moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.id];
+           /* debug('targetNode.parentNode.dataset', targetNode.parentNode.dataset);
+            if (!moves_info && 'maskGroup' in targetNode.parentNode.dataset) {
+                //if it’s an attraction, key is the mask and not the id
+                moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.parentNode.dataset.maskGroup];
+            }*/
             if (!gameui.isCurrentPlayerActive()) {
                 gameui.showError(_('This is not your turn, turn on Practice Mode to practice placing'));
             } else if (!moves_info) {
@@ -491,6 +496,10 @@ class PatchManager {
             this.normalizedRotateAngle(gameui.clientStateArgs.rotateY);
         //debug('updating moves for ' + curpatch + ' ' + combo);
         var moves_info = gameui.gamedatas.gamestate.args.patches[curpatch];
+        /*if (!moves_info && 'maskGroup' in $(curpatch).parentNode.dataset) {
+            //if it’s an attraction, key is the mask and not the id
+            moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.parentNode.dataset.maskGroup];
+        }*/
         if (moves_info) {
             var moves = moves_info.moves[combo];
             if (moves) {
@@ -771,6 +780,7 @@ define([
                 //debug('setupToken unknown', token);
             }
         },
+
         setupGameTokens: function () {
             this.setupScrollableMap();
 
@@ -795,7 +805,6 @@ define([
                 this.updateTooltip(node.id, node.parentNode);
             });
 
-            
             /*const animalZonesQuery = document.querySelectorAll('.nyz_animal_action_zone');
             for (const item of animalZonesQuery) {
                 item.addEventListener("click", event => this.onClickAnimalZone(event), false)
@@ -1005,7 +1014,15 @@ define([
 
         processStateArgs(stateName, args) {
             //debug('before processStateArgs: ', args);
-            return stateName == 'placeStartFences' ? args[this.player_id] : args;
+            switch (stateName) {
+                case 'placeStartFences':
+                    return args[this.player_id];
+                case 'placeAttraction':
+                    return this.completeArgsWithEquivalentAttractions(args);
+
+                default:
+                    return args;
+            }
         },
 
         onLeavingState: function (stateName) {
@@ -1129,6 +1146,17 @@ define([
             );
         },
 
+        completeArgsWithEquivalentAttractions(args) {
+            var idEq;
+            for (var id in args.patches) {
+                for (var eq in args.patches[id].equivalentPatches) {
+                    idEq = args.patches[id].equivalentPatches[eq];
+                    args.patches[idEq] = args.patches[id];
+                }
+            }
+            return args;
+        },
+
         onUpdateActionButtons_chooseFence: function (args) {
             gameui.clientStateArgs.action = 'chooseFences';
             gameui.clientStateArgs.squares = [];
@@ -1211,16 +1239,22 @@ define([
         onUpdateActionButtons_placeAttraction: function (args) {
             this.clientStateArgs.action = 'place';
             var canBuy = Object.keys(args.patches);
+           /* canBuy.forEach((mask) => {
+                var canUse = args.patches[mask].canUse;
+                var activeClass = canUse ? 'active_slot' : 'cannot_use';
+                dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
+            });*/
             canBuy.forEach((id) => {
                 var canUse = args.patches[id].canUse;
                 dojo.addClass(id, 'active_slot');
                 if (canUse == false) {
                     dojo.addClass(id, 'cannot_use');
                 } else {
-                    if (dojo.query(`.bonus-mask-group[data-mask-group=":1"] #${id}`).length == 1) {
+                    dojo.addClass(id, 'active_slot');
+                    /*if (dojo.query(`.bonus-mask-group[data-mask-group=":1"] #${id}`).length == 1) {
                         //this is a 1x1 attraction, we activate them all
                         dojo.query(`.bonus-mask-group[data-mask-group=":1"] .patch`).addClass('active_slot');
-                    }
+                    }*/
                 }
             });
 
@@ -1273,9 +1307,18 @@ define([
             var canBuyArgs = 'patches' in args ? args['patches'] : [];
             var canBuy = Object.keys(canBuyArgs);
             canBuy.forEach((id) => {
-                var canUse = args.patches[id].canUse;
-                if (canUse == false) dojo.addClass(id, 'cannot_use');
-                else dojo.addClass(id, 'active_slot');
+               // if ($(id)) {
+                    //patch
+                    var canUse = args.patches[id].canUse;
+                    if (canUse == false) dojo.addClass(id, 'cannot_use');
+                    else dojo.addClass(id, 'active_slot');
+               /* } else {
+                    //bonus
+                    var mask = id;
+                    var canUse = args.patches[mask].canUse;
+                    var activeClass = canUse ? 'active_slot' : 'cannot_use';
+                    dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
+                }*/
             });
 
             var sel = document.querySelector('.selected');
