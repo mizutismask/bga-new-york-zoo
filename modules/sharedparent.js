@@ -148,6 +148,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
         //
         onLeavingState: function (stateName) {
             this.curstate = null;
+            this.disconnectAllTemp();
         },
         // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
         // action status bar (ie: the HTML links in the status bar).
