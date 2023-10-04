@@ -1284,8 +1284,13 @@ define([
 
         updateAttractionCount() {
             dojo.query(`.group-counter`).forEach((g) => {
-                g.innerHTML = g.parentNode.childElementCount - 1;
-                if (g.innerHTML == 0) {
+                if (g.parentNode.dataset.maskGroup == ':1') {
+                    g.innerHTML = '';
+                    g.classList.add('fa6', 'fa6-regular', 'fa6-infinity');
+                } else {
+                    g.innerHTML = g.parentNode.childElementCount - 1;
+                }
+                if (g.innerHTML === "0") {
                     g.parentNode.style.display = 'none';
                 } else {
                     g.parentNode.style.display = 'grid';
