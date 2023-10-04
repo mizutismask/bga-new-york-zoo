@@ -115,14 +115,15 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $this->tpl['PCOLOR'] = 'ffffff'; // spectator
     $current_player = $g_user->get_id();
 
-    $this->page->begin_block($template, "handMarket");
-
-    foreach ($players as $player_info) {
-      if (isset($players[$current_player])) { // may be not set if spectator
-        $this->page->insert_block("handMarket", array(
-          "PLAYER_ID" => $player_info['player_id'],
-          "OTHER_CLASSES" => $player_info['player_id'] != $current_player ? "opponent" : "",
-        ));
+    if($players_nbr == 2 && $this->game->isFastGame()){
+      $this->page->begin_block($template, "handMarket");
+      foreach ($players as $player_info) {
+        if (isset($players[$current_player])) { // may be not set if spectator
+          $this->page->insert_block("handMarket", array(
+            "PLAYER_ID" => $player_info['player_id'],
+            "OTHER_CLASSES" => $player_info['player_id'] != $current_player ? "opponent" : "",
+          ));
+        }
       }
     }
 
