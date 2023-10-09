@@ -22,3 +22,14 @@ You can play here : https://boardgamearena.com
 | Ipad air 2| 8 | even bga does not work |
 | Iphone 13 pro| 15 | ok but people say ko |
 | Ipad 10| 16 | ok |
+
+
+### Known Safari problems still pending:
+| Version | IOS | State |
+|---|---|---|
+|iPad Air 3th generation | 16.6 | ko |
+|iPad Pro 4th generation 12.9” | 16.6.1 | ko |
+|iPad 6th generation | 16.6.1 | ko |
+|iPad Mini 6th generation 2021 | 16.6.1 | ko |
+|iPhone X| 16.6 | ko |
+|iPhone 14 Pro | 16.6.1  | ko |
