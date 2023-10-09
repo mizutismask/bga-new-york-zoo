@@ -833,7 +833,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
             var main = this.getTooptipHtml(tokenInfo.name, tokenInfo.tooltip, tokenInfo.imageTypes, '<hr/>');
             var action = tokenInfo.tooltip_action;
             if (action && main !== null) {
-                main += '<br/>' + this.getActionLine(action);
+                main += '<br>' + this.getActionLine(action);
             }
             return main;
         },
