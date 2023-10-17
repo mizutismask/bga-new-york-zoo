@@ -138,6 +138,12 @@
 	<div id="flip_control_template" class="mirror-image control-image"></div>
 	<div id="done_control_template" class="done-image control-image"></div>
 	<div id="cancel_control_template" class="cancel-image control-image"></div>
+	
+	<div id="solo_token_0" class="solo-token-0 solo-token"></div>
+	<div id="solo_token_1" class="solo-token-1 solo-token"></div>
+	<div id="solo_token_2" class="solo-token-2 solo-token"></div>
+	<div id="solo_token_3" class="solo-token-3 solo-token"></div>
+	<div id="solo_token_4" class="solo-token-4 solo-token"></div>
 </div>
 
 <style>

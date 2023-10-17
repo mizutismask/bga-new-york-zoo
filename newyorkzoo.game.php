@@ -251,6 +251,12 @@ class NewYorkZoo extends EuroGame {
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createToken("token_neutral", "action_zone_anml_10", 0);
+
+        if($this->isSoloMode()){
+            for ($i=0; $i < 5; $i++) { 
+                $this->tokens->createToken("solo_token_${i}", "limbo", 0);
+            }
+        }
     }
 
     /**
@@ -2132,12 +2138,12 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BONUS_BREEDING, 0);
         //$this->dbEmptyTable("context_log");
-        $args = $this->arg_playerTurn();
-        $canPatch = $args['canPatch'];
-        //$this->warn("st_playerTurn canPatch='".$canPatch."' pl=$player_id ".toJson($args)."|");
-        if (false &&  !$canPatch) {
-            $this->notifyWithName('message', clienttranslate('${player_name} cannot place any fence'));
-            $this->sendNotifications(); // have to do it so it does not bundle too much
+        if($this->isSoloMode()){
+            $used= $this->tokens->getTokensOfTypeInLocation("solo_token%", "used");
+            if(count($used)==5){
+                $ids = $this->getFieldValuesFromArray($used, "key");
+                $this->dbSetTokensLocation($ids,"limbo");
+            }
         }
     }
 

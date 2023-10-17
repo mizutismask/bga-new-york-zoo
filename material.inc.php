@@ -451,6 +451,32 @@ $this->token_types = [
     'type' => KANGAROO. " animal",
     'name' => clienttranslate("Kangaroo"),
   ],
+  
+  'solo_token_0' => [
+    'type' => 'solo-token solo-token_0',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to stay on the same space"),
+  ],
+  'solo_token_1' => [
+    'type' => 'solo-token solo-token_1',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 1 space forward"),
+  ],
+  'solo_token_2' => [
+    'type' => 'solo-token solo-token_21',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 2 spaces forward"),
+  ],
+  'solo_token_3' => [
+    'type' => 'solo-token solo-token_3',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 3 spaces forward"),
+  ],
+  'solo_token_4' => [
+    'type' => 'solo-token solo-token_4',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 4 spaces forward or more"),
+  ],
 
   //1 to indicate filler, then playerCount_playerOrder
   'patch_113' => [

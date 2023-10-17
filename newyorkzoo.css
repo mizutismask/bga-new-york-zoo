@@ -125,12 +125,16 @@
 /*@supports (background: -webkit-named-image(i)) {}*/
 /* Safari 7.1+ to Safari 17.0 */
 /* Disables filter:drop-shadow */
-_::-webkit-full-page-media, _:future, :root:not(.animal-target-image):not(.invalid):not(.cannot_use):not(.breeding-notif):not(.control-node) {
+_::-webkit-full-page-media,
+_:future,
+:root:not(.animal-target-image):not(.invalid):not(.cannot_use):not(.breeding-notif):not(.control-node) {
     filter: none !important;
 }
-_::-webkit-full-page-media, _:future, :root .house.active_slot {
-        box-shadow: none !important;
-        border: 2px solid rgba(125, 247, 26, 0.8);
+_::-webkit-full-page-media,
+_:future,
+:root .house.active_slot {
+    box-shadow: none !important;
+    border: 2px solid rgba(125, 247, 26, 0.8);
 }
 
 .central {
@@ -466,9 +470,10 @@ _::-webkit-full-page-media, _:future, :root .house.active_slot {
 }
 
 /*Improves visibility when the highlight is present*/
-.current_player_is_active .gamestate_client_PlaceAnimal .patch-outline-poligon, .current_player_is_active .gamestate_chooseFence .patch-outline-poligon {
+.current_player_is_active .gamestate_client_PlaceAnimal .patch-outline-poligon,
+.current_player_is_active .gamestate_chooseFence .patch-outline-poligon {
     stroke-width: 2;
-    stroke:#3d1704;
+    stroke: #3d1704;
 }
 
 .drag-shadow .patch-outline-poligon {
@@ -595,7 +600,7 @@ _::-webkit-full-page-media, _:future, :root .house.active_slot {
     opacity: 1;
     z-index: 20;
 }
-.market .active_slot { 
+.market .active_slot {
     filter: drop-shadow(6px 6px 6px #8a8) drop-shadow(2px 2px 2px black);
     z-index: 30;
 }
@@ -1337,6 +1342,29 @@ _::-webkit-full-page-media, _:future, :root .house.active_slot {
 
 .filler_face {
     background: none;
+}
+
+.solo-token {
+    background-image: url(img/soloTokens.png);
+    width: 45px;
+    height: 45px;
+    border-radius: 10%;
+    border: 3px solid #f1f0ef;
+}
+.solo-token-0 {
+    background-position: 0 0;
+}
+.solo-token-1 {
+    background-position: 25% 0;
+}
+.solo-token-2 {
+    background-position: 50% 0;
+}
+.solo-token-3 {
+    background-position: 75% 0;
+}
+.solo-token-4 {
+    background-position: 100% 0;
 }
 
 /*todo*/
