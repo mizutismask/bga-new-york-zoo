@@ -89,7 +89,7 @@
 		    </div>
 		</div>
 
-		<div id="tableau_{ORDER}" data-title="{PLAYER_NAME}" class="tableau tableau_{ORDER} {OWN} player_count_{PLAYER_COUNT} player_order_{ORDER}">
+		<div id="tableau_{ORDER}" data-title="{PLAYER_NAME}" class="tableau tableau_{ORDER} {OWN} player_count_{PLAYER_COUNT} player_order_{ORDER} {SOLO_BOARD}">
 			<div id="pboard_{ORDER}" class="pboard pboard_{ORDER}">
 				<div id="squares_{ORDER}" class="squares squares_{ORDER}">
     <!-- BEGIN square -->

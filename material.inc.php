@@ -56,8 +56,18 @@ if (!defined("LIGHTEST_GREEN")) {
 $this->animals = [MEERKAT, FLAMINGO, KANGAROO, PENGUIN, FOX];
 $this->animalTypes = [MEERKAT_TYPE, FLAMINGO_TYPE, KANGAROO_TYPE, PENGUIN_TYPE, FOX_TYPE];
 
-//by player count, then player order
+//by player count, then player order (if solo, by player count then houses count)
 $this->boards = [
+  '1' => [
+    '3' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 3,
+    ],
+    '4' => [
+      'animals' => [MEERKAT, KANGAROO],
+      'houses' => 4,
+    ],
+  ],
   '2' => [
     '1' => [
       'animals' => [MEERKAT, FLAMINGO],
@@ -443,6 +453,26 @@ $this->token_types = [
   ],
 
   //1 to indicate filler, then playerCount_playerOrder
+  'patch_113' => [
+    'num' => 113,
+    'type' => 'patch filler filler_1_3',
+    'spaces' => 19,
+    'mask' => ':1111:1111:1111:1111:1110',
+    'w' => 4,
+    'h' => 5,
+    'color' => 'filler',
+    'occurrences' => 1,
+  ],
+  'patch_114' => [
+    'num' => 114,
+    'type' => 'patch filler filler_1_4',
+    'spaces' => 22,
+    'mask' => ':11111:11111:11110:11110:11110',
+    'w' => 5,
+    'h' => 5,
+    'color' => 'filler',
+    'occurrences' => 1,
+  ],
   'patch_121' => [
     'num' => 121,
     'type' => 'patch filler filler_2_1',

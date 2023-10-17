@@ -77,6 +77,8 @@ class NewYorkZoo extends EuroGame {
             //    "my_second_game_variant" => 101,
             //      ...
             FAST_GAME => 100, //2 players only
+            SOLO => 101, //1 player only
+            SOLO_BOARD => 102, //2 possible boards with 3 or 4 houses
             GS_ANIMAL_TO_PLACE => 10, //animalType 1 from main action
             GS_OTHER_ANIMAL_TO_PLACE => 11,  //animalType 2 from main action
             GS_BREEDING => 12,
@@ -164,12 +166,33 @@ class NewYorkZoo extends EuroGame {
         /************ End of the game initialization *****/
     }
 
+    function getSoloBoard($player_count) {
+        if ($player_count == 1) {
+            switch (self::getGameStateValue(SOLO_BOARD)) {
+                case HOUSE_COUNT_3:
+                    return "board_houses_3";
+                case HOUSE_COUNT_4:
+                    return "board_houses_4";
+            }
+        }
+        return "";
+    }
+
+    function getSoloHousesCount() {
+        switch (self::getGameStateValue(SOLO_BOARD)) {
+            case HOUSE_COUNT_3:
+                return 3;
+            case HOUSE_COUNT_4:
+                return 4;
+        }
+    }
+
     function debugSetup() {
         if ($this->getBgaEnvironment() != 'studio') {
             return;
         }
         //$this->dblBreeding(FLAMINGO, 1);
-        $this->dblBreeding(MEERKAT, 1);
+        //$this->dblBreeding(MEERKAT, 1);
 
         $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
     }
@@ -186,7 +209,7 @@ class NewYorkZoo extends EuroGame {
         foreach ($players as $player_id => $player) {
             //$this->tokens->createTokensPack($player_id . "_house_{INDEX}",  "house_" . $playerOrder, 3);
             $playerOrder = $player["player_no"];
-            $boardConf = $this->boards[count($players)][$playerOrder];
+            $boardConf = $this->isSoloMode() ? $this->boards[count($players)][$this->getSoloHousesCount()] : $this->boards[count($players)][$playerOrder];
             $h = 1;
             foreach ($boardConf["animals"] as $animal) {
                 $this->tokens->moveToken($animal . '_' . $i, "house_" . $playerOrder . "_" . $h, 0);
@@ -256,8 +279,7 @@ class NewYorkZoo extends EuroGame {
             if ($toMove) {
                 $this->tokens->moveTokens($toMove, "bonus_market");
                 $this->dbSyncInfo($toMove);
-            }
-            else{
+            } else {
                 $this->error("No more 1x1 attraction in stock");
             }
         }
@@ -385,7 +407,8 @@ class NewYorkZoo extends EuroGame {
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
 
             //total
-            $fillerSize = substr_count($this->token_types["patch_1" . count($players) . $order]["mask"], "1");
+            $fillerId = $this->isSoloMode() ? "patch_1" . count($players) . $this->getSoloHousesCount() : "patch_1" . count($players) . $order;
+            $fillerSize = substr_count($this->token_types[$fillerId]["mask"], "1");
             $totalToDo = $this->getGridHeight() * $this->getGridWidth() - $fillerSize;
 
             $done[$player_id] = ($totalToDo - $unoccup_count) * 100 / $totalToDo;
@@ -398,6 +421,9 @@ class NewYorkZoo extends EuroGame {
     //////////// Utility functions
     //////////// 
     function getFillerId($players_nbr, $order) {
+        if ($this->isSoloMode()) {
+            return "patch_1" . $players_nbr . $this->getSoloHousesCount();
+        }
         return "patch_1" . $players_nbr . $order;
     }
 
@@ -497,7 +523,11 @@ class NewYorkZoo extends EuroGame {
     function getGridSize() {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
-        if ($players_nbr == 2) {
+        if ($players_nbr == 1 && $this->getSoloHousesCount() == 3) {
+            return array(11, 9); //x,y
+        } else if ($players_nbr == 1 && $this->getSoloHousesCount() == 4) {
+            return array(14, 9); //x,y
+        } else if ($players_nbr == 2) {
             return array(14, 9); //x,y
         } else if ($players_nbr == 3) {
             return array(11, 9); //x,y
@@ -683,6 +713,10 @@ class NewYorkZoo extends EuroGame {
 
     public function isFastGame() {
         return $this->getGameStateValue(FAST_GAME) == ACTIVATED;
+    }
+
+    public function isSoloMode() {
+        return $this->getGameStateValue(SOLO) == ACTIVATED;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1753,7 +1787,7 @@ class NewYorkZoo extends EuroGame {
     function getPlayerHouses($playerOrder) {
         $players = $this->loadPlayersBasicInfos();
         $playerCount = count($players);
-        $houseCount = $this->boards[$playerCount][$playerOrder]["houses"];
+        $houseCount = $this->isSoloMode() ?  $this->boards[$playerCount][$this->getSoloHousesCount()]["houses"] : $this->boards[$playerCount][$playerOrder]["houses"];
         $houses = [];
         for ($i = 1; $i <= $houseCount; $i++) {
             $houses[] = "house_" . $playerOrder . "_" . $i;
@@ -1806,6 +1840,8 @@ class NewYorkZoo extends EuroGame {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
         switch ($players_nbr) {
+            case 1:
+                return 0;
             case 2:
             case 4:
                 return 4;

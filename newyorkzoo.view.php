@@ -52,7 +52,8 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $hor_scale = CELL_WIDTH;
     $ver_scale = CELL_WIDTH;
 
-    for ($x = 1; $x <= $this->game->boards[$player_count][$order]['houses']; $x++) {
+    $houses = $this->game->isSoloMode() ?  $this->game->boards[$player_count][$this->game->getSoloHousesCount()]["houses"] : $this->game->boards[$player_count][$order]["houses"];
+    for ($x = 1; $x <= $houses; $x++) {
       $classes = 'house_' . $x;
       $this->page->insert_block("house", array(
         'X' => $x, 'Y' => 0, 'LEFT' => round(($x) * $hor_scale),
@@ -82,7 +83,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     }
 
     $own = $player_id == $current_player;
-    if($own){
+    if ($own) {
       for ($x = 0; $x < $gridSize[0]; $x++) {
         for ($y = 0; $y < $gridSize[1]; $y++) {
           $classes = '';
@@ -98,6 +99,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       "ORDER" => $order, "PLAYER_NAME" => $name,
       "PLAYER_ID" => $player_id, "OWN" => $own ? "own" : "",
       "PLAYER_COUNT" => $player_count,
+      "SOLO_BOARD" => $this->game->getSoloBoard($player_count),
     ));
   }
 
@@ -115,7 +117,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $this->tpl['PCOLOR'] = 'ffffff'; // spectator
     $current_player = $g_user->get_id();
 
-    if($players_nbr == 2 && $this->game->isFastGame()){
+    if ($players_nbr == 2 && $this->game->isFastGame()) {
       $this->page->begin_block($template, "handMarket");
       foreach ($players as $player_info) {
         if (isset($players[$current_player])) { // may be not set if spectator
@@ -193,7 +195,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $attractions = $this->game->mtCollectAllWithFieldValue("color", "bonus");
     $uniqueMasks = array_unique(array_map(fn ($a) => $a["mask"], $attractions));
     usort($uniqueMasks, function ($a, $b) {
-      return substr_count($b,"1") - substr_count($a,"1");
+      return substr_count($b, "1") - substr_count($a, "1");
     });
     foreach ($uniqueMasks as $i => $mask) {
       $this->page->insert_block("bonus-mask", ['COUNTER' => $i, 'MASK' => $mask,]);

@@ -215,6 +215,9 @@ _::-webkit-full-page-media, _:future, :root .house.active_slot {
 }
 
 /*should be pboard instead of tableau*/
+.tableau.player_count_1 {
+    background-image: url(img/board1P.png);
+}
 .tableau.player_count_2 {
     background-image: url(img/board2P.png);
 }
@@ -226,6 +229,13 @@ _::-webkit-full-page-media, _:future, :root .house.active_slot {
 }
 .tableau.player_count_5 {
     background-image: url(img/board5P.png);
+}
+
+.tableau.player_order_1.board_houses_3 {
+    background-position: 0 0;
+}
+.tableau.player_order_1.board_houses_4 {
+    background-position: 100% 0;
 }
 
 .tableau.player_order_1 {
@@ -242,6 +252,10 @@ _::-webkit-full-page-media, _:future, :root .house.active_slot {
 }
 .tableau.player_order_5 {
     background-position: calc(100% / var(--playerCountMinus1) * 4) 0%;
+}
+
+.player_count_1.player_order_1 .pboard {
+    padding: 143px 0px 0px 56px;
 }
 
 .player_count_2.player_order_1 .pboard {
@@ -1114,6 +1128,36 @@ _::-webkit-full-page-media, _:future, :root .house.active_slot {
     height: var(--cellWidth);
     position: relative;
     z-index: 110;
+}
+
+.player_count_1.player_order_1.board_houses_3 .house_1 {
+    top: 7%;
+    left: 16.9%;
+}
+.player_count_1.player_order_1.board_houses_3 .house_2 {
+    top: -0.2%;
+    left: 1.6%;
+}
+.player_count_1.player_order_1.board_houses_3 .house_3 {
+    top: 7.5%;
+    left: 5.4%;
+}
+
+.player_count_1.player_order_1.board_houses_4 .house_1 {
+    top: 5.5%;
+    left: 13.6%;
+}
+.player_count_1.player_order_1.board_houses_4 .house_2 {
+    top: -4%;
+    left: 1.6%;
+}
+.player_count_1.player_order_1.board_houses_4 .house_3 {
+    top: 2.1%;
+    left: 12.8%;
+}
+.player_count_1.player_order_1.board_houses_4 .house_4 {
+    top: -6%;
+    left: 0%;
 }
 
 .player_count_2.player_order_1 .house_1 {
