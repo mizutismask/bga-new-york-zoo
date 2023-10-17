@@ -313,7 +313,7 @@ class NewYorkZoo extends EuroGame {
                 $this->tokens->moveToken($patch["key"], "limbo");
                 $removed[] = $patch;
             }
-            
+
             if ($players_nbr == 2 && $this->isFastGame()) {
                 //deal evenly the removed patches by color
                 $stateP1 = 1;
@@ -2174,7 +2174,7 @@ class NewYorkZoo extends EuroGame {
             $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
         } else {
             //everyone has bred, see if bonus breeding needed
-            if ($playerCount === 2 || $playerCount === 3) {
+            if ($playerCount === 1 ||$playerCount === 2 || $playerCount === 3) {
                 self::setGameStateValue(GS_BONUS_BREEDING, 1);
                 $this->dbInsertContextLog(BONUS_BREEDING);
                 self::notifyAllPlayers("breedingTime", clienttranslate('Bonus breeding time'), ["bonus" => true]);
