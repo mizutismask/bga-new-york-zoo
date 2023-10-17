@@ -305,7 +305,7 @@ class NewYorkZoo extends EuroGame {
         }
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
-        if ($players_nbr == 2 && $this->isFastGame()) {
+        if ($this->isSoloMode() || ($players_nbr == 2 && $this->isFastGame())) {
             $locations = $this->getPolyominoesLocationsOnBoard();
             $removed = [];
             foreach ($locations as $loc) {
@@ -313,19 +313,22 @@ class NewYorkZoo extends EuroGame {
                 $this->tokens->moveToken($patch["key"], "limbo");
                 $removed[] = $patch;
             }
-            //deal evenly the removed patches by color
-            $stateP1 = 1;
-            $stateP2 = 1;
-            foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
-                $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
-                $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
-                for ($i = 0; $i < 3; $i++) {
-                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
-                    $stateP1++;
-                }
-                for ($i = 3; $i < 6; $i++) {
-                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1], $stateP2);
-                    $stateP2++;
+            
+            if ($players_nbr == 2 && $this->isFastGame()) {
+                //deal evenly the removed patches by color
+                $stateP1 = 1;
+                $stateP2 = 1;
+                foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
+                    $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
+                    $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
+                    for ($i = 0; $i < 3; $i++) {
+                        $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
+                        $stateP1++;
+                    }
+                    for ($i = 3; $i < 6; $i++) {
+                        $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1], $stateP2);
+                        $stateP2++;
+                    }
                 }
             }
         }
