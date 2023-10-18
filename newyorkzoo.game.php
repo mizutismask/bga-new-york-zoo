@@ -44,6 +44,7 @@ if (!defined('OFFSET')) {
     define("GS_RESOLVING_BREEDING", "resolvingBreeding");
     define("GS_PREVIOUS_NEUTRAL_LOCATION", "previousNeutralLocation");
     define("GS_CAN_UNDO_ACQUISITION_MOVE", "canUndoAcquisitionMove");
+    define("GS_LAST_SOLO_TOKEN_USED", "lastSoloTokenUsed");
 
     //context_log actions
     define("ACTION_GET_ANIMALS", 'getAnimals');
@@ -93,6 +94,7 @@ class NewYorkZoo extends EuroGame {
             GS_BREEDING_2_LONG_MOVE => 21, //when fences spaces are empty, a 4 move can cross 2 birth lines
             GS_PREVIOUS_NEUTRAL_LOCATION => 22, //need to store elephant position prior to a move to acquisition zone since it can be canceled
             GS_CAN_UNDO_ACQUISITION_MOVE => 23, //can undo only if no animal has been placed (just meant to prevent misclicks)
+            GS_LAST_SOLO_TOKEN_USED => 24, //remember last solo token used in case of undo
         ));
 
         $this->tokens = new Tokens();
@@ -149,6 +151,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_BONUS_BREEDING, 0);
             self::setGameStateInitialValue(GS_CAN_UNDO_ACQUISITION_MOVE, 0);
             self::setGameStateInitialValue(GS_PREVIOUS_NEUTRAL_LOCATION, 0);
+            self::setGameStateInitialValue(GS_LAST_SOLO_TOKEN_USED, 0);
 
             $this->initStats();
 
@@ -939,6 +942,14 @@ class NewYorkZoo extends EuroGame {
         $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
+        if ($this->isSoloMode()) {
+            $tokenNumber = self::getGameStateValue(GS_LAST_SOLO_TOKEN_USED);
+            if ($tokenNumber) {
+                $this->dbSetTokenLocation("solo_token_" . $tokenNumber, "solo_tokens_hand", null, '${player_name} gets back the range token', []);
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
+            }
+        }
+
         $this->gamestate->nextState(TRANSITION_UNDO_ELEPHANT_MOVE_TO_ANIMALS);
         $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
@@ -1006,7 +1017,7 @@ class NewYorkZoo extends EuroGame {
         return $crossed;
     }
 
-    function action_getAnimals($animalZone) {
+    function action_getAnimals($animalZone, $soloTokenId) {
         $this->checkAction(ACTION_GET_ANIMALS);
 
         $player_id = $this->getActivePlayerId();
@@ -1014,6 +1025,22 @@ class NewYorkZoo extends EuroGame {
         $order = $this->getPlayerPosition($player_id);
         $canGo  = $this->arg_canGetAnimals($order);
         $this->userAssertTrue(self::_("Cannot place those animals anywhere"), array_search($animalZone, $canGo) !== false);
+
+        if ($this->isSoloMode()) {
+            $tokenByZone = $this->arg_usableTokensByZone();
+            $verifiedSoloTokenId = "";
+            self::dump('*******************$tokenByZone[$animalZone]', $tokenByZone[$animalZone]);
+            if (count($tokenByZone[$animalZone]) == 1) {
+                $verifiedSoloTokenId = $tokenByZone[$animalZone][0];
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, getPart($verifiedSoloTokenId, -1));
+                self::dump('*******************verifiedSoloTokenId', $verifiedSoloTokenId);
+            } else {
+                $this->userAssertTrue(self::_("You have to specify if you want to use a token or not"), $soloTokenId !== false);
+            }
+            self::dump('******************* array_values($tokenByZone[$animalZone])',  array_values($tokenByZone[$animalZone]));
+            $this->userAssertTrue(self::_("Don’t have a convenient token to reach this location"), array_search($verifiedSoloTokenId, array_values($tokenByZone[$animalZone])) !== false);
+            $this->dbSetTokenLocation($verifiedSoloTokenId, "limbo", null, '${player_name} uses range token ${token_range}', ['token_range' => getPart($verifiedSoloTokenId, -1)]);
+        }
 
         $animal1 = $this->actionStripZones[$animalZone]['animals'][0];
         $animal2 = $this->actionStripZones[$animalZone]['animals'][1];
@@ -2206,7 +2233,7 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_BONUS_BREEDING, 0);
         //$this->dbEmptyTable("context_log");
         if ($this->isSoloMode()) {
-            $used = $this->tokens->getTokensOfTypeInLocation("solo_token%", "used");
+            $used = $this->tokens->getTokensOfTypeInLocation("solo_token%", "limbo");
             if (count($used) == 5) {
                 $ids = $this->getFieldValuesFromArray($used, "key");
                 $this->dbSetTokensLocation($ids, "solo_tokens_hand", null, null);

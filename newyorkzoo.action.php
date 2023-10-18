@@ -64,7 +64,8 @@ class action_newyorkzoo extends APP_GameAction {
   public function getAnimals() {
     self::setAjaxMode();
     $actionZone = self::getArg('actionZone', AT_alphanum, true);
-    $this->game->action_getAnimals($actionZone);
+    $soloToken = self::getArg('soloToken', AT_alphanum, false);
+    $this->game->action_getAnimals($actionZone, $soloToken);
     self::ajaxResponse();
   }
 

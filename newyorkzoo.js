@@ -1048,8 +1048,8 @@ define([
             this.removeClass('active_slot');
             this.removeClass('practice_mode');
             this.removeClass('animal-target-image');
-            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass("hidden");
-            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass("hidden");
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass('hidden');
+            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass('hidden');
         },
 
         onUpdateActionButtons: function (stateName, args) {
@@ -1075,6 +1075,9 @@ define([
             this.clientStateArgs.action = 'place';
 
             if (this.playerCount == 1) {
+                this.setDescriptionOnMyTurn(
+                    _('You must move the elephant of the amount of a range token to choose an action')
+                );
                 this.updateSoloTokens(args.usableTokensByZone);
             }
             this.addActiveSlots(args);
@@ -1107,20 +1110,24 @@ define([
         },
 
         updateSoloTokens: function (usableTokensByZone) {
-            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass("hidden");
-            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass("hidden");
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass('hidden');
+            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass('hidden');
             Object.entries(usableTokensByZone).forEach((entry) => {
                 const [zone, tokens] = entry;
-                console.log("entry", entry);
-                console.log("tokens", tokens.length);
+                console.log('entry', entry);
+                console.log('tokens', tokens.length);
                 console.log(`.${zone} .soloTokenNeeded`);
                 switch (tokens.length) {
                     case 1:
-                        dojo.query(`#${zone} .soloTokenNeeded`).addClass(tokens[0].replaceAll("_", "-")).toggleClass("hidden", false);
+                        dojo.query(`#${zone} .soloTokenNeeded`)
+                            .addClass(tokens[0].replaceAll('_', '-'))
+                            .toggleClass('hidden', false);
                         break;
                     case 2:
-                        dojo.query(`#${zone} .soloTokenNeeded`).addClass(tokens[0].replaceAll("_","-")).toggleClass("hidden", false);
-                        dojo.query(`#${zone} .soloTokenFree`).toggleClass("hidden", false);
+                        dojo.query(`#${zone} .soloTokenNeeded`)
+                            .addClass(tokens[0].replaceAll('_', '-'))
+                            .toggleClass('hidden', false);
+                        dojo.query(`#${zone} .soloTokenFree`).toggleClass('hidden', false);
                         break;
                     default:
                         break;
@@ -1709,6 +1716,15 @@ define([
         onAnimalZone: function (event) {
             dojo.stopEvent(event);
             var id = event.currentTarget.id;
+
+            if (this.playerCount == 1) {
+                const zoneDiv = event.target.closest('.nyz_action_zone');
+                if (dojo.query(`#${zoneDiv.id} .solo-token:not(.hidden)`).length > 1) {
+                    console.log('choice');
+                    return;
+                }
+            }
+
             gameui.clientStateArgs.action = 'getAnimals';
             gameui.clientStateArgs.actionZone = id;
             if (!gameui.isActiveSlot(id)) {
