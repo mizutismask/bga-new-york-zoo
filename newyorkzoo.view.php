@@ -181,9 +181,16 @@ class view_newyorkzoo_newyorkzoo extends game_view {
         ]);
       }
     }
-    $this->page->begin_block($template, "actionStripZone");
-    foreach ($this->game->actionStripZones as $id => &$zone) {
-      $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
+    if ($this->game->isSoloMode()) {
+      $this->page->begin_block($template, "actionStripZoneSolo");
+      foreach ($this->game->actionStripZones as $id => &$zone) {
+        $this->page->insert_block("actionStripZoneSolo", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
+      }
+    } else {
+      $this->page->begin_block($template, "actionStripZone");
+      foreach ($this->game->actionStripZones as $id => &$zone) {
+        $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
+      }
     }
 
     $this->page->begin_block($template, "birthZone");

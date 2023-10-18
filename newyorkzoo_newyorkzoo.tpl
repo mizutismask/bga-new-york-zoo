@@ -50,6 +50,13 @@
 				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
 				<!-- END actionStripZone -->
 
+				<!-- BEGIN actionStripZoneSolo -->
+				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;">
+					<div class="soloTokenNeeded solo-token hidden"></div>
+					<div class="soloTokenFree solo-token hidden">&olcross;</div>
+				</div>
+				<!-- END actionStripZoneSolo -->
+
 				<!-- BEGIN birthZone -->
 				<div id="{ID}" class="nyz_birth_zone" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
 				<!-- END birthZone -->

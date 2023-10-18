@@ -337,7 +337,7 @@ class PatchManager {
             var has_error = true;
             dojo.query('.head_error').forEach(dojo.destroy); // remove stack of error popups
             var moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.id];
-           /* debug('targetNode.parentNode.dataset', targetNode.parentNode.dataset);
+            /* debug('targetNode.parentNode.dataset', targetNode.parentNode.dataset);
             if (!moves_info && 'maskGroup' in targetNode.parentNode.dataset) {
                 //if it’s an attraction, key is the mask and not the id
                 moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.parentNode.dataset.maskGroup];
@@ -631,18 +631,27 @@ define([
 
         setup: function (gamedatas) {
             debug('Starting game setup, gamedatas:', gamedatas);
-            var playerCount = Object.keys(gamedatas.players).length;
+            this.playerCount = Object.keys(gamedatas.players).length;
 
             // Setting up player boards
             document.documentElement.style.setProperty('--colsNb', gamedatas.gridSize[0]);
             document.documentElement.style.setProperty('--rowsNb', gamedatas.gridSize[1]);
-            document.documentElement.style.setProperty('--playerCount', playerCount);
-            document.documentElement.style.setProperty('--playerCountMinus1', playerCount - 1);
+            document.documentElement.style.setProperty('--playerCount', this.playerCount);
+            document.documentElement.style.setProperty('--playerCountMinus1', this.playerCount - 1);
 
             for (let index = 1; index <= 5; index++) {
-                if (i != playerCount) {
-                    this.dontPreloadImage('board' + playerCount + 'P.png');
+                if (i != this.playerCount) {
+                    this.dontPreloadImage('board' + this.playerCount + 'P.png');
                 }
+            }
+
+            if (this.playerCount == 1) {
+                dojo.place(
+                    `
+                <div id="solo_tokens_hand"></div>
+                `,
+                    'miniboard_1'
+                );
             }
 
             for (var player_id in gamedatas.players) {
@@ -1039,6 +1048,8 @@ define([
             this.removeClass('active_slot');
             this.removeClass('practice_mode');
             this.removeClass('animal-target-image');
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass("hidden");
+            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass("hidden");
         },
 
         onUpdateActionButtons: function (stateName, args) {
@@ -1063,6 +1074,9 @@ define([
         onUpdateActionButtons_playerTurn: function (args) {
             this.clientStateArgs.action = 'place';
 
+            if (this.playerCount == 1) {
+                this.updateSoloTokens(args.usableTokensByZone);
+            }
             this.addActiveSlots(args);
 
             args.canGetAnimals.forEach((id) => {
@@ -1090,6 +1104,28 @@ define([
                 'blue',
                 _('Get one or two animals and place them')
             );
+        },
+
+        updateSoloTokens: function (usableTokensByZone) {
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass("hidden");
+            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass("hidden");
+            Object.entries(usableTokensByZone).forEach((entry) => {
+                const [zone, tokens] = entry;
+                console.log("entry", entry);
+                console.log("tokens", tokens.length);
+                console.log(`.${zone} .soloTokenNeeded`);
+                switch (tokens.length) {
+                    case 1:
+                        dojo.query(`#${zone} .soloTokenNeeded`).addClass(tokens[0].replaceAll("_", "-")).toggleClass("hidden", false);
+                        break;
+                    case 2:
+                        dojo.query(`#${zone} .soloTokenNeeded`).addClass(tokens[0].replaceAll("_","-")).toggleClass("hidden", false);
+                        dojo.query(`#${zone} .soloTokenFree`).toggleClass("hidden", false);
+                        break;
+                    default:
+                        break;
+                }
+            });
         },
 
         onUpdateActionButtons_populateNewFence: function (args) {
@@ -1239,7 +1275,7 @@ define([
         onUpdateActionButtons_placeAttraction: function (args) {
             this.clientStateArgs.action = 'place';
             var canBuy = Object.keys(args.patches);
-           /* canBuy.forEach((mask) => {
+            /* canBuy.forEach((mask) => {
                 var canUse = args.patches[mask].canUse;
                 var activeClass = canUse ? 'active_slot' : 'cannot_use';
                 dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
@@ -1290,7 +1326,7 @@ define([
                 } else {
                     g.innerHTML = g.parentNode.childElementCount - 1;
                 }
-                if (g.innerHTML === "0") {
+                if (g.innerHTML === '0') {
                     g.parentNode.style.display = 'none';
                 } else {
                     g.parentNode.style.display = 'grid';
@@ -1312,12 +1348,12 @@ define([
             var canBuyArgs = 'patches' in args ? args['patches'] : [];
             var canBuy = Object.keys(canBuyArgs);
             canBuy.forEach((id) => {
-               // if ($(id)) {
-                    //patch
-                    var canUse = args.patches[id].canUse;
-                    if (canUse == false) dojo.addClass(id, 'cannot_use');
-                    else dojo.addClass(id, 'active_slot');
-               /* } else {
+                // if ($(id)) {
+                //patch
+                var canUse = args.patches[id].canUse;
+                if (canUse == false) dojo.addClass(id, 'cannot_use');
+                else dojo.addClass(id, 'active_slot');
+                /* } else {
                     //bonus
                     var mask = id;
                     var canUse = args.patches[mask].canUse;
