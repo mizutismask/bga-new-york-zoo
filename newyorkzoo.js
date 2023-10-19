@@ -346,9 +346,9 @@ class PatchManager {
                 gameui.showError(_('This is not your turn, turn on Practice Mode to practice placing'));
             } else if (!moves_info) {
                 gameui.showError(_('You cannot select this enclosure yet'));
-            } else if (!moves_info.canPlace) {
+            } else if (!moves_info.cp) {
                 gameui.showError(_('You cannot place this enclosure on your zoo, it would not fit'));
-            } else if (!moves_info.canUse) {
+            } else if (!moves_info.cu) {
                 gameui.showError(
                     _('You cannot place an enclosure on your zoo, you would have no animal to populate it')
                 );
@@ -501,7 +501,7 @@ class PatchManager {
             moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.parentNode.dataset.maskGroup];
         }*/
         if (moves_info) {
-            var moves = moves_info.moves[combo];
+            var moves = moves_info.mvs[combo];
             if (moves) {
                 for (var x of moves) {
                     $(x).classList.add('active_slot');
@@ -1026,6 +1026,8 @@ define([
             switch (stateName) {
                 case 'placeStartFences':
                     return args[this.player_id];
+                case 'playerTurn':
+                    return this.restoreCompressedData(args);
                 case 'placeAttraction':
                     return this.completeArgsWithEquivalentAttractions(args);
 
@@ -1110,20 +1112,26 @@ define([
         },
 
         updateSoloTokens: function (usableTokensByZone) {
-            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass('hidden').forEach(elt=>elt.dataset.soloTokenId = "");
-            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass('hidden').forEach(elt=>elt.dataset.soloTokenId = "");
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`)
+                .addClass('hidden')
+                .forEach((elt) => (elt.dataset.soloTokenId = ''));
+            dojo.query(`.nyz_action_zone .soloTokenFree`)
+                .addClass('hidden')
+                .forEach((elt) => (elt.dataset.soloTokenId = ''));
             Object.entries(usableTokensByZone).forEach((entry) => {
                 const [zone, tokens] = entry;
                 switch (tokens.length) {
                     case 1:
                         dojo.query(`#${zone} .soloTokenNeeded`)
                             .addClass(tokens[0].replaceAll('_', '-'))
-                            .toggleClass('hidden', false).forEach(elt=>elt.dataset.soloTokenId = tokens[0]);
+                            .toggleClass('hidden', false)
+                            .forEach((elt) => (elt.dataset.soloTokenId = tokens[0]));
                         break;
                     case 2:
                         dojo.query(`#${zone} .soloTokenNeeded`)
                             .addClass(tokens[0].replaceAll('_', '-'))
-                            .toggleClass('hidden', false).forEach(elt=>elt.dataset.soloTokenId = tokens[0]);
+                            .toggleClass('hidden', false)
+                            .forEach((elt) => (elt.dataset.soloTokenId = tokens[0]));
                         dojo.query(`#${zone} .soloTokenFree`).toggleClass('hidden', false);
                         break;
                     default:
@@ -1280,12 +1288,12 @@ define([
             this.clientStateArgs.action = 'place';
             var canBuy = Object.keys(args.patches);
             /* canBuy.forEach((mask) => {
-                var canUse = args.patches[mask].canUse;
+                var canUse = args.patches[mask].cu;
                 var activeClass = canUse ? 'active_slot' : 'cannot_use';
                 dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
             });*/
             canBuy.forEach((id) => {
-                var canUse = args.patches[id].canUse;
+                var canUse = args.patches[id].cu;
                 dojo.addClass(id, 'active_slot');
                 if (canUse == false) {
                     dojo.addClass(id, 'cannot_use');
@@ -1354,13 +1362,13 @@ define([
             canBuy.forEach((id) => {
                 // if ($(id)) {
                 //patch
-                var canUse = args.patches[id].canUse;
+                var canUse = args.patches[id].cu;
                 if (canUse == false) dojo.addClass(id, 'cannot_use');
                 else dojo.addClass(id, 'active_slot');
                 /* } else {
                     //bonus
                     var mask = id;
-                    var canUse = args.patches[mask].canUse;
+                    var canUse = args.patches[mask].cu;
                     var activeClass = canUse ? 'active_slot' : 'cannot_use';
                     dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
                 }*/
@@ -1452,7 +1460,7 @@ define([
 
             for (const anml of possibleAnimals) {
                 var pickcolor = 'blue';
-                if (!args.animals[anml].canPlace) pickcolor = 'red';
+                if (!args.animals[anml].cp) pickcolor = 'red';
 
                 gameui.addImageActionButton(
                     'place_animal_' + anml,
@@ -1460,7 +1468,7 @@ define([
                     () => {
                         //todo translate i18
 
-                        if (args.animals[anml].canPlace) {
+                        if (args.animals[anml].cp) {
                             this.setClientStateAction('client_PlaceAnimal');
                             this.clientStateArgs.animalType = anml;
                             this.setDescriptionOnMyTurn(_('Place the ${animalType} in a house or with his friends'), {
@@ -1539,11 +1547,36 @@ define([
         },
 
         // UTILS
+        restoreCompressedData: function (args) {
+            if (args.hasOwnProperty('patches')) {
+                for (const patchId in args.patches) {
+                    const p = args.patches[patchId];
+
+                    for (const rotation in p.mvs) {
+                        const squares = p.mvs[rotation];
+
+                        for (const index in squares) {
+                            const s = squares[index];
+                            squares[index] = this.restoreSquareName(s);
+                        }
+                    }
+                }
+            }
+            return args;
+        },
+
+        restoreSquareName: function (squareCompactId) {
+            const strSquareCompactId = squareCompactId.toString();
+            return `square_${strSquareCompactId.charAt(0)}_${strSquareCompactId.charAt(1)}_${strSquareCompactId.slice(
+                2
+            )}`;
+        },
+
         addActiveSlots: function (args) {
             if (args.hasOwnProperty('patches')) {
                 var canBuy = Object.keys(args.patches);
                 canBuy.forEach((id) => {
-                    var canUse = args.patches[id].canUse;
+                    var canUse = args.patches[id].cu;
                     if (canUse == false) dojo.addClass(id, 'cannot_use');
                     else dojo.addClass(id, 'active_slot');
                 });
@@ -1711,7 +1744,7 @@ define([
                 'soloToken',
                 _('Yes'),
                 () => {
-                    console.log("soloToken",soloToken);
+                    console.log('soloToken', soloToken);
                     gameui.clientStateArgs.soloToken = soloToken;
                     this.callGetAnimals();
                 },
@@ -1754,7 +1787,8 @@ define([
                 const zoneDiv = event.target.closest('.nyz_action_zone');
                 if (dojo.query(`#${zoneDiv.id} .solo-token:not(.hidden)`).length > 1) {
                     this.offerToChooseSoloToken(
-                        this.queryFirst(`#${zoneDiv.id} .solo-token:not(.hidden):not(.soloTokenFree)`).dataset.soloTokenId
+                        this.queryFirst(`#${zoneDiv.id} .solo-token:not(.hidden):not(.soloTokenFree)`).dataset
+                            .soloTokenId
                     );
                     return;
                 }

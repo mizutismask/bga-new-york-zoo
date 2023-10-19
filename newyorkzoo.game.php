@@ -28,6 +28,7 @@ if (!defined('OFFSET')) {
     define("OFFSET", 5);
     define("ACTION_ZONES_COUNT", 25);
     define("ACTION_ZONE_PREFIX", "action_zone_");
+    define("SQUARE_PREFIX", "square_");
     define("ACTION_ZONE_ANML_PREFIX", "action_zone_anml_");
     define("ANIMALS_INITIAL_NUMBER", 60);
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
@@ -45,8 +46,10 @@ if (!defined('OFFSET')) {
     define("GS_PREVIOUS_NEUTRAL_LOCATION", "previousNeutralLocation");
     define("GS_CAN_UNDO_ACQUISITION_MOVE", "canUndoAcquisitionMove");
     define("GS_LAST_SOLO_TOKEN_USED", "lastSoloTokenUsed");
-    
-    define("PATCHES", "ptchs");
+
+    define("MOVES", "mvs");
+    define("CAN_PLACE", "cp");
+    define("CAN_USE", "cu");
 
     //context_log actions
     define("ACTION_GET_ANIMALS", 'getAnimals');
@@ -1681,7 +1684,6 @@ class NewYorkZoo extends EuroGame {
         $canPopulate = $this->canPopulateNewFence();
         $occupancy = $this->getOccupancyMatrix($order);
         foreach ($patches as $patch) {
-            self::dump('*******************arg_playerTurn patch', $patch);
             $moves = $this->arg_possibleMoves($patch, $order, null, $occupancy);
             $canPlace = false;
             foreach ($moves as $arr) {
@@ -1690,24 +1692,44 @@ class NewYorkZoo extends EuroGame {
                     break;
                 }
             }
-            $res['patches'][$patch]['moves'] = $moves;
-            $res['patches'][$patch]['canPlace'] = $canPlace;
-            
+            $res['patches'][$patch][MOVES] = $moves;
+            $res['patches'][$patch][CAN_PLACE] = $canPlace;
+
             $canUse = $canPlace && $canPopulate;
-            $res['patches'][$patch]['canUse'] = $canUse;
+            $res['patches'][$patch][CAN_USE] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
 
         $res['canPatch'] = $canUseAny && $canPopulate;
         $res['maxMoves'] = $this->arg_elephantMove();
         $res['canGetAnimals'] = $this->arg_canGetAnimals($order);
-        
+
         if ($this->isSoloMode()) {
             $res["usableTokensByZone"] = $this->arg_usableTokensByZone();
         }
-        
-        self::dump('*************arg_playerTurn***res***', $res);
+
+        $this->reduceDataSize($res);
+       //self::dump('*************arg_playerTurn***res***',$res );
         return $res;
+    }
+
+    /**
+     * Compress square_1_1_8 into 118 (for moves)
+     */
+    function reduceDataSize(&$arg_playerTurn) {
+        foreach ($arg_playerTurn['patches'] as  &$patch) {
+            foreach ($patch[MOVES] as &$squares) {
+                foreach ($squares as $index => $square) {
+                    $squares[$index] = $this->extractNumber($square);
+                }
+            }
+        }
+    }
+
+    function extractNumber(string $squareId): int {
+        //starts with
+        $this->systemAssertTrue("SquareId does NOT start with square_.", strncmp($squareId, SQUARE_PREFIX, strlen(SQUARE_PREFIX)) === 0);
+        return intval(preg_replace("/[^0-9]/", '', $squareId));
     }
 
     function canPopulateNewFence() {
@@ -1734,10 +1756,10 @@ class NewYorkZoo extends EuroGame {
             }
             //$key = $bonuses ? $this->getRulesFor($patch, "mask") : $patch;
             $key = $patch;
-            $res['patches'][$key]['moves'] = $moves;
-            $res['patches'][$key]['canPlace'] = $canPlace;
+            $res['patches'][$key][MOVES] = $moves;
+            $res['patches'][$key][CAN_PLACE] = $canPlace;
             $canUse = $canPlace;
-            $res['patches'][$key]['canUse'] = $canUse;
+            $res['patches'][$key][CAN_USE] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
 
@@ -2015,14 +2037,14 @@ class NewYorkZoo extends EuroGame {
             $args["animalType1"] = $anmlType;
             $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
-            $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
+            $args["animals"][$anmlType][CAN_PLACE] = count($targets) != 0;
         }
         if ($second) {
             $anmlType = $this->getAnimalName($second, true);
             $args["animalType2"] = $anmlType;
             $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
-            $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
+            $args["animals"][$anmlType][CAN_PLACE] = count($targets) != 0;
         }
         if ($first && $second) {
             $args["canDismiss"] = false;
@@ -2047,7 +2069,7 @@ class NewYorkZoo extends EuroGame {
                 $canPlace = count($targets) != 0;
                 if ($canPlace) {
                     $args[$anmlType]["possibleTargets"] =  $targets;
-                    $args[$anmlType]["canPlace"] = $canPlace;
+                    $args[$anmlType][CAN_PLACE] = $canPlace;
                 }
             }
         }
@@ -2182,7 +2204,7 @@ class NewYorkZoo extends EuroGame {
         $animalName = $this->getAnimalName($anml);
         $args["animalType1"] = $animalName;
         $args["animals"][$animalName]["possibleTargets"] =  $this->getFreeHouses($playerOrder);
-        $args["animals"][$animalName]["canPlace"] =  true;
+        $args["animals"][$animalName][CAN_PLACE] =  true;
         $args["canDismiss"] = true;
         return $args;
     }
@@ -2464,12 +2486,12 @@ class NewYorkZoo extends EuroGame {
         $patch1 = array_shift($fences);
         $patch2 = array_shift($fences);
 
-        $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
+        $patchOneMoves = $turn['patches'][$patch1][MOVES]["0_0"];
         $p1Move = array_shift($patchOneMoves);
         $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
 
         $turn = $this->arg_playerTurn();
-        $patch2Moves = $turn['patches'][$patch2]['moves']["0_0"];
+        $patch2Moves = $turn['patches'][$patch2][MOVES]["0_0"];
         $p2Move = array_shift($patch2Moves);
         $this->saction_PlacePatch($playerOrder, $patch2, $p2Move, 0, 0);
 
@@ -2503,15 +2525,15 @@ class NewYorkZoo extends EuroGame {
             //self::dump('*******************$patch1', $patch1);
             while (!$placed && $patch1 != null) {
 
-                $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
+                $patchOneMoves = $turn['patches'][$patch1][MOVES]["0_0"];
                 if (empty($patchOneMoves)) {
-                    $patchOneMoves = $turn['patches'][$patch1]['moves']["90_0"];
+                    $patchOneMoves = $turn['patches'][$patch1][MOVES]["90_0"];
                 }
                 if (empty($patchOneMoves)) {
-                    $patchOneMoves = $turn['patches'][$patch1]['moves']["180_0"];
+                    $patchOneMoves = $turn['patches'][$patch1][MOVES]["180_0"];
                 }
                 if (empty($patchOneMoves)) {
-                    $patchOneMoves = $turn['patches'][$patch1]['moves']["270_0"];
+                    $patchOneMoves = $turn['patches'][$patch1][MOVES]["270_0"];
                 }
                 //self::dump('*******************patchOneMoves', $patchOneMoves);
                 if (!empty($patchOneMoves)) {
