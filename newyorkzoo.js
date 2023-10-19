@@ -1114,6 +1114,7 @@ define([
         updateSoloTokens: function (usableTokensByZone) {
             dojo.query(`.nyz_action_zone .soloTokenNeeded`)
                 .addClass('hidden')
+                .removeClass("solo-token-0 solo-token-1 solo-token-2 solo-token-3 solo-token-4")
                 .forEach((elt) => (elt.dataset.soloTokenId = ''));
             dojo.query(`.nyz_action_zone .soloTokenFree`)
                 .addClass('hidden')
