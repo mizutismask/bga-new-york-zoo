@@ -1353,6 +1353,12 @@ _:future,
     background-size: cover;
     pointer-events: none;
 }
+
+#generalactions .solo-token {
+    width: 15px;
+    height: 15px;
+    position: inherit;
+}
 .solo-token-0 {
     background-position: 0 0;
 }
@@ -1368,31 +1374,31 @@ _:future,
 .solo-token-4 {
     background-position: 100% 0;
 }
-.soloTokenFree{
+.soloTokenFree {
     background: rgb(138, 153, 183);
     color: white;
     text-align: center;
     position: absolute;
-   right: 27px;
-   top: -18px;
+    right: 27px;
+    top: -18px;
 }
 
-#solo_tokens_hand{
+#solo_tokens_hand {
     padding-top: 7px;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
 }
 
-.nyz_action_zone .solo-token{
+.nyz_action_zone .solo-token {
     width: 20px;
     height: 20px;
 }
 
-.nyz_action_zone .soloTokenNeeded{
-   position: absolute;
-   right: 0px;
-   top: -18px;
+.nyz_action_zone .soloTokenNeeded {
+    position: absolute;
+    right: 0px;
+    top: -18px;
 }
 /*todo*/
 

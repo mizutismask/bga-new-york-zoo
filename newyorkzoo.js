@@ -1110,23 +1110,20 @@ define([
         },
 
         updateSoloTokens: function (usableTokensByZone) {
-            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass('hidden');
-            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass('hidden');
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass('hidden').forEach(elt=>elt.dataset.soloTokenId = "");
+            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass('hidden').forEach(elt=>elt.dataset.soloTokenId = "");
             Object.entries(usableTokensByZone).forEach((entry) => {
                 const [zone, tokens] = entry;
-                console.log('entry', entry);
-                console.log('tokens', tokens.length);
-                console.log(`.${zone} .soloTokenNeeded`);
                 switch (tokens.length) {
                     case 1:
                         dojo.query(`#${zone} .soloTokenNeeded`)
                             .addClass(tokens[0].replaceAll('_', '-'))
-                            .toggleClass('hidden', false);
+                            .toggleClass('hidden', false).forEach(elt=>elt.dataset.soloTokenId = tokens[0]);
                         break;
                     case 2:
                         dojo.query(`#${zone} .soloTokenNeeded`)
                             .addClass(tokens[0].replaceAll('_', '-'))
-                            .toggleClass('hidden', false);
+                            .toggleClass('hidden', false).forEach(elt=>elt.dataset.soloTokenId = tokens[0]);
                         dojo.query(`#${zone} .soloTokenFree`).toggleClass('hidden', false);
                         break;
                     default:
@@ -1707,6 +1704,36 @@ define([
         ///////////////////////////////////////////////////
         //// Utility methods
 
+        offerToChooseSoloToken: function (soloToken) {
+            //dojo.empty("#generalactions");
+            this.setDescriptionOnMyTurn(_('Do you want to use a token or not ?'));
+            this.addActionButton(
+                'soloToken',
+                _('Yes'),
+                () => {
+                    console.log("soloToken",soloToken);
+                    gameui.clientStateArgs.soloToken = soloToken;
+                    this.callGetAnimals();
+                },
+                null,
+                null,
+                'blue'
+            );
+
+            this.addActionButton(
+                'soloTokenFree',
+                _('No'),
+                () => {
+                    gameui.clientStateArgs.soloToken = 'soloTokenFree';
+                    this.callGetAnimals();
+                },
+                null,
+                null,
+                'blue'
+            );
+
+            this.addCancelButton();
+        },
         /*
             
                 Here, you can defines some utility methods that you can use everywhere in your javascript
@@ -1717,20 +1744,25 @@ define([
             dojo.stopEvent(event);
             var id = event.currentTarget.id;
 
-            if (this.playerCount == 1) {
-                const zoneDiv = event.target.closest('.nyz_action_zone');
-                if (dojo.query(`#${zoneDiv.id} .solo-token:not(.hidden)`).length > 1) {
-                    console.log('choice');
-                    return;
-                }
-            }
-
             gameui.clientStateArgs.action = 'getAnimals';
             gameui.clientStateArgs.actionZone = id;
             if (!gameui.isActiveSlot(id)) {
                 return;
             }
 
+            if (this.playerCount == 1) {
+                const zoneDiv = event.target.closest('.nyz_action_zone');
+                if (dojo.query(`#${zoneDiv.id} .solo-token:not(.hidden)`).length > 1) {
+                    this.offerToChooseSoloToken(
+                        this.queryFirst(`#${zoneDiv.id} .solo-token:not(.hidden):not(.soloTokenFree)`).dataset.soloTokenId
+                    );
+                    return;
+                }
+            }
+            this.callGetAnimals();
+        },
+
+        callGetAnimals: function () {
             gameui.removeClass('original');
             gameui.removeClass('active_slot');
 

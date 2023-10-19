@@ -45,6 +45,8 @@ if (!defined('OFFSET')) {
     define("GS_PREVIOUS_NEUTRAL_LOCATION", "previousNeutralLocation");
     define("GS_CAN_UNDO_ACQUISITION_MOVE", "canUndoAcquisitionMove");
     define("GS_LAST_SOLO_TOKEN_USED", "lastSoloTokenUsed");
+    
+    define("PATCHES", "ptchs");
 
     //context_log actions
     define("ACTION_GET_ANIMALS", 'getAnimals');
@@ -1027,19 +1029,25 @@ class NewYorkZoo extends EuroGame {
         $this->userAssertTrue(self::_("Cannot place those animals anywhere"), array_search($animalZone, $canGo) !== false);
 
         if ($this->isSoloMode()) {
+            /**
+             * Uses the adequate token if no free move is possible, or else the given token
+             */
             $tokenByZone = $this->arg_usableTokensByZone();
             $verifiedSoloTokenId = "";
-            self::dump('*******************$tokenByZone[$animalZone]', $tokenByZone[$animalZone]);
             if (count($tokenByZone[$animalZone]) == 1) {
                 $verifiedSoloTokenId = $tokenByZone[$animalZone][0];
-                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, getPart($verifiedSoloTokenId, -1));
-                self::dump('*******************verifiedSoloTokenId', $verifiedSoloTokenId);
             } else {
                 $this->userAssertTrue(self::_("You have to specify if you want to use a token or not"), $soloTokenId !== false);
+                $verifiedSoloTokenId = $soloTokenId;
             }
-            self::dump('******************* array_values($tokenByZone[$animalZone])',  array_values($tokenByZone[$animalZone]));
             $this->userAssertTrue(self::_("Don’t have a convenient token to reach this location"), array_search($verifiedSoloTokenId, array_values($tokenByZone[$animalZone])) !== false);
-            $this->dbSetTokenLocation($verifiedSoloTokenId, "limbo", null, '${player_name} uses range token ${token_range}', ['token_range' => getPart($verifiedSoloTokenId, -1)]);
+
+            if ($verifiedSoloTokenId != "soloTokenFree") {
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, getPart($verifiedSoloTokenId, -1));
+                $this->dbSetTokenLocation($verifiedSoloTokenId, "limbo", null, '${player_name} uses range token ${token_range}', ['token_range' => getPart($verifiedSoloTokenId, -1)]);
+            } else {
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
+            }
         }
 
         $animal1 = $this->actionStripZones[$animalZone]['animals'][0];
@@ -1669,11 +1677,11 @@ class NewYorkZoo extends EuroGame {
         $order = $this->getPlayerPosition($player_id);
         $res = [];
         $patches = $this->arg_canBuyPatches($order);
-        //self::dump('*************arg_playerTurn***patches***', $patches);
         $canUseAny = false;
         $canPopulate = $this->canPopulateNewFence();
         $occupancy = $this->getOccupancyMatrix($order);
         foreach ($patches as $patch) {
+            self::dump('*******************arg_playerTurn patch', $patch);
             $moves = $this->arg_possibleMoves($patch, $order, null, $occupancy);
             $canPlace = false;
             foreach ($moves as $arr) {
@@ -1684,7 +1692,7 @@ class NewYorkZoo extends EuroGame {
             }
             $res['patches'][$patch]['moves'] = $moves;
             $res['patches'][$patch]['canPlace'] = $canPlace;
-
+            
             $canUse = $canPlace && $canPopulate;
             $res['patches'][$patch]['canUse'] = $canUse;
             $canUseAny = $canUseAny || $canUse;
@@ -1693,11 +1701,12 @@ class NewYorkZoo extends EuroGame {
         $res['canPatch'] = $canUseAny && $canPopulate;
         $res['maxMoves'] = $this->arg_elephantMove();
         $res['canGetAnimals'] = $this->arg_canGetAnimals($order);
-
+        
         if ($this->isSoloMode()) {
             $res["usableTokensByZone"] = $this->arg_usableTokensByZone();
         }
-
+        
+        self::dump('*************arg_playerTurn***res***', $res);
         return $res;
     }
 
