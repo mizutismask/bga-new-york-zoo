@@ -2273,6 +2273,16 @@ class NewYorkZoo extends EuroGame {
             $this->gamestate->nextState('last');
             return;
         }
+
+        //give back solo tokens if exhausted
+        if ($this->isSoloMode()) {
+            $used = $this->tokens->getTokensOfTypeInLocation("solo_token%", "limbo");
+            if (count($used) == 5) {
+                $ids = $this->getFieldValuesFromArray($used, "key");
+                $this->dbSetTokensLocation($ids, "solo_tokens_hand", null, "");
+            }
+        }
+
         $this->activateNextPlayerCustom();
         $this->notifyWithName('message', clienttranslate('&#10148; Start of ${player_name}\'s turn'));
         $this->gamestate->nextState('next');
@@ -2283,13 +2293,6 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BONUS_BREEDING, 0);
         //$this->dbEmptyTable("context_log");
-        if ($this->isSoloMode()) {
-            $used = $this->tokens->getTokensOfTypeInLocation("solo_token%", "limbo");
-            if (count($used) == 5) {
-                $ids = $this->getFieldValuesFromArray($used, "key");
-                $this->dbSetTokensLocation($ids, "solo_tokens_hand", null, null);
-            }
-        }
     }
 
     function st_gameTurnNextBreeder() {
