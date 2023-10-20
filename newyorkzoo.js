@@ -1112,32 +1112,29 @@ define([
         },
 
         updateSoloTokens: function (usableTokensByZone) {
+            //hide tokens
             dojo.query(`.nyz_action_zone .soloTokenNeeded`)
                 .addClass('hidden')
-                .removeClass("solo-token-0 solo-token-1 solo-token-2 solo-token-3 solo-token-4")
+                .removeClass('solo-token-0 solo-token-1 solo-token-2 solo-token-3 solo-token-4')
                 .forEach((elt) => (elt.dataset.soloTokenId = ''));
             dojo.query(`.nyz_action_zone .soloTokenFree`)
                 .addClass('hidden')
                 .forEach((elt) => (elt.dataset.soloTokenId = ''));
+
+            //sets value and show tokens
             Object.entries(usableTokensByZone).forEach((entry) => {
                 const [zone, tokens] = entry;
-                switch (tokens.length) {
-                    case 1:
-                        dojo.query(`#${zone} .soloTokenNeeded`)
-                            .addClass(tokens[0].replaceAll('_', '-'))
-                            .toggleClass('hidden', false)
-                            .forEach((elt) => (elt.dataset.soloTokenId = tokens[0]));
-                        break;
-                    case 2:
-                        dojo.query(`#${zone} .soloTokenNeeded`)
-                            .addClass(tokens[0].replaceAll('_', '-'))
-                            .toggleClass('hidden', false)
-                            .forEach((elt) => (elt.dataset.soloTokenId = tokens[0]));
+                tokens.forEach((token) => {
+                    console.log("token",token);
+                    if (token == 'soloTokenFree') {
                         dojo.query(`#${zone} .soloTokenFree`).toggleClass('hidden', false);
-                        break;
-                    default:
-                        break;
-                }
+                    } else {
+                        dojo.query(`#${zone} .soloTokenNeeded`)
+                            .addClass(token.replaceAll('_', '-'))
+                            .toggleClass('hidden', false)
+                            .forEach((elt) => (elt.dataset.soloTokenId = token));
+                    }
+                });
             });
         },
 
