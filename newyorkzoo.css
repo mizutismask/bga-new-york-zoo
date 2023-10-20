@@ -1361,18 +1361,23 @@ _:future,
 }
 .solo-token-0 {
     background-position: 0 0;
+    order: 0;
 }
 .solo-token-1 {
     background-position: 25% 0;
+    order: 1;
 }
 .solo-token-2 {
     background-position: 50% 0;
+    order: 2;
 }
 .solo-token-3 {
     background-position: 75% 0;
+    order: 3;
 }
 .solo-token-4 {
     background-position: 100% 0;
+    order: 4;
 }
 .soloTokenFree {
     background: rgb(138, 153, 183);
