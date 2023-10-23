@@ -463,13 +463,13 @@ class NewYorkZoo extends EuroGame {
 
     function filterAnimals($tokens) {
         return array_filter($tokens, function ($tok) {
-            return str_starts_with($tok, FOX) || str_starts_with($tok, PENGUIN) || str_starts_with($tok, MEERKAT) || str_starts_with($tok, FLAMINGO) || str_starts_with($tok, KANGAROO);
+            return startsWith($tok, FOX) || startsWith($tok, PENGUIN) || startsWith($tok, MEERKAT) || startsWith($tok, FLAMINGO) || startsWith($tok, KANGAROO);
         }, ARRAY_FILTER_USE_KEY);
     }
 
     function filterAnimalType($tokens, $animalType) {
         return array_filter($tokens, function ($tok) use ($animalType) {
-            return str_starts_with($tok, $animalType);
+            return startsWith($tok, $animalType);
         });
     }
 
@@ -526,7 +526,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function isHouse($targetName) {
-        return str_starts_with($targetName, "house_");
+        return startsWith($targetName, "house_");
     }
 
     function transformMask($mask) {
@@ -630,23 +630,13 @@ class NewYorkZoo extends EuroGame {
 
     /**
      * Get actions zones (animal or patches) that can be reach within an elephant move.
+     * If solo mode, get accessible actions zones with a valid token plus the next animal zone.
      */
     function getNextActionZones() {
         $zones = [];
 
         if (!$this->isSoloMode()) {
-            $moveCount = 1;
-            $moveMax = $this->arg_elephantMove();
-            $nextZone = $this->getNextActionZone();
-            while (count($zones) < $moveMax) {
-                if ($this->isFenceActionZoneWithoutFences($nextZone)) {
-                    //empty patch zones do not count
-                } else {
-                    $zones[$nextZone][] = $moveCount;
-                    $moveCount++;
-                }
-                $nextZone = $this->getNextActionZone($nextZone);
-            }
+            $zones = $this->getNextNonEmptyZones($this->arg_elephantMove());
         } else {
             $origin = $this->getNeutralTokenPosition();
             $soloTokens = $this->getSoloTokensAvailable();
@@ -655,51 +645,63 @@ class NewYorkZoo extends EuroGame {
                 $move = intval(getPart($token["key"], -1));
                 //self::dump('*******************move', $move);
                 if ($move < 4) {
-                    for ($i = 0; $i < $move; $i++) {
-                        $nextZone = $this->getNextActionZone($nextZone);
-                    }
-                    if ($this->isFenceActionZoneWithoutFences($nextZone)) {
-                        //empty patch zones do not count
-                    } else {
-                        $zones[$nextZone][] = $move;
-                        //self::dump('*******************add', $nextZone);
-                    }
+                    $tokenZones = $this->getNextNonEmptyZones($move, false);
+                    //self::dump('*******************tokenZones', $tokenZones);
                 } else {
-                    $allNextZones = [];
-                    $token4NextZones = [];
-                    $nextZone = $origin;
-                    for ($i = 0; $i < $move; $i++) {
-                        $nextZone = $this->getNextActionZone($nextZone);
-                    }
-                    //self::dump('*******************démarrage du +4 à', $nextZone);
-                    //self::dump('*******************array_search', array_search($nextZone, $allNextZones));
-                    while (array_search($nextZone, $allNextZones) == false && $nextZone != $origin) {
-                        //only zones with fences or animals matter
-                        $allNextZones[] = $nextZone;
-                        if (!$this->isFenceActionZoneWithoutFences($nextZone)) {
-                            // self::dump('*******************add +4', $nextZone);
-                            $token4NextZones[$nextZone][] = $move;
-                        }
-                        //self::dump('*******************$allNextZones', $allNextZones);
-                        $nextZone = $this->getNextActionZone($nextZone);
-                    };
-                    //self::dump('*******************$token4NextZones', $token4NextZones);
-                    //$token4NextZones = array_diff($token4NextZones, [$origin]); //we can not stay at the same place
-                    $zones = array_merge($zones, $token4NextZones);
+                    $tokenZones = $this->getNextNonEmptyZones(count(array_keys($this->actionStripZones)));
+                    $tokenZones = array_slice($tokenZones, 3); //can’t stay or simulate 1,2 or 3, so we remove the 4 first elements
+                    //self::dump('*******************+4 tokenZones', $tokenZones);
                 }
+                $zones = array_merge($zones, $tokenZones);
+                //self::dump("************zones  after merge******************", $zones);
             }
             //add next animal zone
             $nextZone = $this->getNextActionZone();
-            while (!str_starts_with($nextZone, "action_zone_anml")) {
+            while (!startsWith($nextZone, "action_zone_anml")) {
                 $nextZone = $this->getNextActionZone($nextZone);
             }
             $zones[$nextZone][] = "-1";
 
             //$zones = array_unique($zones);
         }
-        self::dump("************possible zones******************", $zones);
+        //self::dump("************possible zones******************", $zones);
         return $zones;
     }
+
+    function getNextNonEmptyZones($moveMax, $accumulate = true) {
+        //self::dump("************accumulate******************", $accumulate);
+        $zones = [];
+        $nextZone = $this->getNextActionZone();
+        $iNextZone = 1;
+        $moveCount = 0; //$this->isFenceActionZoneWithoutFences($nextZone)?0:1;
+
+        $notAccumulated = [];
+        while (count($zones) < $moveMax && $iNextZone < count(array_keys($this->actionStripZones))) {
+            //self::dump("************moveCount******************", $moveCount);
+            //self::dump("************nextZone******************", $nextZone);
+            //self::dump("************count(zones)******************", count($zones));
+            if ($this->isFenceActionZoneWithoutFences($nextZone)) {
+                //empty patch zones do not count
+                //self::dump("************do not count******************", $nextZone);
+            } else {
+                $moveCount++;
+                $zones[$nextZone][] = $moveCount;
+                //self::dump("found", compact('nextZone', 'moveCount'));
+                //self::dump("************nextZone******************", $nextZone);
+                //self::dump("************moveCount******************", $moveCount);
+
+                if (!$accumulate && count($zones) == $moveMax) {
+                    $notAccumulated[$nextZone][] = $moveCount;
+                    //self::dump("************notAccumulated******************", $notAccumulated);
+                }
+            }
+            $nextZone = $this->getNextActionZone($nextZone);
+            $iNextZone++;
+        }
+        //self::dump("************return******************", $accumulate ? $zones : $notAccumulated);
+        return $accumulate ? $zones : $notAccumulated;
+    }
+
     function getNeutralTokenPosition() {
         return $this->tokens->getTokenInfo('token_neutral')["location"];
     }
@@ -1056,7 +1058,7 @@ class NewYorkZoo extends EuroGame {
         //self::dump('*******************start crossed', $crossed);
         if ($crossed) {
             $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, 1);
-            $this->notifyCounterDirect("rounds_completed_counter",self::getGameStateValue(GS_BOARD_COMPLETED_COUNT),'');
+            $this->notifyCounterDirect("rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT), '');
         }
         return $crossed;
     }
@@ -1172,7 +1174,7 @@ class NewYorkZoo extends EuroGame {
     function formatPlaceName($placeName) {
         $parts = explode('_', $placeName);
         $len = count($parts);
-        if ($len == 5 && str_starts_with($placeName, "anml_square"))
+        if ($len == 5 && startsWith($placeName, "anml_square"))
             return strval(intval(getpart($placeName, 3, true)) + 1) . ":" . strval(intval(getpart($placeName, 4)) + 1);
         return $placeName;
     }
@@ -1184,9 +1186,9 @@ class NewYorkZoo extends EuroGame {
 
         $state = $this->gamestate->state();
         $newLocation = "";
-        if (str_starts_with($to, "house")) {
+        if (startsWith($to, "house")) {
             $newLocation = clienttranslate('into a house');
-        } else if (str_starts_with($to, "anml_square")) {
+        } else if (startsWith($to, "anml_square")) {
             $newLocation = clienttranslate('into a fence');
         }
         $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name} ${newLocation}', ["newLocation" => $newLocation]); //todo i18
@@ -1514,6 +1516,7 @@ class NewYorkZoo extends EuroGame {
     function dbGetFencesKeysByPlayer(Int $order) {
         return self::getObjectListFromDB("SELECT token_key FROM fence WHERE player_order='$order'", true);
     }
+
     function action_dismissAttraction() {
         $this->checkAction('dismissAttraction');
         $this->notifyWithName('message', clienttranslate('${player_name} does not place a bonus attraction'));
@@ -1914,7 +1917,6 @@ class NewYorkZoo extends EuroGame {
     }
 
     function arg_usableTokensByZone() {
-        //$distancesFromNeutral = [];
         $nextZones = $this->getNextActionZones();
         foreach ($nextZones as $zone => $distances) {
             foreach ($distances as $index => $distance) {
@@ -1923,7 +1925,7 @@ class NewYorkZoo extends EuroGame {
                 if ($distance == -1) {
                     $soloTokenId = "soloTokenFree";
                 } else {
-                    $soloTokenId = "solo_token_" .  $distance;
+                    $soloTokenId = "solo_token_" . ($distance < 4 ? $distance : 4);
                 }
                 $nextZones[$zone][$index] = $soloTokenId;
             }
