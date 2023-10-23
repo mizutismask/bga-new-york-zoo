@@ -207,8 +207,9 @@ class NewYorkZoo extends EuroGame {
         }
         //$this->dblBreeding(FLAMINGO, 1);
         //$this->dblBreeding(MEERKAT, 1);
-
-        $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
+        if (!$this->isSoloMode()) {
+            $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
+        }
     }
     function debugZoo() {
     }
