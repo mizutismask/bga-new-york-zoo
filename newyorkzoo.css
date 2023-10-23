@@ -910,6 +910,7 @@ _:future,
     flex-direction: row;
     justify-content: start;
     align-items: center;
+    gap: 5px;
 }
 
 .miniboard {
@@ -924,6 +925,10 @@ _:future,
     font-size: larger;
     font-weight: bold;
     color: #65481b;
+}
+
+.mini_icons .fa, .mini_icons .fa6{
+   color: #65481b;
 }
 
 /* TOOLTIP */

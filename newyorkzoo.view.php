@@ -107,6 +107,10 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     // Get players & players number
     $players = $this->game->loadPlayersBasicInfos();
     $players_nbr = count($players);
+    global $g_user;
+    $current_player = $g_user->get_id();
+    $order = $players[$current_player]['player_no'];
+
     /**
      * ********* Place your code below: ***********
      */
@@ -115,7 +119,6 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $this->tpl['PLS'] = $num;
     global $g_user;
     $this->tpl['PCOLOR'] = 'ffffff'; // spectator
-    $current_player = $g_user->get_id();
 
     if ($players_nbr == 2 && $this->game->isFastGame()) {
       $this->page->begin_block($template, "handMarket");
@@ -185,6 +188,10 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       $this->page->begin_block($template, "actionStripZoneSolo");
       foreach ($this->game->actionStripZones as $id => &$zone) {
         $this->page->insert_block("actionStripZoneSolo", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
+      }
+      if (isset($players[$current_player])) { // may be not set if spectator
+        $this->page->begin_block($template, "solo_counters");
+        $this->page->insert_block("solo_counters", ["PLAYER_ORDER" => $order,]);
       }
     } else {
       $this->page->begin_block($template, "actionStripZone");

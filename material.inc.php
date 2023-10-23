@@ -431,6 +431,10 @@ $this->token_types = [
     'name' => clienttranslate("Empties Counter"),
     'tooltip' => clienttranslate("Counter for remaining empty spaces. The first player who fill his board wins the game."),
   ],
+  'rounds_completed' => [
+    'name' => clienttranslate("Rounds completed"),
+    'tooltip' => clienttranslate("Counter for entire board convolution. You must win before it gets to 2."),
+  ],
   'flamingo' => [
     'type' => FLAMINGO. " animal",
     'name' => clienttranslate("Flamingo"),
@@ -451,7 +455,7 @@ $this->token_types = [
     'type' => KANGAROO. " animal",
     'name' => clienttranslate("Kangaroo"),
   ],
-  
+
   'solo_token_0' => [
     'type' => 'solo-token solo-token_0',
     'name' => clienttranslate("Range marker"),

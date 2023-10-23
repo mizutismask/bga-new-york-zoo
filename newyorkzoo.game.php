@@ -406,6 +406,7 @@ class NewYorkZoo extends EuroGame {
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
             $this->setCounter($result['counters'], "empties_${order}_counter", $unoccup_count);
         }
+        $this->setCounter($result['counters'], "rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT));
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
         return $result;
@@ -1055,6 +1056,7 @@ class NewYorkZoo extends EuroGame {
         //self::dump('*******************start crossed', $crossed);
         if ($crossed) {
             $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, 1);
+            $this->notifyCounterDirect("rounds_completed_counter",self::getGameStateValue(GS_BOARD_COMPLETED_COUNT),'');
         }
         return $crossed;
     }

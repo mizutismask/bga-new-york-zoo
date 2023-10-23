@@ -93,6 +93,12 @@
 		             <div id="empties_{ORDER}_counter" class="empties_counter mini_counter">0</div>
 		             <div id="empties_{ORDER}_icon" class="empty_icon micon"></div>
 		        </div>
+				<!-- BEGIN solo_counters -->
+				<div id="rounds_completed_div" class="mini_board_item">
+    				<div id="rounds_completed_counter" class="mini_counter">0</div>
+		            <div id="rounds_completed_icon" class="fa6 fa-regular fa6-arrow-rotate-right"></div>
+				</div>
+    			<!-- END solo_counters -->
 		    </div>
 		</div>
 
