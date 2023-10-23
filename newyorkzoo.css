@@ -258,7 +258,11 @@ _:future,
     background-position: calc(100% / var(--playerCountMinus1) * 4) 0%;
 }
 
-.player_count_1.player_order_1 .pboard {
+.player_count_1.board_houses_3 .pboard {
+    padding: 143px 0px 0px 58px;
+}
+
+.player_count_1.board_houses_4 .pboard {
     padding: 143px 0px 0px 56px;
 }
 
