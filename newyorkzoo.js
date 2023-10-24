@@ -1739,7 +1739,7 @@ define([
         //// Utility methods
 
         offerToChooseSoloToken: function (soloToken) {
-            //dojo.empty("#generalactions");
+            dojo.empty("generalactions");
             this.setDescriptionOnMyTurn(_('Do you want to use a token or not ?'));
             this.addActionButton(
                 'soloToken',
@@ -1747,7 +1747,7 @@ define([
                 () => {
                     console.log('soloToken', soloToken);
                     gameui.clientStateArgs.soloToken = soloToken;
-                    this.callGetAnimals();
+                    this.callClientStateAction();
                 },
                 null,
                 null,
@@ -1759,7 +1759,7 @@ define([
                 _('No'),
                 () => {
                     gameui.clientStateArgs.soloToken = 'soloTokenFree';
-                    this.callGetAnimals();
+                    this.callClientStateAction();
                 },
                 null,
                 null,
@@ -1786,22 +1786,29 @@ define([
 
             if (this.playerCount == 1) {
                 const zoneDiv = event.target.closest('.nyz_action_zone');
-                if (dojo.query(`#${zoneDiv.id} .solo-token:not(.hidden)`).length > 1) {
-                    this.offerToChooseSoloToken(
-                        this.queryFirst(`#${zoneDiv.id} .solo-token:not(.hidden):not(.soloTokenFree)`).dataset
-                            .soloTokenId
-                    );
+                const tokenToChoose = this.getSoloTokenChoice(zoneDiv);
+                if (tokenToChoose) {
+                    this.offerToChooseSoloToken(tokenToChoose);
                     return;
                 }
             }
-            this.callGetAnimals();
+            this.callClientStateAction();
         },
 
-        callGetAnimals: function () {
+        getSoloTokenChoice(zoneDiv) {
+            let needed = undefined;
+            if (zoneDiv && dojo.query(`#${zoneDiv.id} .solo-token:not(.hidden)`).length > 1) {
+                needed = this.queryFirst(`#${zoneDiv.id} .solo-token:not(.hidden):not(.soloTokenFree)`).dataset
+                    .soloTokenId;
+            }
+            return needed;
+        },
+
+        callClientStateAction: function () {
             gameui.removeClass('original');
             gameui.removeClass('active_slot');
 
-            debug('onAnimalZone', gameui.clientStateArgs);
+            debug('callClientStateAction', gameui.clientStateArgs);
             gameui.ajaxClientStateAction();
         },
 
