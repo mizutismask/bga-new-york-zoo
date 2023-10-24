@@ -1715,7 +1715,7 @@ class NewYorkZoo extends EuroGame {
             if ($this->isSoloMode() && $unoccup_count == 0) {
                 //count every action zone until starting zone, even empty zones
                 $points = $this->countCrossedZones($this->getNeutralPositionNumber(), getPart(STARTING_LOCATION, -1));
-                $this->dbSetScore($player_id, $points);
+                $this->dbIncScoreValueAndNotify($player_id, $points, clienttranslate('${player_name} wins ${mod} point(s) for zones between the elephant and the starting point'));
             } else {
                 //tie breaker
                 $animalCount = 0;
