@@ -50,6 +50,7 @@ if (!defined('OFFSET')) {
     //solo mode
     define("GS_LAST_SOLO_TOKEN_USED", "lastSoloTokenUsed");
     define("GS_BOARD_COMPLETED_COUNT", "boardCompletedCount");
+    define("GS_LAST_MOVE_CROSSED_START", "lastMoveCrossedStart");
 
     define("MOVES", "mvs");
     define("CAN_PLACE", "cp");
@@ -105,6 +106,7 @@ class NewYorkZoo extends EuroGame {
             GS_CAN_UNDO_ACQUISITION_MOVE => 23, //can undo only if no animal has been placed (just meant to prevent misclicks)
             GS_LAST_SOLO_TOKEN_USED => 24, //remember last solo token used in case of undo
             GS_BOARD_COMPLETED_COUNT => 25, //count of times the board has been circumvoluted by solo player
+            GS_LAST_MOVE_CROSSED_START => 26, //need to know if the last move crossed starting point in case of undo to decrement GS_BOARD_COMPLETED_COUNT
         ));
 
         $this->tokens = new Tokens();
@@ -163,6 +165,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_PREVIOUS_NEUTRAL_LOCATION, 0);
             self::setGameStateInitialValue(GS_LAST_SOLO_TOKEN_USED, 0);
             self::setGameStateInitialValue(GS_BOARD_COMPLETED_COUNT, 0);
+            self::setGameStateInitialValue(GS_LAST_MOVE_CROSSED_START, false);
 
             $this->initStats();
 
@@ -983,6 +986,10 @@ class NewYorkZoo extends EuroGame {
                 $this->dbSetTokenLocation("solo_token_" . $tokenNumber, "solo_tokens_hand", null, '${player_name} gets back the range token', []);
                 self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
             }
+            if (self::getGameStateValue(GS_LAST_MOVE_CROSSED_START)) {
+                $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, -1);
+                $this->notifyCounterDirect("rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT), '');
+            }
         }
 
         $this->gamestate->nextState(TRANSITION_UNDO_ELEPHANT_MOVE_TO_ANIMALS);
@@ -1063,6 +1070,7 @@ class NewYorkZoo extends EuroGame {
             $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, 1);
             $this->notifyCounterDirect("rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT), '');
         }
+        self::setGameStateValue(GS_LAST_MOVE_CROSSED_START, $crossed);
         return $crossed;
     }
 
