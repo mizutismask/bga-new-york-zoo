@@ -1709,8 +1709,7 @@ class NewYorkZoo extends EuroGame {
             // empty spaces
             $occupancy = $this->getOccupancyMatrix($order);
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
-            $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_slot');
-            self::setStat($unoccup_count, "game_empty_squares", $player_id);
+            $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_squares');
 
             if ($this->isSoloMode() && $unoccup_count == 0) {
                 //count every action zone until starting zone, even empty zones
