@@ -37,7 +37,7 @@ class NewYorkZooSoloToken0Tests  extends NewYorkZoo { // this is your game class
 
         $next = array_keys($this->getNextActionZones());
 
-        $expected = ["action_zone_anml_17",]; 
+        $expected = ["action_zone_anml_17", "action_zone_anml_20"];
         $equal = $next === $expected;
 
         if ($equal) {

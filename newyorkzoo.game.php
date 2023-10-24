@@ -644,7 +644,10 @@ class NewYorkZoo extends EuroGame {
                 $nextZone = $origin;
                 $move = intval(getPart($token["key"], -1));
                 //self::dump('*******************move', $move);
-                if ($move < 4) {
+                if ($move == 0) {
+                    $tokenZones = [];
+                    $tokenZones[$this->getNeutralTokenPosition()][] = 0;
+                } else if ($move < 4) {
                     $tokenZones = $this->getNextNonEmptyZones($move, false);
                     //self::dump('*******************tokenZones', $tokenZones);
                 } else {
@@ -993,7 +996,7 @@ class NewYorkZoo extends EuroGame {
 
         $spaces = array_search($pos, array_keys($this->getNextActionZones())) + 1;
 
-        $this->dbSetTokenLocation('token_neutral', $pos, null, '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
+        $this->dbSetTokenLocation('token_neutral', $pos, null, $this->isSoloMode() ? "" : '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
         $this->checkIfBreedingLineCrossed($old, $new, $spaces);
         if ($this->isSoloMode()) {
             $this->checkIfStartingZoneCrossed($old, $new);
@@ -1112,6 +1115,7 @@ class NewYorkZoo extends EuroGame {
                 $this->dbSetTokenLocation($verifiedSoloTokenId, "limbo", null, '${player_name} uses range token ${token_range}', ['token_range' => getPart($verifiedSoloTokenId, -1)]);
             } else {
                 self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
+                $this->notifyWithName('message', clienttranslate('${player_name} goes the next animal zone without token'));
             }
         }
     }
