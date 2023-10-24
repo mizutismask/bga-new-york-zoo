@@ -1104,8 +1104,12 @@ define([
                 'a',
                 _('Get animals'),
                 () => {
-                    if (args.canGetAnimals) this.setClientStateAction('client_GetAnimals');
-                    else this.showError(_('No space to put those animals'));
+                    if (args.canGetAnimals) {
+                        this.setClientStateAction('client_GetAnimals');
+                        if (this.playerCount == 1) {
+                            this.updateSoloTokens(args.usableTokensByZone); //tokens need to be displayed, and they were removed leaving playerTurn
+                        }
+                    } else this.showError(_('No space to put those animals'));
                 },
                 'blue',
                 _('Get one or two animals and place them')
@@ -1126,7 +1130,6 @@ define([
             Object.entries(usableTokensByZone).forEach((entry) => {
                 const [zone, tokens] = entry;
                 tokens.forEach((token) => {
-                    console.log('token', token);
                     if (token == 'soloTokenFree') {
                         dojo.query(`#${zone} .soloTokenFree`).toggleClass('hidden', false);
                     } else {
@@ -1491,7 +1494,6 @@ define([
             var choosableAnimals = Object.keys(animalArgs);
             for (const anml of choosableAnimals) {
                 var pickcolor = 'gray';
-                debug('anml', anml);
                 gameui.addImageActionButton(
                     'place_animal_' + anml,
                     this.createDiv(anml + ' smallIcon'),
@@ -1739,13 +1741,12 @@ define([
         //// Utility methods
 
         offerToChooseSoloToken: function (soloToken) {
-            dojo.empty("generalactions");
+            dojo.empty('generalactions');
             this.setDescriptionOnMyTurn(_('Do you want to use a token or not ?'));
             this.addActionButton(
                 'soloToken',
                 _('Yes'),
                 () => {
-                    console.log('soloToken', soloToken);
                     gameui.clientStateArgs.soloToken = soloToken;
                     this.callClientStateAction();
                 },
@@ -1777,20 +1778,18 @@ define([
         onAnimalZone: function (event) {
             dojo.stopEvent(event);
             var id = event.currentTarget.id;
-
+            //console.log('on animal zone', id);
             gameui.clientStateArgs.action = 'getAnimals';
             gameui.clientStateArgs.actionZone = id;
             if (!gameui.isActiveSlot(id)) {
                 return;
             }
 
-            if (this.playerCount == 1) {
-                const zoneDiv = event.target.closest('.nyz_action_zone');
-                const tokenToChoose = this.getSoloTokenChoice(zoneDiv);
-                if (tokenToChoose) {
-                    this.offerToChooseSoloToken(tokenToChoose);
-                    return;
-                }
+            const zoneDiv = event.target.closest('.nyz_action_zone');
+            const tokenToChoose = this.getSoloTokenChoice(zoneDiv);
+            if (this.playerCount == 1 && tokenToChoose) {
+                this.offerToChooseSoloToken(tokenToChoose);
+                return;
             }
             this.callClientStateAction();
         },
