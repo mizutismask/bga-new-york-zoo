@@ -337,7 +337,7 @@ class PatchManager {
             var has_error = true;
             dojo.query('.head_error').forEach(dojo.destroy); // remove stack of error popups
             var moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.id];
-           /* debug('targetNode.parentNode.dataset', targetNode.parentNode.dataset);
+            /* debug('targetNode.parentNode.dataset', targetNode.parentNode.dataset);
             if (!moves_info && 'maskGroup' in targetNode.parentNode.dataset) {
                 //if it’s an attraction, key is the mask and not the id
                 moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.parentNode.dataset.maskGroup];
@@ -346,9 +346,9 @@ class PatchManager {
                 gameui.showError(_('This is not your turn, turn on Practice Mode to practice placing'));
             } else if (!moves_info) {
                 gameui.showError(_('You cannot select this enclosure yet'));
-            } else if (!moves_info.canPlace) {
+            } else if (!moves_info.cp) {
                 gameui.showError(_('You cannot place this enclosure on your zoo, it would not fit'));
-            } else if (!moves_info.canUse) {
+            } else if (!moves_info.cu) {
                 gameui.showError(
                     _('You cannot place an enclosure on your zoo, you would have no animal to populate it')
                 );
@@ -501,7 +501,7 @@ class PatchManager {
             moves_info = gameui.gamedatas.gamestate.args.patches[targetNode.parentNode.dataset.maskGroup];
         }*/
         if (moves_info) {
-            var moves = moves_info.moves[combo];
+            var moves = moves_info.mvs[combo];
             if (moves) {
                 for (var x of moves) {
                     $(x).classList.add('active_slot');
@@ -631,18 +631,28 @@ define([
 
         setup: function (gamedatas) {
             debug('Starting game setup, gamedatas:', gamedatas);
-            var playerCount = Object.keys(gamedatas.players).length;
+            this.playerCount = Object.keys(gamedatas.players).length;
 
             // Setting up player boards
             document.documentElement.style.setProperty('--colsNb', gamedatas.gridSize[0]);
             document.documentElement.style.setProperty('--rowsNb', gamedatas.gridSize[1]);
-            document.documentElement.style.setProperty('--playerCount', playerCount);
-            document.documentElement.style.setProperty('--playerCountMinus1', playerCount - 1);
+            document.documentElement.style.setProperty('--playerCount', this.playerCount);
+            document.documentElement.style.setProperty('--playerCountMinus1', this.playerCount - 1);
 
             for (let index = 1; index <= 5; index++) {
-                if (i != playerCount) {
-                    this.dontPreloadImage('board' + playerCount + 'P.png');
+                if (i != this.playerCount) {
+                    this.dontPreloadImage('board' + this.playerCount + 'P.png');
                 }
+            }
+
+            if (this.playerCount == 1) {
+                dojo.place(
+                    `
+                <div id="solo_tokens_hand"></div>
+                `,
+                    'miniboard_1'
+                );
+                dojo.removeClass('rounds_completed_div', 'hidden');
             }
 
             for (var player_id in gamedatas.players) {
@@ -1017,6 +1027,8 @@ define([
             switch (stateName) {
                 case 'placeStartFences':
                     return args[this.player_id];
+                case 'playerTurn':
+                    return this.restoreCompressedData(args);
                 case 'placeAttraction':
                     return this.completeArgsWithEquivalentAttractions(args);
 
@@ -1039,6 +1051,8 @@ define([
             this.removeClass('active_slot');
             this.removeClass('practice_mode');
             this.removeClass('animal-target-image');
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass('hidden');
+            dojo.query(`.nyz_action_zone .soloTokenFree`).addClass('hidden');
         },
 
         onUpdateActionButtons: function (stateName, args) {
@@ -1063,6 +1077,12 @@ define([
         onUpdateActionButtons_playerTurn: function (args) {
             this.clientStateArgs.action = 'place';
 
+            if (this.playerCount == 1) {
+                this.setDescriptionOnMyTurn(
+                    _('You must move the elephant of the amount of a range token to choose an action')
+                );
+                this.updateSoloTokens(args.usableTokensByZone);
+            }
             this.addActiveSlots(args);
 
             args.canGetAnimals.forEach((id) => {
@@ -1084,12 +1104,42 @@ define([
                 'a',
                 _('Get animals'),
                 () => {
-                    if (args.canGetAnimals) this.setClientStateAction('client_GetAnimals');
-                    else this.showError(_('No space to put those animals'));
+                    if (args.canGetAnimals) {
+                        this.setClientStateAction('client_GetAnimals');
+                        if (this.playerCount == 1) {
+                            this.updateSoloTokens(args.usableTokensByZone); //tokens need to be displayed, and they were removed leaving playerTurn
+                        }
+                    } else this.showError(_('No space to put those animals'));
                 },
                 'blue',
                 _('Get one or two animals and place them')
             );
+        },
+
+        updateSoloTokens: function (usableTokensByZone) {
+            //hide tokens
+            dojo.query(`.nyz_action_zone .soloTokenNeeded`)
+                .addClass('hidden')
+                .removeClass('solo-token-0 solo-token-1 solo-token-2 solo-token-3 solo-token-4')
+                .forEach((elt) => (elt.dataset.soloTokenId = ''));
+            dojo.query(`.nyz_action_zone .soloTokenFree`)
+                .addClass('hidden')
+                .forEach((elt) => (elt.dataset.soloTokenId = ''));
+
+            //sets value and show tokens
+            Object.entries(usableTokensByZone).forEach((entry) => {
+                const [zone, tokens] = entry;
+                tokens.forEach((token) => {
+                    if (token == 'soloTokenFree') {
+                        dojo.query(`#${zone} .soloTokenFree`).toggleClass('hidden', false);
+                    } else {
+                        dojo.query(`#${zone} .soloTokenNeeded`)
+                            .addClass(token.replaceAll('_', '-'))
+                            .toggleClass('hidden', false)
+                            .forEach((elt) => (elt.dataset.soloTokenId = token));
+                    }
+                });
+            });
         },
 
         onUpdateActionButtons_populateNewFence: function (args) {
@@ -1239,13 +1289,13 @@ define([
         onUpdateActionButtons_placeAttraction: function (args) {
             this.clientStateArgs.action = 'place';
             var canBuy = Object.keys(args.patches);
-           /* canBuy.forEach((mask) => {
-                var canUse = args.patches[mask].canUse;
+            /* canBuy.forEach((mask) => {
+                var canUse = args.patches[mask].cu;
                 var activeClass = canUse ? 'active_slot' : 'cannot_use';
                 dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
             });*/
             canBuy.forEach((id) => {
-                var canUse = args.patches[id].canUse;
+                var canUse = args.patches[id].cu;
                 dojo.addClass(id, 'active_slot');
                 if (canUse == false) {
                     dojo.addClass(id, 'cannot_use');
@@ -1290,7 +1340,7 @@ define([
                 } else {
                     g.innerHTML = g.parentNode.childElementCount - 1;
                 }
-                if (g.innerHTML === "0") {
+                if (g.innerHTML === '0') {
                     g.parentNode.style.display = 'none';
                 } else {
                     g.parentNode.style.display = 'grid';
@@ -1312,15 +1362,15 @@ define([
             var canBuyArgs = 'patches' in args ? args['patches'] : [];
             var canBuy = Object.keys(canBuyArgs);
             canBuy.forEach((id) => {
-               // if ($(id)) {
-                    //patch
-                    var canUse = args.patches[id].canUse;
-                    if (canUse == false) dojo.addClass(id, 'cannot_use');
-                    else dojo.addClass(id, 'active_slot');
-               /* } else {
+                // if ($(id)) {
+                //patch
+                var canUse = args.patches[id].cu;
+                if (canUse == false) dojo.addClass(id, 'cannot_use');
+                else dojo.addClass(id, 'active_slot');
+                /* } else {
                     //bonus
                     var mask = id;
-                    var canUse = args.patches[mask].canUse;
+                    var canUse = args.patches[mask].cu;
                     var activeClass = canUse ? 'active_slot' : 'cannot_use';
                     dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
                 }*/
@@ -1412,7 +1462,7 @@ define([
 
             for (const anml of possibleAnimals) {
                 var pickcolor = 'blue';
-                if (!args.animals[anml].canPlace) pickcolor = 'red';
+                if (!args.animals[anml].cp) pickcolor = 'red';
 
                 gameui.addImageActionButton(
                     'place_animal_' + anml,
@@ -1420,7 +1470,7 @@ define([
                     () => {
                         //todo translate i18
 
-                        if (args.animals[anml].canPlace) {
+                        if (args.animals[anml].cp) {
                             this.setClientStateAction('client_PlaceAnimal');
                             this.clientStateArgs.animalType = anml;
                             this.setDescriptionOnMyTurn(_('Place the ${animalType} in a house or with his friends'), {
@@ -1432,6 +1482,7 @@ define([
                                 const div = $(this.replaceGridSquareByHighlightSquare(id));
                                 if (div) div.classList.add('active_slot');
                             });
+                            this.addCancelButton();
                         } else this.showError(_('No legal location'));
                     },
                     pickcolor,
@@ -1443,7 +1494,6 @@ define([
             var choosableAnimals = Object.keys(animalArgs);
             for (const anml of choosableAnimals) {
                 var pickcolor = 'gray';
-                debug('anml', anml);
                 gameui.addImageActionButton(
                     'place_animal_' + anml,
                     this.createDiv(anml + ' smallIcon'),
@@ -1459,6 +1509,7 @@ define([
                             const div = $(this.replaceGridSquareByHighlightSquare(id));
                             if (div) div.classList.add('active_slot');
                         });
+                        this.addCancelButton();
                     },
                     pickcolor,
                     _(
@@ -1499,11 +1550,36 @@ define([
         },
 
         // UTILS
+        restoreCompressedData: function (args) {
+            if (args.hasOwnProperty('patches')) {
+                for (const patchId in args.patches) {
+                    const p = args.patches[patchId];
+
+                    for (const rotation in p.mvs) {
+                        const squares = p.mvs[rotation];
+
+                        for (const index in squares) {
+                            const s = squares[index];
+                            squares[index] = this.restoreSquareName(s);
+                        }
+                    }
+                }
+            }
+            return args;
+        },
+
+        restoreSquareName: function (squareCompactId) {
+            const strSquareCompactId = squareCompactId.toString();
+            return `square_${strSquareCompactId.charAt(0)}_${strSquareCompactId.charAt(1)}_${strSquareCompactId.slice(
+                2
+            )}`;
+        },
+
         addActiveSlots: function (args) {
             if (args.hasOwnProperty('patches')) {
                 var canBuy = Object.keys(args.patches);
                 canBuy.forEach((id) => {
-                    var canUse = args.patches[id].canUse;
+                    var canUse = args.patches[id].cu;
                     if (canUse == false) dojo.addClass(id, 'cannot_use');
                     else dojo.addClass(id, 'active_slot');
                 });
@@ -1664,6 +1740,35 @@ define([
         ///////////////////////////////////////////////////
         //// Utility methods
 
+        offerToChooseSoloToken: function (soloToken) {
+            dojo.empty('generalactions');
+            this.setDescriptionOnMyTurn(_('Do you want to use a token or not ?'));
+            this.addActionButton(
+                'soloToken',
+                _('Yes'),
+                () => {
+                    gameui.clientStateArgs.soloToken = soloToken;
+                    this.callClientStateAction();
+                },
+                null,
+                null,
+                'blue'
+            );
+
+            this.addActionButton(
+                'soloTokenFree',
+                _('No'),
+                () => {
+                    gameui.clientStateArgs.soloToken = 'soloTokenFree';
+                    this.callClientStateAction();
+                },
+                null,
+                null,
+                'blue'
+            );
+
+            this.addCancelButton();
+        },
         /*
             
                 Here, you can defines some utility methods that you can use everywhere in your javascript
@@ -1673,16 +1778,36 @@ define([
         onAnimalZone: function (event) {
             dojo.stopEvent(event);
             var id = event.currentTarget.id;
+            //console.log('on animal zone', id);
             gameui.clientStateArgs.action = 'getAnimals';
             gameui.clientStateArgs.actionZone = id;
             if (!gameui.isActiveSlot(id)) {
                 return;
             }
 
+            const zoneDiv = event.target.closest('.nyz_action_zone');
+            const tokenToChoose = this.getSoloTokenChoice(zoneDiv);
+            if (this.playerCount == 1 && tokenToChoose) {
+                this.offerToChooseSoloToken(tokenToChoose);
+                return;
+            }
+            this.callClientStateAction();
+        },
+
+        getSoloTokenChoice(zoneDiv) {
+            let needed = undefined;
+            if (zoneDiv && dojo.query(`#${zoneDiv.id} .solo-token:not(.hidden)`).length > 1) {
+                needed = this.queryFirst(`#${zoneDiv.id} .solo-token:not(.hidden):not(.soloTokenFree)`).dataset
+                    .soloTokenId;
+            }
+            return needed;
+        },
+
+        callClientStateAction: function () {
             gameui.removeClass('original');
             gameui.removeClass('active_slot');
 
-            debug('onAnimalZone', gameui.clientStateArgs);
+            debug('callClientStateAction', gameui.clientStateArgs);
             gameui.ajaxClientStateAction();
         },
 

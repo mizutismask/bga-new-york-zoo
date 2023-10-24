@@ -52,7 +52,8 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $hor_scale = CELL_WIDTH;
     $ver_scale = CELL_WIDTH;
 
-    for ($x = 1; $x <= $this->game->boards[$player_count][$order]['houses']; $x++) {
+    $houses = $this->game->isSoloMode() ?  $this->game->boards[$player_count][$this->game->getSoloHousesCount()]["houses"] : $this->game->boards[$player_count][$order]["houses"];
+    for ($x = 1; $x <= $houses; $x++) {
       $classes = 'house_' . $x;
       $this->page->insert_block("house", array(
         'X' => $x, 'Y' => 0, 'LEFT' => round(($x) * $hor_scale),
@@ -82,7 +83,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     }
 
     $own = $player_id == $current_player;
-    if($own){
+    if ($own) {
       for ($x = 0; $x < $gridSize[0]; $x++) {
         for ($y = 0; $y < $gridSize[1]; $y++) {
           $classes = '';
@@ -98,6 +99,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       "ORDER" => $order, "PLAYER_NAME" => $name,
       "PLAYER_ID" => $player_id, "OWN" => $own ? "own" : "",
       "PLAYER_COUNT" => $player_count,
+      "SOLO_BOARD" => $this->game->getSoloBoard($player_count),
     ));
   }
 
@@ -105,6 +107,10 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     // Get players & players number
     $players = $this->game->loadPlayersBasicInfos();
     $players_nbr = count($players);
+    global $g_user;
+    $current_player = $g_user->get_id();
+    $order = $players[$current_player]['player_no'];
+
     /**
      * ********* Place your code below: ***********
      */
@@ -113,9 +119,8 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $this->tpl['PLS'] = $num;
     global $g_user;
     $this->tpl['PCOLOR'] = 'ffffff'; // spectator
-    $current_player = $g_user->get_id();
 
-    if($players_nbr == 2 && $this->game->isFastGame()){
+    if ($players_nbr == 2 && $this->game->isFastGame()) {
       $this->page->begin_block($template, "handMarket");
       foreach ($players as $player_info) {
         if (isset($players[$current_player])) { // may be not set if spectator
@@ -179,9 +184,20 @@ class view_newyorkzoo_newyorkzoo extends game_view {
         ]);
       }
     }
-    $this->page->begin_block($template, "actionStripZone");
-    foreach ($this->game->actionStripZones as $id => &$zone) {
-      $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
+    if ($this->game->isSoloMode()) {
+      $this->page->begin_block($template, "actionStripZoneSolo");
+      foreach ($this->game->actionStripZones as $id => &$zone) {
+        $this->page->insert_block("actionStripZoneSolo", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
+      }
+      if (isset($players[$current_player])) { // may be not set if spectator
+        $this->page->begin_block($template, "solo_counters");
+        $this->page->insert_block("solo_counters", ["PLAYER_ORDER" => $order,]);
+      }
+    } else {
+      $this->page->begin_block($template, "actionStripZone");
+      foreach ($this->game->actionStripZones as $id => &$zone) {
+        $this->page->insert_block("actionStripZone", ['ID' => $id, 'X' => $zone['topX'], 'Y' => $zone['topY'], 'WIDTH' => $zone['width'], 'HEIGHT' => $zone['height'], 'ANIMAL_ZONE' => $zone['type'] === ANIMAL ? "nyz_animal_action_zone" : ""]);
+      }
     }
 
     $this->page->begin_block($template, "birthZone");
@@ -193,7 +209,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $attractions = $this->game->mtCollectAllWithFieldValue("color", "bonus");
     $uniqueMasks = array_unique(array_map(fn ($a) => $a["mask"], $attractions));
     usort($uniqueMasks, function ($a, $b) {
-      return substr_count($b,"1") - substr_count($a,"1");
+      return substr_count($b, "1") - substr_count($a, "1");
     });
     foreach ($uniqueMasks as $i => $mask) {
       $this->page->insert_block("bonus-mask", ['COUNTER' => $i, 'MASK' => $mask,]);

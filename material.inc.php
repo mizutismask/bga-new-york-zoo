@@ -56,8 +56,18 @@ if (!defined("LIGHTEST_GREEN")) {
 $this->animals = [MEERKAT, FLAMINGO, KANGAROO, PENGUIN, FOX];
 $this->animalTypes = [MEERKAT_TYPE, FLAMINGO_TYPE, KANGAROO_TYPE, PENGUIN_TYPE, FOX_TYPE];
 
-//by player count, then player order
+//by player count, then player order (if solo, by player count then houses count)
 $this->boards = [
+  '1' => [
+    '3' => [
+      'animals' => [MEERKAT, FLAMINGO],
+      'houses' => 3,
+    ],
+    '4' => [
+      'animals' => [MEERKAT, KANGAROO],
+      'houses' => 4,
+    ],
+  ],
   '2' => [
     '1' => [
       'animals' => [MEERKAT, FLAMINGO],
@@ -421,6 +431,10 @@ $this->token_types = [
     'name' => clienttranslate("Empties Counter"),
     'tooltip' => clienttranslate("Counter for remaining empty spaces. The first player who fill his board wins the game."),
   ],
+  'rounds_completed' => [
+    'name' => clienttranslate("Rounds completed"),
+    'tooltip' => clienttranslate("Counter for entire board convolution. You must win before it gets to 2."),
+  ],
   'flamingo' => [
     'type' => FLAMINGO. " animal",
     'name' => clienttranslate("Flamingo"),
@@ -442,7 +456,53 @@ $this->token_types = [
     'name' => clienttranslate("Kangaroo"),
   ],
 
+  'solo_token_0' => [
+    'type' => 'solo-token solo-token_0',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to stay on the same space"),
+  ],
+  'solo_token_1' => [
+    'type' => 'solo-token solo-token_1',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 1 space forward"),
+  ],
+  'solo_token_2' => [
+    'type' => 'solo-token solo-token_21',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 2 spaces forward"),
+  ],
+  'solo_token_3' => [
+    'type' => 'solo-token solo-token_3',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 3 spaces forward"),
+  ],
+  'solo_token_4' => [
+    'type' => 'solo-token solo-token_4',
+    'name' => clienttranslate("Range marker"),
+    'tooltip' => clienttranslate("Use this token to move 4 spaces forward or more"),
+  ],
+
   //1 to indicate filler, then playerCount_playerOrder
+  'patch_113' => [
+    'num' => 113,
+    'type' => 'patch filler filler_1_3',
+    'spaces' => 19,
+    'mask' => ':1111:1111:1111:1111:1110',
+    'w' => 4,
+    'h' => 5,
+    'color' => 'filler',
+    'occurrences' => 1,
+  ],
+  'patch_114' => [
+    'num' => 114,
+    'type' => 'patch filler filler_1_4',
+    'spaces' => 22,
+    'mask' => ':11111:11111:11110:11110:11110',
+    'w' => 5,
+    'h' => 5,
+    'color' => 'filler',
+    'occurrences' => 1,
+  ],
   'patch_121' => [
     'num' => 121,
     'type' => 'patch filler filler_2_1',

@@ -50,6 +50,13 @@
 				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
 				<!-- END actionStripZone -->
 
+				<!-- BEGIN actionStripZoneSolo -->
+				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;">
+					<div class="soloTokenNeeded solo-token hidden"></div>
+					<div class="soloTokenFree solo-token hidden">&olcross;</div>
+				</div>
+				<!-- END actionStripZoneSolo -->
+
 				<!-- BEGIN birthZone -->
 				<div id="{ID}" class="nyz_birth_zone" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;"></div>
 				<!-- END birthZone -->
@@ -86,10 +93,16 @@
 		             <div id="empties_{ORDER}_counter" class="empties_counter mini_counter">0</div>
 		             <div id="empties_{ORDER}_icon" class="empty_icon micon"></div>
 		        </div>
+				<!-- BEGIN solo_counters -->
+				<div id="rounds_completed_div" class="mini_board_item hidden">
+    				<div id="rounds_completed_counter" class="mini_counter">0</div>
+		            <div id="rounds_completed_icon" class="fa6 fa-regular fa6-arrow-rotate-right"></div>
+				</div>
+    			<!-- END solo_counters -->
 		    </div>
 		</div>
 
-		<div id="tableau_{ORDER}" data-title="{PLAYER_NAME}" class="tableau tableau_{ORDER} {OWN} player_count_{PLAYER_COUNT} player_order_{ORDER}">
+		<div id="tableau_{ORDER}" data-title="{PLAYER_NAME}" class="tableau tableau_{ORDER} {OWN} player_count_{PLAYER_COUNT} player_order_{ORDER} {SOLO_BOARD}">
 			<div id="pboard_{ORDER}" class="pboard pboard_{ORDER}">
 				<div id="squares_{ORDER}" class="squares squares_{ORDER}">
     <!-- BEGIN square -->
@@ -138,6 +151,12 @@
 	<div id="flip_control_template" class="mirror-image control-image"></div>
 	<div id="done_control_template" class="done-image control-image"></div>
 	<div id="cancel_control_template" class="cancel-image control-image"></div>
+	
+	<div id="solo_token_0" class="solo-token-0 solo-token"></div>
+	<div id="solo_token_1" class="solo-token-1 solo-token"></div>
+	<div id="solo_token_2" class="solo-token-2 solo-token"></div>
+	<div id="solo_token_3" class="solo-token-3 solo-token"></div>
+	<div id="solo_token_4" class="solo-token-4 solo-token"></div>
 </div>
 
 <style>

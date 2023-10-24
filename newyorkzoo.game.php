@@ -28,8 +28,10 @@ if (!defined('OFFSET')) {
     define("OFFSET", 5);
     define("ACTION_ZONES_COUNT", 25);
     define("ACTION_ZONE_PREFIX", "action_zone_");
+    define("SQUARE_PREFIX", "square_");
     define("ACTION_ZONE_ANML_PREFIX", "action_zone_anml_");
     define("ANIMALS_INITIAL_NUMBER", 60);
+    define("STARTING_LOCATION", "action_zone_anml_10");
     define('GS_ANIMAL_TO_PLACE', "animalToPlace");
     define('GS_OTHER_ANIMAL_TO_PLACE', "otherAnimalToPlace");
     define("GS_BREEDING", "breeding");
@@ -44,6 +46,15 @@ if (!defined('OFFSET')) {
     define("GS_RESOLVING_BREEDING", "resolvingBreeding");
     define("GS_PREVIOUS_NEUTRAL_LOCATION", "previousNeutralLocation");
     define("GS_CAN_UNDO_ACQUISITION_MOVE", "canUndoAcquisitionMove");
+
+    //solo mode
+    define("GS_LAST_SOLO_TOKEN_USED", "lastSoloTokenUsed");
+    define("GS_BOARD_COMPLETED_COUNT", "boardCompletedCount");
+    define("GS_LAST_MOVE_CROSSED_START", "lastMoveCrossedStart");
+
+    define("MOVES", "mvs");
+    define("CAN_PLACE", "cp");
+    define("CAN_USE", "cu");
 
     //context_log actions
     define("ACTION_GET_ANIMALS", 'getAnimals');
@@ -77,6 +88,8 @@ class NewYorkZoo extends EuroGame {
             //    "my_second_game_variant" => 101,
             //      ...
             FAST_GAME => 100, //2 players only
+            SOLO => 101, //1 player only
+            SOLO_BOARD => 102, //2 possible boards with 3 or 4 houses
             GS_ANIMAL_TO_PLACE => 10, //animalType 1 from main action
             GS_OTHER_ANIMAL_TO_PLACE => 11,  //animalType 2 from main action
             GS_BREEDING => 12,
@@ -91,6 +104,9 @@ class NewYorkZoo extends EuroGame {
             GS_BREEDING_2_LONG_MOVE => 21, //when fences spaces are empty, a 4 move can cross 2 birth lines
             GS_PREVIOUS_NEUTRAL_LOCATION => 22, //need to store elephant position prior to a move to acquisition zone since it can be canceled
             GS_CAN_UNDO_ACQUISITION_MOVE => 23, //can undo only if no animal has been placed (just meant to prevent misclicks)
+            GS_LAST_SOLO_TOKEN_USED => 24, //remember last solo token used in case of undo
+            GS_BOARD_COMPLETED_COUNT => 25, //count of times the board has been circumvoluted by solo player
+            GS_LAST_MOVE_CROSSED_START => 26, //need to know if the last move crossed starting point in case of undo to decrement GS_BOARD_COMPLETED_COUNT
         ));
 
         $this->tokens = new Tokens();
@@ -147,6 +163,9 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_BONUS_BREEDING, 0);
             self::setGameStateInitialValue(GS_CAN_UNDO_ACQUISITION_MOVE, 0);
             self::setGameStateInitialValue(GS_PREVIOUS_NEUTRAL_LOCATION, 0);
+            self::setGameStateInitialValue(GS_LAST_SOLO_TOKEN_USED, 0);
+            self::setGameStateInitialValue(GS_BOARD_COMPLETED_COUNT, 0);
+            self::setGameStateInitialValue(GS_LAST_MOVE_CROSSED_START, false);
 
             $this->initStats();
 
@@ -164,14 +183,36 @@ class NewYorkZoo extends EuroGame {
         /************ End of the game initialization *****/
     }
 
+    function getSoloBoard($player_count) {
+        if ($player_count == 1) {
+            switch (self::getGameStateValue(SOLO_BOARD)) {
+                case HOUSE_COUNT_3:
+                    return "board_houses_3";
+                case HOUSE_COUNT_4:
+                    return "board_houses_4";
+            }
+        }
+        return "";
+    }
+
+    function getSoloHousesCount() {
+        switch (self::getGameStateValue(SOLO_BOARD)) {
+            case HOUSE_COUNT_3:
+                return 3;
+            case HOUSE_COUNT_4:
+                return 4;
+        }
+    }
+
     function debugSetup() {
         if ($this->getBgaEnvironment() != 'studio') {
             return;
         }
         //$this->dblBreeding(FLAMINGO, 1);
-        $this->dblBreeding(MEERKAT, 1);
-
-        $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
+        //$this->dblBreeding(MEERKAT, 1);
+        if (!$this->isSoloMode()) {
+            $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
+        }
     }
     function debugZoo() {
     }
@@ -186,7 +227,7 @@ class NewYorkZoo extends EuroGame {
         foreach ($players as $player_id => $player) {
             //$this->tokens->createTokensPack($player_id . "_house_{INDEX}",  "house_" . $playerOrder, 3);
             $playerOrder = $player["player_no"];
-            $boardConf = $this->boards[count($players)][$playerOrder];
+            $boardConf = $this->isSoloMode() ? $this->boards[count($players)][$this->getSoloHousesCount()] : $this->boards[count($players)][$playerOrder];
             $h = 1;
             foreach ($boardConf["animals"] as $animal) {
                 $this->tokens->moveToken($animal . '_' . $i, "house_" . $playerOrder . "_" . $h, 0);
@@ -227,7 +268,13 @@ class NewYorkZoo extends EuroGame {
         $this->tokens->createTokensPack("kangaroo_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("penguin_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
         $this->tokens->createTokensPack("fox_{INDEX}", "limbo", ANIMALS_INITIAL_NUMBER);
-        $this->tokens->createToken("token_neutral", "action_zone_anml_10", 0);
+        $this->tokens->createToken("token_neutral", STARTING_LOCATION, 0);
+
+        if ($this->isSoloMode()) {
+            for ($i = 0; $i < 5; $i++) {
+                $this->tokens->createToken("solo_token_${i}", "solo_tokens_hand", 0);
+            }
+        }
     }
 
     /**
@@ -256,8 +303,7 @@ class NewYorkZoo extends EuroGame {
             if ($toMove) {
                 $this->tokens->moveTokens($toMove, "bonus_market");
                 $this->dbSyncInfo($toMove);
-            }
-            else{
+            } else {
                 $this->error("No more 1x1 attraction in stock");
             }
         }
@@ -283,7 +329,7 @@ class NewYorkZoo extends EuroGame {
         }
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
-        if ($players_nbr == 2 && $this->isFastGame()) {
+        if ($this->isSoloMode() || ($players_nbr == 2 && $this->isFastGame())) {
             $locations = $this->getPolyominoesLocationsOnBoard();
             $removed = [];
             foreach ($locations as $loc) {
@@ -291,19 +337,22 @@ class NewYorkZoo extends EuroGame {
                 $this->tokens->moveToken($patch["key"], "limbo");
                 $removed[] = $patch;
             }
-            //deal evenly the removed patches by color
-            $stateP1 = 1;
-            $stateP2 = 1;
-            foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
-                $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
-                $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
-                for ($i = 0; $i < 3; $i++) {
-                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
-                    $stateP1++;
-                }
-                for ($i = 3; $i < 6; $i++) {
-                    $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1], $stateP2);
-                    $stateP2++;
+
+            if ($players_nbr == 2 && $this->isFastGame()) {
+                //deal evenly the removed patches by color
+                $stateP1 = 1;
+                $stateP2 = 1;
+                foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
+                    $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
+                    $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
+                    for ($i = 0; $i < 3; $i++) {
+                        $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
+                        $stateP1++;
+                    }
+                    for ($i = 3; $i < 6; $i++) {
+                        $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[1], $stateP2);
+                        $stateP2++;
+                    }
                 }
             }
         }
@@ -360,6 +409,7 @@ class NewYorkZoo extends EuroGame {
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
             $this->setCounter($result['counters'], "empties_${order}_counter", $unoccup_count);
         }
+        $this->setCounter($result['counters'], "rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT));
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
         return $result;
@@ -385,7 +435,8 @@ class NewYorkZoo extends EuroGame {
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
 
             //total
-            $fillerSize = substr_count($this->token_types["patch_1" . count($players) . $order]["mask"], "1");
+            $fillerId = $this->isSoloMode() ? "patch_1" . count($players) . $this->getSoloHousesCount() : "patch_1" . count($players) . $order;
+            $fillerSize = substr_count($this->token_types[$fillerId]["mask"], "1");
             $totalToDo = $this->getGridHeight() * $this->getGridWidth() - $fillerSize;
 
             $done[$player_id] = ($totalToDo - $unoccup_count) * 100 / $totalToDo;
@@ -398,6 +449,9 @@ class NewYorkZoo extends EuroGame {
     //////////// Utility functions
     //////////// 
     function getFillerId($players_nbr, $order) {
+        if ($this->isSoloMode()) {
+            return "patch_1" . $players_nbr . $this->getSoloHousesCount();
+        }
         return "patch_1" . $players_nbr . $order;
     }
 
@@ -412,13 +466,13 @@ class NewYorkZoo extends EuroGame {
 
     function filterAnimals($tokens) {
         return array_filter($tokens, function ($tok) {
-            return str_starts_with($tok, FOX) || str_starts_with($tok, PENGUIN) || str_starts_with($tok, MEERKAT) || str_starts_with($tok, FLAMINGO) || str_starts_with($tok, KANGAROO);
+            return startsWith($tok, FOX) || startsWith($tok, PENGUIN) || startsWith($tok, MEERKAT) || startsWith($tok, FLAMINGO) || startsWith($tok, KANGAROO);
         }, ARRAY_FILTER_USE_KEY);
     }
 
     function filterAnimalType($tokens, $animalType) {
         return array_filter($tokens, function ($tok) use ($animalType) {
-            return str_starts_with($tok, $animalType);
+            return startsWith($tok, $animalType);
         });
     }
 
@@ -475,7 +529,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function isHouse($targetName) {
-        return str_starts_with($targetName, "house_");
+        return startsWith($targetName, "house_");
     }
 
     function transformMask($mask) {
@@ -497,7 +551,11 @@ class NewYorkZoo extends EuroGame {
     function getGridSize() {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
-        if ($players_nbr == 2) {
+        if ($players_nbr == 1 && $this->getSoloHousesCount() == 3) {
+            return array(11, 9); //x,y
+        } else if ($players_nbr == 1 && $this->getSoloHousesCount() == 4) {
+            return array(14, 9); //x,y
+        } else if ($players_nbr == 2) {
             return array(14, 9); //x,y
         } else if ($players_nbr == 3) {
             return array(11, 9); //x,y
@@ -575,23 +633,87 @@ class NewYorkZoo extends EuroGame {
 
     /**
      * Get actions zones (animal or patches) that can be reach within an elephant move.
+     * If solo mode, get accessible actions zones with a valid token plus the next animal zone.
      */
     function getNextActionZones() {
         $zones = [];
-        $moveMax = $this->arg_elephantMove();
-        $moveCount = 1;
-        $nextZone = $this->getNextActionZone();
-        while (count($zones) < $moveMax) {
-            if ($this->isFenceActionZoneWithoutFences($nextZone)) {
-                //empty patch zones do not count
-            } else {
-                $zones[] = $nextZone;
-                $moveCount++;
+
+        if (!$this->isSoloMode()) {
+            $zones = $this->getNextNonEmptyZones($this->arg_elephantMove());
+        } else {
+            $origin = $this->getNeutralTokenPosition();
+            $soloTokens = $this->getSoloTokensAvailable();
+            foreach ($soloTokens as $token) {
+                $nextZone = $origin;
+                $move = intval(getPart($token["key"], -1));
+                //self::dump('*******************move', $move);
+                if ($move == 0) {
+                    $tokenZones = [];
+                    $tokenZones[$this->getNeutralTokenPosition()][] = 0;
+                } else if ($move < 4) {
+                    $tokenZones = $this->getNextNonEmptyZones($move, false);
+                    //self::dump('*******************tokenZones', $tokenZones);
+                } else {
+                    $tokenZones = $this->getNextNonEmptyZones(count(array_keys($this->actionStripZones)));
+                    $tokenZones = array_slice($tokenZones, 3); //can’t stay or simulate 1,2 or 3, so we remove the 4 first elements
+                    //self::dump('*******************+4 tokenZones', $tokenZones);
+                }
+                $zones = array_merge($zones, $tokenZones);
+                //self::dump("************zones  after merge******************", $zones);
             }
-            $nextZone = $this->getNextActionZone($nextZone);
+            //add next animal zone
+            $nextZone = $this->getNextActionZone();
+            while (!startsWith($nextZone, "action_zone_anml")) {
+                $nextZone = $this->getNextActionZone($nextZone);
+            }
+            $zones[$nextZone][] = "-1";
+
+            //$zones = array_unique($zones);
         }
         //self::dump("************possible zones******************", $zones);
         return $zones;
+    }
+
+    function getNextNonEmptyZones($moveMax, $accumulate = true) {
+        //self::dump("************accumulate******************", $accumulate);
+        $zones = [];
+        $nextZone = $this->getNextActionZone();
+        $iNextZone = 1;
+        $moveCount = 0; //$this->isFenceActionZoneWithoutFences($nextZone)?0:1;
+
+        $notAccumulated = [];
+        while (count($zones) < $moveMax && $iNextZone < count(array_keys($this->actionStripZones))) {
+            //self::dump("************moveCount******************", $moveCount);
+            //self::dump("************nextZone******************", $nextZone);
+            //self::dump("************count(zones)******************", count($zones));
+            if ($this->isFenceActionZoneWithoutFences($nextZone)) {
+                //empty patch zones do not count
+                //self::dump("************do not count******************", $nextZone);
+            } else {
+                $moveCount++;
+                $zones[$nextZone][] = $moveCount;
+                //self::dump("found", compact('nextZone', 'moveCount'));
+                //self::dump("************nextZone******************", $nextZone);
+                //self::dump("************moveCount******************", $moveCount);
+
+                if (!$accumulate && count($zones) == $moveMax) {
+                    $notAccumulated[$nextZone][] = $moveCount;
+                    //self::dump("************notAccumulated******************", $notAccumulated);
+                }
+            }
+            $nextZone = $this->getNextActionZone($nextZone);
+            $iNextZone++;
+        }
+        //self::dump("************return******************", $accumulate ? $zones : $notAccumulated);
+        return $accumulate ? $zones : $notAccumulated;
+    }
+
+    function getNeutralTokenPosition() {
+        return $this->tokens->getTokenInfo('token_neutral')["location"];
+    }
+    function getSoloTokensAvailable() {
+        $soloTokens = $this->tokens->getTokensOfTypeInLocation('solo_token', "solo_tokens_hand", null, "token_key asc");
+        return $soloTokens;
     }
 
     function isFenceActionZoneWithoutFences($nextZone) {
@@ -685,6 +807,10 @@ class NewYorkZoo extends EuroGame {
         return $this->getGameStateValue(FAST_GAME) == ACTIVATED;
     }
 
+    public function isSoloMode() {
+        return $this->getGameStateValue(SOLO) == ACTIVATED;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
@@ -759,7 +885,7 @@ class NewYorkZoo extends EuroGame {
         }
     }
 
-    function action_place($token_id, $dropTarget, $rotateZ, $rotateY) {
+    function action_place($token_id, $dropTarget, $rotateZ, $rotateY, $soloTokenId = null) {
         $this->checkAction('place');
 
         $player_id = $this->getActivePlayerId();
@@ -783,6 +909,8 @@ class NewYorkZoo extends EuroGame {
 
             $canBuy  = $this->arg_canBuyPatches($order);
             $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
+
+            $this->validateAndUseSoloToken($pos, $soloTokenId);
 
             $this->saction_MoveNeutralToken($pos);
             $this->dbInsertContextLog(ACTION_POPULATE_FENCE, $token_id);
@@ -852,6 +980,18 @@ class NewYorkZoo extends EuroGame {
         $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
+        if ($this->isSoloMode()) {
+            $tokenNumber = self::getGameStateValue(GS_LAST_SOLO_TOKEN_USED);
+            if ($tokenNumber) {
+                $this->dbSetTokenLocation("solo_token_" . $tokenNumber, "solo_tokens_hand", null, '${player_name} gets back the range token', []);
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
+            }
+            if (self::getGameStateValue(GS_LAST_MOVE_CROSSED_START)) {
+                $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, -1);
+                $this->notifyCounterDirect("rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT), '');
+            }
+        }
+
         $this->gamestate->nextState(TRANSITION_UNDO_ELEPHANT_MOVE_TO_ANIMALS);
         $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
@@ -861,10 +1001,13 @@ class NewYorkZoo extends EuroGame {
         $old = getPart($old, -1) + 0;
         $new = getPart($pos, -1) + 0;
 
-        $spaces = array_search($pos, $this->getNextActionZones()) + 1;
+        $spaces = array_search($pos, array_keys($this->getNextActionZones())) + 1;
 
-        $this->dbSetTokenLocation('token_neutral', $pos, null, '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
+        $this->dbSetTokenLocation('token_neutral', $pos, null, $this->isSoloMode() ? "" : '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
         $this->checkIfBreedingLineCrossed($old, $new, $spaces);
+        if ($this->isSoloMode()) {
+            $this->checkIfStartingZoneCrossed($old, $new);
+        }
 
         $this->notifyAllPlayers('eofnet', '', []); // end of moving neutral token
     }
@@ -919,7 +1062,19 @@ class NewYorkZoo extends EuroGame {
         return $crossed;
     }
 
-    function action_getAnimals($animalZone) {
+    function checkIfStartingZoneCrossed($oldPosition, $newPosition) {
+        $moves = $this->getCrossedActionZones($oldPosition, $this->countCrossedZones($oldPosition, $newPosition));
+        $crossed = in_array(getPart(STARTING_LOCATION, -1), $moves);
+        //self::dump('*******************start crossed', $crossed);
+        if ($crossed) {
+            $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, 1);
+            $this->notifyCounterDirect("rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT), '');
+        }
+        self::setGameStateValue(GS_LAST_MOVE_CROSSED_START, $crossed);
+        return $crossed;
+    }
+
+    function action_getAnimals($animalZone, $soloTokenId) {
         $this->checkAction(ACTION_GET_ANIMALS);
 
         $player_id = $this->getActivePlayerId();
@@ -927,6 +1082,8 @@ class NewYorkZoo extends EuroGame {
         $order = $this->getPlayerPosition($player_id);
         $canGo  = $this->arg_canGetAnimals($order);
         $this->userAssertTrue(self::_("Cannot place those animals anywhere"), array_search($animalZone, $canGo) !== false);
+
+        $this->validateAndUseSoloToken($animalZone, $soloTokenId);
 
         $animal1 = $this->actionStripZones[$animalZone]['animals'][0];
         $animal2 = $this->actionStripZones[$animalZone]['animals'][1];
@@ -944,6 +1101,31 @@ class NewYorkZoo extends EuroGame {
     function insertGetAnimalsContextLog($animal1, $animal2) {
         $this->dbInsertContextLog(ACTION_GET_ANIMAL, $animal1);
         $this->dbInsertContextLog(ACTION_GET_ANIMAL, $animal2);
+    }
+
+    function validateAndUseSoloToken($animalZone, $soloTokenId) {
+        if ($this->isSoloMode()) {
+            /**
+             * Uses the adequate token if no free move is possible, or else the given token
+             */
+            $tokenByZone = $this->arg_usableTokensByZone();
+            $verifiedSoloTokenId = "";
+            if (count($tokenByZone[$animalZone]) == 1) {
+                $verifiedSoloTokenId = $tokenByZone[$animalZone][0];
+            } else {
+                $this->userAssertTrue(self::_("You have to specify if you want to use a token or not"), $soloTokenId !== false);
+                $verifiedSoloTokenId = $soloTokenId;
+            }
+            $this->userAssertTrue(self::_("Don’t have a convenient token to reach this location"), array_search($verifiedSoloTokenId, array_values($tokenByZone[$animalZone])) !== false);
+
+            if ($verifiedSoloTokenId != "soloTokenFree") {
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, getPart($verifiedSoloTokenId, -1));
+                $this->dbSetTokenLocation($verifiedSoloTokenId, "limbo", null, '${player_name} uses range token ${token_range}', ['token_range' => getPart($verifiedSoloTokenId, -1)]);
+            } else {
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
+                $this->notifyWithName('message', clienttranslate('${player_name} goes the next animal zone without token'));
+            }
+        }
     }
 
     /**
@@ -1004,7 +1186,7 @@ class NewYorkZoo extends EuroGame {
     function formatPlaceName($placeName) {
         $parts = explode('_', $placeName);
         $len = count($parts);
-        if ($len == 5 && str_starts_with($placeName, "anml_square"))
+        if ($len == 5 && startsWith($placeName, "anml_square"))
             return strval(intval(getpart($placeName, 3, true)) + 1) . ":" . strval(intval(getpart($placeName, 4)) + 1);
         return $placeName;
     }
@@ -1016,9 +1198,9 @@ class NewYorkZoo extends EuroGame {
 
         $state = $this->gamestate->state();
         $newLocation = "";
-        if (str_starts_with($to, "house")) {
+        if (startsWith($to, "house")) {
             $newLocation = clienttranslate('into a house');
-        } else if (str_starts_with($to, "anml_square")) {
+        } else if (startsWith($to, "anml_square")) {
             $newLocation = clienttranslate('into a fence');
         }
         $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name} ${newLocation}', ["newLocation" => $newLocation]); //todo i18
@@ -1346,6 +1528,7 @@ class NewYorkZoo extends EuroGame {
     function dbGetFencesKeysByPlayer(Int $order) {
         return self::getObjectListFromDB("SELECT token_key FROM fence WHERE player_order='$order'", true);
     }
+
     function action_dismissAttraction() {
         $this->checkAction('dismissAttraction');
         $this->notifyWithName('message', clienttranslate('${player_name} does not place a bonus attraction'));
@@ -1534,16 +1717,21 @@ class NewYorkZoo extends EuroGame {
             // empty spaces
             $occupancy = $this->getOccupancyMatrix($order);
             $unoccup_count = $this->getOccupancyEmpty($occupancy);
-            $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_slot');
-            self::setStat($unoccup_count, "game_empty_squares", $player_id);
+            $this->dbIncScoreValueAndNotify($player_id, -$unoccup_count, clienttranslate('${player_name} loses ${mod} point(s) for empty spaces'), 'game_empty_squares');
 
-            //tie breaker
-            $animalCount = 0;
-            foreach ($this->animals as $type) {
-                $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "anml_square_" . $order . "%"));
+            if ($this->isSoloMode() && $unoccup_count == 0) {
+                //count every action zone until starting zone, even empty zones
+                $points = $this->countCrossedZones($this->getNeutralPositionNumber(), getPart(STARTING_LOCATION, -1));
+                $this->dbIncScoreValueAndNotify($player_id, $points, clienttranslate('${player_name} wins ${mod} point(s) for zones between the elephant and the starting point'));
+            } else {
+                //tie breaker
+                $animalCount = 0;
+                foreach ($this->animals as $type) {
+                    $animalCount += count($this->tokens->getTokensOfTypeInLocation($type, "anml_square_" . $order . "%"));
+                }
+                $animalCount += $this->tokens->countTokensInLocation("house_" . $order . "%");
+                $this->dbSetAuxScore($player_id, $animalCount);
             }
-            $animalCount += $this->tokens->countTokensInLocation("house_" . $order . "%");
-            $this->dbSetAuxScore($player_id, $animalCount);
         }
     }
 
@@ -1555,7 +1743,6 @@ class NewYorkZoo extends EuroGame {
         $order = $this->getPlayerPosition($player_id);
         $res = [];
         $patches = $this->arg_canBuyPatches($order);
-        //self::dump('*************arg_playerTurn***patches***', $patches);
         $canUseAny = false;
         $canPopulate = $this->canPopulateNewFence();
         $occupancy = $this->getOccupancyMatrix($order);
@@ -1568,11 +1755,11 @@ class NewYorkZoo extends EuroGame {
                     break;
                 }
             }
-            $res['patches'][$patch]['moves'] = $moves;
-            $res['patches'][$patch]['canPlace'] = $canPlace;
+            $res['patches'][$patch][MOVES] = $moves;
+            $res['patches'][$patch][CAN_PLACE] = $canPlace;
 
             $canUse = $canPlace && $canPopulate;
-            $res['patches'][$patch]['canUse'] = $canUse;
+            $res['patches'][$patch][CAN_USE] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
 
@@ -1580,8 +1767,34 @@ class NewYorkZoo extends EuroGame {
         $res['maxMoves'] = $this->arg_elephantMove();
         $res['canGetAnimals'] = $this->arg_canGetAnimals($order);
 
+        if ($this->isSoloMode()) {
+            $res["usableTokensByZone"] = $this->arg_usableTokensByZone();
+        }
 
+        $this->reduceDataSize($res);
+        //self::dump('*************arg_playerTurn***res***',$res );
         return $res;
+    }
+
+    /**
+     * Compress square_1_1_8 into 118 (for moves)
+     */
+    function reduceDataSize(&$arg_playerTurn) {
+        if (isset($arg_playerTurn['patches'])) {
+            foreach ($arg_playerTurn['patches'] as  &$patch) {
+                foreach ($patch[MOVES] as &$squares) {
+                    foreach ($squares as $index => $square) {
+                        $squares[$index] = $this->extractNumber($square);
+                    }
+                }
+            }
+        }
+    }
+
+    function extractNumber(string $squareId): int {
+        //starts with
+        $this->systemAssertTrue("SquareId does NOT start with square_.", strncmp($squareId, SQUARE_PREFIX, strlen(SQUARE_PREFIX)) === 0);
+        return intval(preg_replace("/[^0-9]/", '', $squareId));
     }
 
     function canPopulateNewFence() {
@@ -1608,10 +1821,10 @@ class NewYorkZoo extends EuroGame {
             }
             //$key = $bonuses ? $this->getRulesFor($patch, "mask") : $patch;
             $key = $patch;
-            $res['patches'][$key]['moves'] = $moves;
-            $res['patches'][$key]['canPlace'] = $canPlace;
+            $res['patches'][$key][MOVES] = $moves;
+            $res['patches'][$key][CAN_PLACE] = $canPlace;
             $canUse = $canPlace;
-            $res['patches'][$key]['canUse'] = $canUse;
+            $res['patches'][$key][CAN_USE] = $canUse;
             $canUseAny = $canUseAny || $canUse;
         }
 
@@ -1714,10 +1927,28 @@ class NewYorkZoo extends EuroGame {
         return $this->matrix->possibleMoves($mask, $prefix, $rotor, $occupancy);
     }
 
+    function arg_usableTokensByZone() {
+        $nextZones = $this->getNextActionZones();
+        foreach ($nextZones as $zone => $distances) {
+            foreach ($distances as $index => $distance) {
+                //self::dump('******************$zone*', $zone);
+                //self::dump('******************$distance*', $distance);
+                if ($distance == -1) {
+                    $soloTokenId = "soloTokenFree";
+                } else {
+                    $soloTokenId = "solo_token_" . ($distance < 4 ? $distance : 4);
+                }
+                $nextZones[$zone][$index] = $soloTokenId;
+            }
+        }
+        //self::dump("*****************arg_usableTokensByZone*", $nextZones);
+        return $nextZones;
+    }
+
     /** Return patches that are accessible with an elephant move. */
     function arg_canBuyPatches($order) {
         $patches = [];
-        $nextZones = $this->getNextActionZones();
+        $nextZones = array_keys($this->getNextActionZones());
         foreach ($nextZones as $nz) {
             // self::dump("*****************getNextActionZones rs*", $nz);
             $topPatch = $this->tokens->getTokenOnTop($nz, true, 'patch');
@@ -1730,7 +1961,7 @@ class NewYorkZoo extends EuroGame {
 
     function arg_canGetAnimals($order) {
         $from = [];
-        $nextZones = $this->getNextActionZones();
+        $nextZones = array_keys($this->getNextActionZones());
         foreach ($nextZones as $nz) {
             //actionStripZones
             $zoneType = $this->actionStripZones[$nz]["type"];
@@ -1753,7 +1984,7 @@ class NewYorkZoo extends EuroGame {
     function getPlayerHouses($playerOrder) {
         $players = $this->loadPlayersBasicInfos();
         $playerCount = count($players);
-        $houseCount = $this->boards[$playerCount][$playerOrder]["houses"];
+        $houseCount = $this->isSoloMode() ?  $this->boards[$playerCount][$this->getSoloHousesCount()]["houses"] : $this->boards[$playerCount][$playerOrder]["houses"];
         $houses = [];
         for ($i = 1; $i <= $houseCount; $i++) {
             $houses[] = "house_" . $playerOrder . "_" . $i;
@@ -1806,6 +2037,8 @@ class NewYorkZoo extends EuroGame {
         $players = $this->loadPlayersBasicInfos();
         $players_nbr = count($players);
         switch ($players_nbr) {
+            case 1:
+                return 0;
             case 2:
             case 4:
                 return 4;
@@ -1867,14 +2100,14 @@ class NewYorkZoo extends EuroGame {
             $args["animalType1"] = $anmlType;
             $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
-            $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
+            $args["animals"][$anmlType][CAN_PLACE] = count($targets) != 0;
         }
         if ($second) {
             $anmlType = $this->getAnimalName($second, true);
             $args["animalType2"] = $anmlType;
             $targets = $this->arg_possibleTargetsForAnimal($order, $anmlType);
             $args["animals"][$anmlType]["possibleTargets"] =  $targets;
-            $args["animals"][$anmlType]["canPlace"] = count($targets) != 0;
+            $args["animals"][$anmlType][CAN_PLACE] = count($targets) != 0;
         }
         if ($first && $second) {
             $args["canDismiss"] = false;
@@ -1899,7 +2132,7 @@ class NewYorkZoo extends EuroGame {
                 $canPlace = count($targets) != 0;
                 if ($canPlace) {
                     $args[$anmlType]["possibleTargets"] =  $targets;
-                    $args[$anmlType]["canPlace"] = $canPlace;
+                    $args[$anmlType][CAN_PLACE] = $canPlace;
                 }
             }
         }
@@ -2034,7 +2267,7 @@ class NewYorkZoo extends EuroGame {
         $animalName = $this->getAnimalName($anml);
         $args["animalType1"] = $animalName;
         $args["animals"][$animalName]["possibleTargets"] =  $this->getFreeHouses($playerOrder);
-        $args["animals"][$animalName]["canPlace"] =  true;
+        $args["animals"][$animalName][CAN_PLACE] =  true;
         $args["canDismiss"] = true;
         return $args;
     }
@@ -2063,15 +2296,17 @@ class NewYorkZoo extends EuroGame {
     }
 
     function isGameOver() {
-        $endOfGame = false;
-        $players = $this->loadPlayersBasicInfos();
-        foreach ($players as $player_id => $info) {
-            if (!$endOfGame) {
-                $order = $info['player_no'];
-                $occupdata = $this->arg_occupancyData($order);
-                $occupancy = $this->matrix->occupancyMatrix($occupdata);
-                $filled = $this->matrix->isFullyFilled($occupancy);
-                $endOfGame = $filled;
+        $endOfGame = $this->isSoloMode() && self::getGameStateValue(GS_BOARD_COMPLETED_COUNT) >= 2;
+        if (!$endOfGame) {
+            $players = $this->loadPlayersBasicInfos();
+            foreach ($players as $player_id => $info) {
+                if (!$endOfGame) {
+                    $order = $info['player_no'];
+                    $occupdata = $this->arg_occupancyData($order);
+                    $occupancy = $this->matrix->occupancyMatrix($occupdata);
+                    $filled = $this->matrix->isFullyFilled($occupancy);
+                    $endOfGame = $filled;
+                }
             }
         }
         return $endOfGame;
@@ -2083,6 +2318,16 @@ class NewYorkZoo extends EuroGame {
             $this->gamestate->nextState('last');
             return;
         }
+
+        //give back solo tokens if exhausted
+        if ($this->isSoloMode()) {
+            $used = $this->tokens->getTokensOfTypeInLocation("solo_token%", "limbo");
+            if (count($used) == 5) {
+                $ids = $this->getFieldValuesFromArray($used, "key");
+                $this->dbSetTokensLocation($ids, "solo_tokens_hand", null, "");
+            }
+        }
+
         $this->activateNextPlayerCustom();
         $this->notifyWithName('message', clienttranslate('&#10148; Start of ${player_name}\'s turn'));
         $this->gamestate->nextState('next');
@@ -2093,13 +2338,6 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BONUS_BREEDING, 0);
         //$this->dbEmptyTable("context_log");
-        $args = $this->arg_playerTurn();
-        $canPatch = $args['canPatch'];
-        //$this->warn("st_playerTurn canPatch='".$canPatch."' pl=$player_id ".toJson($args)."|");
-        if (false &&  !$canPatch) {
-            $this->notifyWithName('message', clienttranslate('${player_name} cannot place any fence'));
-            $this->sendNotifications(); // have to do it so it does not bundle too much
-        }
     }
 
     function st_gameTurnNextBreeder() {
@@ -2135,7 +2373,7 @@ class NewYorkZoo extends EuroGame {
             $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
         } else {
             //everyone has bred, see if bonus breeding needed
-            if ($playerCount === 2 || $playerCount === 3) {
+            if ($playerCount === 1 || $playerCount === 2 || $playerCount === 3) {
                 self::setGameStateValue(GS_BONUS_BREEDING, 1);
                 $this->dbInsertContextLog(BONUS_BREEDING);
                 self::notifyAllPlayers("breedingTime", clienttranslate('Bonus breeding time'), ["bonus" => true]);
@@ -2316,12 +2554,12 @@ class NewYorkZoo extends EuroGame {
         $patch1 = array_shift($fences);
         $patch2 = array_shift($fences);
 
-        $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
+        $patchOneMoves = $turn['patches'][$patch1][MOVES]["0_0"];
         $p1Move = array_shift($patchOneMoves);
         $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
 
         $turn = $this->arg_playerTurn();
-        $patch2Moves = $turn['patches'][$patch2]['moves']["0_0"];
+        $patch2Moves = $turn['patches'][$patch2][MOVES]["0_0"];
         $p2Move = array_shift($patch2Moves);
         $this->saction_PlacePatch($playerOrder, $patch2, $p2Move, 0, 0);
 
@@ -2355,15 +2593,15 @@ class NewYorkZoo extends EuroGame {
             //self::dump('*******************$patch1', $patch1);
             while (!$placed && $patch1 != null) {
 
-                $patchOneMoves = $turn['patches'][$patch1]['moves']["0_0"];
+                $patchOneMoves = $turn['patches'][$patch1][MOVES]["0_0"];
                 if (empty($patchOneMoves)) {
-                    $patchOneMoves = $turn['patches'][$patch1]['moves']["90_0"];
+                    $patchOneMoves = $turn['patches'][$patch1][MOVES]["90_0"];
                 }
                 if (empty($patchOneMoves)) {
-                    $patchOneMoves = $turn['patches'][$patch1]['moves']["180_0"];
+                    $patchOneMoves = $turn['patches'][$patch1][MOVES]["180_0"];
                 }
                 if (empty($patchOneMoves)) {
-                    $patchOneMoves = $turn['patches'][$patch1]['moves']["270_0"];
+                    $patchOneMoves = $turn['patches'][$patch1][MOVES]["270_0"];
                 }
                 //self::dump('*******************patchOneMoves', $patchOneMoves);
                 if (!empty($patchOneMoves)) {
