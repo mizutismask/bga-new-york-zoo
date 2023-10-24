@@ -652,6 +652,7 @@ define([
                 `,
                     'miniboard_1'
                 );
+                dojo.removeClass('rounds_completed_div', 'hidden');
             }
 
             for (var player_id in gamedatas.players) {
@@ -1125,7 +1126,7 @@ define([
             Object.entries(usableTokensByZone).forEach((entry) => {
                 const [zone, tokens] = entry;
                 tokens.forEach((token) => {
-                    console.log("token",token);
+                    console.log('token', token);
                     if (token == 'soloTokenFree') {
                         dojo.query(`#${zone} .soloTokenFree`).toggleClass('hidden', false);
                     } else {
