@@ -1479,6 +1479,7 @@ define([
                                 const div = $(this.replaceGridSquareByHighlightSquare(id));
                                 if (div) div.classList.add('active_slot');
                             });
+                            this.addCancelButton();
                         } else this.showError(_('No legal location'));
                     },
                     pickcolor,
@@ -1506,6 +1507,7 @@ define([
                             const div = $(this.replaceGridSquareByHighlightSquare(id));
                             if (div) div.classList.add('active_slot');
                         });
+                        this.addCancelButton();
                     },
                     pickcolor,
                     _(
