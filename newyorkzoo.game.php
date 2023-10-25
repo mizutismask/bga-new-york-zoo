@@ -208,7 +208,7 @@ class NewYorkZoo extends EuroGame {
             return;
         }
         //$this->dblBreeding(FLAMINGO, 1);
-        //$this->dblBreeding(MEERKAT, 1);
+        $this->dblBreeding(MEERKAT, 1);
         if (!$this->isSoloMode()) {
             $this->tokens->moveToken("token_neutral", $this->getActionZoneName(16));
         }
@@ -2555,11 +2555,13 @@ class NewYorkZoo extends EuroGame {
 
         $patchOneMoves = $turn['patches'][$patch1][MOVES]["0_0"];
         $p1Move = array_shift($patchOneMoves);
+        $p1Move = "square_" . substr($p1Move, 0, 1) . "_" . substr($p1Move, 1, 1) . "_" . substr($p1Move, 2);
         $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
 
         $turn = $this->arg_playerTurn();
         $patch2Moves = $turn['patches'][$patch2][MOVES]["0_0"];
         $p2Move = array_shift($patch2Moves);
+        $p2Move = "square_" . substr($p2Move, 0, 1) . "_" . substr($p2Move, 1, 1) . "_" . substr($p2Move, 2);
         $this->saction_PlacePatch($playerOrder, $patch2, $p2Move, 0, 0);
 
         $this->fullFence($patch1, $animalType, 1);
