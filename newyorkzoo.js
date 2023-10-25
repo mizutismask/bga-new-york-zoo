@@ -420,8 +420,8 @@ class PatchManager {
         debug('cancelPickPatch', this.selectedNode);
         if (this.selectedNode) {
             this.restoreOriginalPatch(this.selectedNode.id);
-            $('overall-content').classList.remove('placingFence');
         }
+        $('overall-content').classList.remove('placingFence');
         this.destroy('dragShadow');
         gameui.removeClass('selected');
         gameui.removeClass('pickTarget');
@@ -1002,6 +1002,11 @@ define([
             this.addActiveSlots(args);
         },
 
+        onEnteringState_placeAttraction(args) {
+            //pops attractions up, near the player board
+            dojo.place('bonus_market', this.queryFirstId('.tableau.own'), 'before');
+        },
+
         onEnteringState_populateNewFence(args) {
             if (this.isCurrentPlayerActive()) {
                 if (args.canDismiss) {
@@ -1053,6 +1058,11 @@ define([
             this.removeClass('animal-target-image');
             dojo.query(`.nyz_action_zone .soloTokenNeeded`).addClass('hidden');
             dojo.query(`.nyz_action_zone .soloTokenFree`).addClass('hidden');
+        },
+
+        setBonusMarketBackAtTheEnd() {
+             //puts attractions back in last
+             dojo.place('bonus_market', 'circle_market', 'after');
         },
 
         onUpdateActionButtons: function (stateName, args) {
@@ -1611,6 +1621,7 @@ define([
             this.pm.cancelPickPatch();
             this.pm.endPickPatch();
             $('overall-content').classList.remove('placingFence');
+            //this.setBonusMarketBackAtTheEnd();
             // }
             this.inherited(arguments);
         },
@@ -1652,6 +1663,7 @@ define([
                 //patch just placed
                 $(token).draggable = false;
             }
+            this.setBonusMarketBackAtTheEnd();
 
             this.ajaxClientStateAction();
         },

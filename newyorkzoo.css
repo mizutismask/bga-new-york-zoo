@@ -927,8 +927,9 @@ _:future,
     color: #65481b;
 }
 
-.mini_icons .fa, .mini_icons .fa6{
-   color: #65481b;
+.mini_icons .fa,
+.mini_icons .fa6 {
+    color: #65481b;
 }
 
 /* TOOLTIP */
@@ -1104,6 +1105,7 @@ _:future,
     flex-flow: wrap;
     gap: 11px;
     justify-content: center;
+    width: 100%;
 }
 
 .group-counter {
