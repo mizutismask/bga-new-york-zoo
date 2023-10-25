@@ -88,7 +88,6 @@ class NewYorkZoo extends EuroGame {
             //    "my_second_game_variant" => 101,
             //      ...
             FAST_GAME => 100, //2 players only
-            SOLO => 101, //1 player only
             SOLO_BOARD => 102, //2 possible boards with 3 or 4 houses
             GS_ANIMAL_TO_PLACE => 10, //animalType 1 from main action
             GS_OTHER_ANIMAL_TO_PLACE => 11,  //animalType 2 from main action
@@ -165,7 +164,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_PREVIOUS_NEUTRAL_LOCATION, 0);
             self::setGameStateInitialValue(GS_LAST_SOLO_TOKEN_USED, 0);
             self::setGameStateInitialValue(GS_BOARD_COMPLETED_COUNT, 0);
-            self::setGameStateInitialValue(GS_LAST_MOVE_CROSSED_START, false);
+            self::setGameStateInitialValue(GS_LAST_MOVE_CROSSED_START, intval(false));
 
             $this->initStats();
 
@@ -808,7 +807,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     public function isSoloMode() {
-        return $this->getGameStateValue(SOLO) == ACTIVATED;
+        return  count($this->loadPlayersBasicInfos()) == 1;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1070,7 +1069,7 @@ class NewYorkZoo extends EuroGame {
             $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, 1);
             $this->notifyCounterDirect("rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT), '');
         }
-        self::setGameStateValue(GS_LAST_MOVE_CROSSED_START, $crossed);
+        self::setGameStateValue(GS_LAST_MOVE_CROSSED_START, intval($crossed));
         return $crossed;
     }
 

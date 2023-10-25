@@ -72,22 +72,6 @@ $game_options = array(
         ],
     ),
 
-    SOLO => array(
-        'name' => totranslate('Solo'),
-        'values' => array(
-            ACTIVATED => array('name' => totranslate('Yes'), 'tmdisplay' => totranslate('Solo'), 'description' => totranslate('Complete your zoo before you complete the board 2 times and beat your own score')),
-            DEACTIVATED => array('name' => totranslate('No')),
-        ),
-        'default' => DEACTIVATED,
-        'displaycondition' => [
-            [
-                'type' => 'maxplayers',
-                'value' => 1,
-                'message' => totranslate('Solo mode is available for 1 players only.')
-            ],
-        ],
-    ),
-
     SOLO_BOARD => array(
         'name' => totranslate('Board choice'),
         'values' => array(
@@ -97,15 +81,9 @@ $game_options = array(
         'default' => HOUSE_COUNT_3,
         'displaycondition' => [
             [
-                'type' => 'otheroption',
-                'id' => SOLO,
-                'value'=> ACTIVATED,
-                'message' => totranslate('You can choose your board only in solo mode.')
-            ],
-            [
                 'type' => 'maxplayers',
                 'value' => 1,
-                'message' => totranslate('Solo mode is available for 1 players only.')
+                'message' => totranslate('You can choose your board only in solo mode.')
             ],
         ],
     ),
