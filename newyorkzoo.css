@@ -1505,11 +1505,10 @@ _:future,
     background-size: auto 100%;
 }
 .token_neutral {
-    width: 40px;
-    height: 80px;
-    background-image: url(img/tokens.png);
-    background-size: calc(600px / 50 * 40) auto;
-    background-position: 0 37%;
+    width: 83px;
+    height: 84px;
+    background-image: url(img/elephant.png);
+    background-size: cover;
     z-index: 20;
     filter: drop-shadow(0px 2px 4px black);
     grid-column: 1/1;
