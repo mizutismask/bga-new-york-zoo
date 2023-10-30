@@ -409,6 +409,10 @@ class NewYorkZoo extends EuroGame {
             $this->setCounter($result['counters'], "empties_${order}_counter", $unoccup_count);
         }
         $this->setCounter($result['counters'], "rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT));
+        $fences = array_filter($this->actionStripZones, fn ($z) => $z["type"] == PATCH);
+        foreach ($fences as $id => $zone) {
+            $this->setCounter($result['counters'], "pile_".$id."_counter", count(array_filter($result["tokens"], fn ($t) => $t["location"] == $id && $t["key"]!=="token_neutral")));
+        }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
         return $result;
@@ -932,6 +936,7 @@ class NewYorkZoo extends EuroGame {
         $this->userAssertTrue(self::_("Not possible to place fence: illegal move"), $valid);
         $state = $rotateZ / 90 + $rotateY / 180 * 4;
         $message = clienttranslate('${player_name} places fence ${token_div}');
+        $actionZone=$this->tokens->getTokenLocation($token_id);
         $this->dbSetTokenLocation(
             $token_id,
             $dropTarget,
@@ -952,6 +957,9 @@ class NewYorkZoo extends EuroGame {
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
         //self::dump('*********occupiedByPiece**********', $occupiedByPiece);
         $fenceId = $this->dbInsertFence($order, $token_id, $occupiedByPiece, $isBonusAttraction);
+        if(!$isBonusAttraction){
+            $this->notifyCounterDirect("pile_".$actionZone."_counter",count($this->tokens->getTokensOfTypeInLocation("patch%", $actionZone)), '');
+        }
         self::setGameStateValue(GS_LAST_FENCE_PLACED, $fenceId);
     }
 

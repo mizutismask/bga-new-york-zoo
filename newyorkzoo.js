@@ -676,7 +676,9 @@ define([
             dojo.query('.nyz_animal_action_zone, .nyz_birth_zone').forEach((node) => {
                 this.updateTooltip(node.id);
             });
-
+            dojo.query('.nyz_action_zone:not(.nyz_animal_action_zone)').forEach((node) => {
+                this.addFencePileToTooltip(node.id);
+            });
             debug('Ending game setup');
         },
 
@@ -744,6 +746,7 @@ define([
 
         setupToken: function (token, tokenRec) {
             if (token.startsWith('patch')) {
+                //console.log("setupToken", token);
                 var tokenId = token; //tokens with several occurrences should be found by their type id
                 if (token.split('_').length == 3) {
                     tokenId = token.substring(0, token.lastIndexOf('_'));
@@ -791,13 +794,50 @@ define([
             }
         },
 
+        naturalSort: function (ary, fullNumbers) {
+            var re = fullNumbers ? /[\d\.\-]+|\D+/g : /\d+|\D+/g;
+
+            // Perform a Schwartzian transform, breaking each entry into pieces first
+            for (var i = ary.length; i--; )
+                ary[i] = [ary[i]].concat(
+                    (ary[i] + '').match(re).map(function (s) {
+                        return isNaN(s) ? [s, false, s] : [s * 1, true, s];
+                    })
+                );
+
+            // Perform a cascading sort down the pieces
+            ary.sort(function (a, b) {
+                var al = a.length,
+                    bl = b.length,
+                    e = al > bl ? al : bl;
+                for (var i = 1; i < e; ++i) {
+                    // Sort "a" before "a1"
+                    if (i >= al) return -1;
+                    else if (i >= bl) return 1;
+                    else if (a[i][0] !== b[i][0])
+                        return a[i][1] && b[i][1] // Are we comparing numbers?
+                            ? a[i][0] - b[i][0] // Then diff them.
+                            : a[i][2] < b[i][2]
+                            ? -1
+                            : 1; // Otherwise, lexicographic sort
+                }
+                return 0;
+            });
+
+            // Restore the original values into the array
+            for (var i = ary.length; i--; ) ary[i] = ary[i][0];
+            return ary;
+        },
+
         setupGameTokens: function () {
             this.setupScrollableMap();
 
             //this.setupPreference();
             //this.updateCountersSafe(this.gamedatas.counters);
             //this.updateMyCountersAll();
-            for (var token in this.gamedatas.tokens) {
+            const sortedTokens = this.naturalSort(Object.keys(this.gamedatas.tokens));
+
+            for (const token of sortedTokens) {
                 var tokenInfo = this.gamedatas.tokens[token];
                 var location = tokenInfo.location;
                 if (!$(location) && this.gamedatas.tokens[location]) {
@@ -806,10 +846,11 @@ define([
                 this.placeTokenWithTips(token);
             }
 
-            for (var token in this.gamedatas.tokens) {
+            for (var token of sortedTokens) {
                 var tokenInfo = this.gamedatas.tokens[token];
                 this.setupToken(token, tokenInfo);
             }
+
             this.updateCountersSafe(this.gamedatas.counters);
             dojo.query('.mini_counter').forEach((node) => {
                 this.updateTooltip(node.id, node.parentNode);
@@ -1061,8 +1102,8 @@ define([
         },
 
         setBonusMarketBackAtTheEnd() {
-             //puts attractions back in last
-             dojo.place('bonus_market', 'circle_market', 'after');
+            //puts attractions back in last
+            dojo.place('bonus_market', 'circle_market', 'after');
         },
 
         onUpdateActionButtons: function (stateName, args) {
@@ -1560,6 +1601,37 @@ define([
         },
 
         // UTILS
+
+        updateDisplayInfo: function (tokenInfo) {
+            //addFencePileToTooltip
+            if (tokenInfo.key.startsWith('action_zone')) {
+                dojo.query(`#${tokenInfo.key}:not(nyz_animal_action_zone) .patch:not(.hidden)`).forEach((fence) => {
+                    debug(tokenInfo);
+                    if (!tokenInfo.hasOwnProperty('fencesPile')) {
+                        tokenInfo.fencesPile = [];
+                    }
+                    tokenInfo.fencesPile.unshift(fence); //reverse the order to reflect the pile
+                });
+            }
+        },
+
+        addFencePileToTooltip: function (actionZoneId) {
+            dojo.query(`#${actionZoneId} .patch:not(.hidden)`).forEach((fence) => {
+                this.updateTooltip(actionZoneId);
+            });
+        },
+
+        getCustomAdditionalTooltipContent: function (tokenInfo) {
+            if (tokenInfo.tokenKey === 'action_zone' && 'fencesPile' in tokenInfo) {
+                let pileContent = '<br><br><span class="tooltipsubtitle">' + _('Enclosure pile:') + '</span>' + '<br>';
+                tokenInfo.fencesPile.forEach((fenceUnder) => {
+                    pileContent += fenceUnder.innerHTML + '<br>';
+                });
+                return pileContent;
+            }
+            return undefined;
+        },
+
         restoreCompressedData: function (args) {
             if (args.hasOwnProperty('patches')) {
                 for (const patchId in args.patches) {

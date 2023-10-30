@@ -1,30 +1,30 @@
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
-var debug = isDebug ? console.info.bind(window.console) : function () { };
+var debug = isDebug ? console.info.bind(window.console) : function () {};
 
 function joinId(first, second) {
     return first + '_' + second;
-};
+}
 function getIntPart(word, i) {
     var arr = word.split('_');
     return parseInt(arr[i]);
-};
+}
 function getPart(word, i) {
     var arr = word.split('_');
     return arr[i];
-};
+}
 function getFirstParts(word, count) {
     var arr = word.split('_');
     var res = arr[0];
     for (var i = 1; i < arr.length && i < count; i++) {
-        res += "_" + arr[i];
+        res += '_' + arr[i];
     }
     return res;
-};
+}
 function getParentParts(word) {
     var arr = word.split('_');
-    if (arr.length <= 1) return "";
+    if (arr.length <= 1) return '';
     return getFirstParts(word, arr.length - 1);
-};
+}
 function reloadCss() {
     var links = document.getElementsByTagName('link');
     for (var cl in links) {
@@ -830,12 +830,19 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
             return this.getTooptipHtmlForTokenInfo(tokenInfo);
         },
         getTooptipHtmlForTokenInfo: function (tokenInfo) {
-            var main = this.getTooptipHtml(tokenInfo.name, tokenInfo.tooltip, tokenInfo.imageTypes, '<hr/>');
+            var main = this.getTooptipHtml(tokenInfo.name, tokenInfo.tooltip, tokenInfo.imageTypes, '<hr/>', this.getCustomAdditionalTooltipContent(tokenInfo));
             var action = tokenInfo.tooltip_action;
             if (action && main !== null) {
                 main += '<br>' + this.getActionLine(action);
             }
             return main;
+        },
+
+        /**
+         * To redefine in a subclass to add some content to the token tooltip.
+         */
+        getCustomAdditionalTooltipContent: function (tokenInfo) {
+            return undefined;
         },
 
         getTooptipHtml: function (name, message, imgTypes, sep, dyn) {
@@ -851,6 +858,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
                     containerType += itypes[i] + '_tooltipcontainer ';
                 }
             }
+         
             return (
                 "<div class='" +
                 containerType +

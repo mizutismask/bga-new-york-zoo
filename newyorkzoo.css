@@ -137,6 +137,26 @@ _:future,
     border: 2px solid rgba(125, 247, 26, 0.8);
 }
 
+.market .patch-outline {
+    display: block;
+}
+
+/*:root .market .patch{
+    filter: none;
+}*/
+
+.nyz_action_zone .patch:nth-last-of-type(3) {
+    filter: grayscale(1);
+}
+
+.nyz_action_zone .patch:nth-last-of-type(2) {
+    filter: grayscale(0.5);
+}
+
+.nyz_action_zone .patch:nth-last-of-type(1) {
+    filter: none !important;
+}
+
 .central {
     position: relative;
     display: flex;
@@ -958,12 +978,23 @@ _:future,
     text-transform: uppercase;
 }
 
+.tooltipsubtitle {
+    font-weight: bold;
+    font-size: 100%;
+    text-transform: uppercase;
+}
+
 .tooltipcontainer {
     color: black;
 }
 .tundra .dijitTooltipContainer {
     color: black;
     /* background: url(img/tile2.jpg);*/
+}
+
+.tooltipcontainer .patch-face {
+    pointer-events: none;
+    margin: 5px;
 }
 
 .nyz_action_zone {
@@ -1354,6 +1385,26 @@ _:future,
 .filler_face {
     background: none;
 }
+.nyz_animal_action_zone .pile-counter {
+    display: none;
+}
+
+.pile-counter {
+    color: white;
+    background-color: #5d3f11;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 15px;
+    height: 15px;
+    z-index: 100;
+    font-weight: bold;
+    font-size: 10pt;
+    display: inline-flex;
+    justify-content: center;
+    align-items: flex-end;
+}
 
 .solo-token {
     background-image: url(img/soloTokens.png);
@@ -1363,6 +1414,7 @@ _:future,
     border: 3px solid #f1f0ef;
     background-size: cover;
     pointer-events: none;
+    z-index: 100;
 }
 
 #generalactions .solo-token {
