@@ -137,13 +137,10 @@ _:future,
     border: 2px solid rgba(125, 247, 26, 0.8);
 }
 
-.market .patch-outline {
+.market .patch-outline,
+.bonus_market .patch-outline {
     display: block;
 }
-
-/*:root .market .patch{
-    filter: none;
-}*/
 
 .central {
     position: relative;
@@ -432,9 +429,6 @@ _:future,
 }
 .market .patch[data-order='3'] {
     z-index: 13;
-}
-.market .patch {
-    filter: drop-shadow(2px 1px 1px rgba(0, 0, 0, 0.575));
 }
 
 .patch.animated {
