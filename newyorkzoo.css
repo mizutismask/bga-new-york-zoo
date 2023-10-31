@@ -145,18 +145,6 @@ _:future,
     filter: none;
 }*/
 
-.nyz_action_zone .patch:nth-last-of-type(3) {
-    filter: grayscale(1);
-}
-
-.nyz_action_zone .patch:nth-last-of-type(2) {
-    filter: grayscale(0.5);
-}
-
-.nyz_action_zone .patch:nth-last-of-type(1) {
-    filter: none !important;
-}
-
 .central {
     position: relative;
     display: flex;

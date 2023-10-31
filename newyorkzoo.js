@@ -679,6 +679,7 @@ define([
             dojo.query('.nyz_action_zone:not(.nyz_animal_action_zone)').forEach((node) => {
                 this.addFencePileToTooltip(node.id);
             });
+            this.hideUnderPile();
             debug('Ending game setup');
         },
 
@@ -1621,6 +1622,15 @@ define([
             });
         },
 
+        hideUnderPile: function () {
+            dojo.query('.nyz_action_zone:not(.nyz_animal_action_zone)').forEach((actionZoneNode) => {
+                var allElemsOfType = actionZoneNode.getElementsByClassName('patch');
+                Array.from(allElemsOfType).forEach((patch) => {
+                    dojo.toggleClass(patch, 'hidden', patch != allElemsOfType[allElemsOfType.length - 1]);
+                });
+            });
+        },
+
         getCustomAdditionalTooltipContent: function (tokenInfo) {
             if (tokenInfo.tokenKey === 'action_zone' && 'fencesPile' in tokenInfo) {
                 let pileContent = '<br><br><span class="tooltipsubtitle">' + _('Enclosure pile:') + '</span>' + '<br>';
@@ -1710,6 +1720,7 @@ define([
             var token = $(tokenId);
             if (!token) return; // destroyed
             this.updateAttractionCount();
+            if (tokenId.startsWith('patch') && !tokenId.endsWith('_temp')) this.hideUnderPile();
         },
         onDone: function () {
             $('overall-content').classList.remove('placingFence');
@@ -1736,7 +1747,7 @@ define([
                 $(token).draggable = false;
             }
             this.setBonusMarketBackAtTheEnd();
-
+            
             this.ajaxClientStateAction();
         },
 
