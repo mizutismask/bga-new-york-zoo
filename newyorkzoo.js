@@ -1046,7 +1046,9 @@ define([
 
         onEnteringState_placeAttraction(args) {
             //pops attractions up, near the player board
-            dojo.place('bonus_market', this.queryFirstId('.tableau.own'), 'before');
+            if (this.isCurrentPlayerActive()) {
+                dojo.place('bonus_market', this.queryFirstId('.tableau.own'), 'before');
+            }
         },
 
         onEnteringState_populateNewFence(args) {
@@ -1747,7 +1749,7 @@ define([
                 $(token).draggable = false;
             }
             this.setBonusMarketBackAtTheEnd();
-            
+
             this.ajaxClientStateAction();
         },
 
