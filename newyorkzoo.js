@@ -1608,8 +1608,8 @@ define([
         updateDisplayInfo: function (tokenInfo) {
             //addFencePileToTooltip
             if (tokenInfo.key.startsWith('action_zone')) {
-                dojo.query(`#${tokenInfo.key}:not(nyz_animal_action_zone) .patch:not(.hidden)`).forEach((fence) => {
-                    debug(tokenInfo);
+                dojo.query(`#${tokenInfo.key}:not(nyz_animal_action_zone) .patch`).forEach((fence) => {
+                    //debug(tokenInfo);
                     if (!tokenInfo.hasOwnProperty('fencesPile')) {
                         tokenInfo.fencesPile = [];
                     }
