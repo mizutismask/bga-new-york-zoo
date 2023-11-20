@@ -5,6 +5,7 @@
 identify -format "%[colorspace]\n"
 mogrify -path ./resized -resize 700 -quality 100 \*.jpg
 montage `ls -v ./resized` -tile 2 -geometry 700x569+0+0 board2P.jpg
+montage `ls -v .` -tile 4 -geometry 560x452+0+0 board4P.jpg
 mogrify -path ./cropped -shave 35x35 -resize 700 -quality 100 \*.png
 ```
 
