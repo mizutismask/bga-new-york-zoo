@@ -319,7 +319,7 @@ _:future,
 
 .player_name {
 	position: absolute;
-	bottom: 8px;
+	bottom: 4px;
 	z-index: 100;
 	width: 100%;
 	left: 0px;
