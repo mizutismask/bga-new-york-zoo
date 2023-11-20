@@ -48,7 +48,7 @@
 :root {
 	--colsNb: 14;
 	--rowsNb: var(--rowsNb);
-	--cellWidth: 42px;
+	--cellWidth: 35px;
 	--playerCount: 3;
 }
 
@@ -165,8 +165,8 @@ _:future,
 .actionStrip {
 	background-image: url(img/actionStrip.png);
 	width: 100%;
-	height: 414px;
-	border: #8a8 solid 1px;
+	height: 358px;
+	/*border: #8a8 solid 1px;*/
 	position: absolute;
 }
 
@@ -194,8 +194,8 @@ _:future,
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: flex-start;
-	width: 700px;
-	height: 569px;
+	width: 560px;
+	height: 452px;
 }
 
 .tableau.own {
@@ -225,19 +225,19 @@ _:future,
 
 /*should be pboard instead of tableau*/
 .tableau.player_count_1 {
-	background-image: url(img/board1P.png);
+	background-image: url(img/board1P.jpg);
 }
 .tableau.player_count_2 {
-	background-image: url(img/board2P.png);
+	background-image: url(img/board2P.jpg);
 }
 .tableau.player_count_3 {
-	background-image: url(img/board3P.png);
+	background-image: url(img/board3P.jpg);
 }
 .tableau.player_count_4 {
-	background-image: url(img/board4P.png);
+	background-image: url(img/board4P.jpg);
 }
 .tableau.player_count_5 {
-	background-image: url(img/board5P.png);
+	background-image: url(img/board5P.jpg);
 }
 
 .tableau.player_order_1.board_houses_3 {
@@ -264,62 +264,62 @@ _:future,
 }
 
 .player_count_1.board_houses_3 .pboard {
-	padding: 143px 0px 0px 58px;
+	padding: 19.1% 0px 0px 6.8%;
 }
 
 .player_count_1.board_houses_4 .pboard {
-	padding: 143px 0px 0px 56px;
+	padding: 19.1% 0px 0px 6.3%;
 }
 
 .player_count_2.player_order_1 .pboard {
-	padding: 143px 0px 0px 56px;
+	padding: 19.1% 0px 0px 6.3%;
 }
 .player_count_2.player_order_2 .pboard {
-	padding: 143px 0px 0px 57px;
+	padding: 19.1% 0px 0px 6.5%;
 }
 
 .player_count_3.player_order_1 .pboard {
-	padding: 143px 0px 0px 62px;
+	padding: 19.1% 0px 0px 7.3%;
 }
 .player_count_3.player_order_2 .pboard {
-	padding: 142px 0px 0px 60px;
+	padding: 19.1% 0px 0px 6.9%;
 }
 .player_count_3.player_order_3 .pboard {
-	padding: 142px 0px 0px 58px;
+	padding: 19.1% 0px 0px 6.7%;
 }
 
 .player_count_4.player_order_1 .pboard {
-	padding: 141px 0px 0px 50px;
+	padding: 19.1% 0px 0px 5.8%;
 }
 .player_count_4.player_order_2 .pboard {
-	padding: 143px 0px 0px 54px;
+	padding: 19.1% 0px 0px 6.1%;
 }
 .player_count_4.player_order_3 .pboard {
-	padding: 142px 0px 0px 53px;
+	padding: 19.1% 0px 0px 5.8%;
 }
 .player_count_4.player_order_4 .pboard {
-	padding: 143px 0px 0px 52px;
+	padding: 19.1% 0px 0px 5.9%;
 }
 
 .player_count_5.player_order_1 .pboard {
-	padding: 141px 0px 0px 50px;
+	padding: 19.1% 0px 0px 5.9%;
 }
 .player_count_5.player_order_2 .pboard {
-	padding: 143px 0px 0px 52px;
+	padding: 19.1% 0px 0px 6.1%;
 }
 .player_count_5.player_order_3 .pboard {
-	padding: 145px 0px 0px 51px;
+	padding: 19.1% 0px 0px 5.9%;
 }
 .player_count_5.player_order_4 .pboard {
-	padding: 143px 0px 0px 49px;
+	padding: 19.1% 0px 0px 5.6%;
 }
 .player_count_5.player_order_5 .pboard {
-	padding: 143px 0px 0px 48px;
+	padding: 19.1% 0px 0px 5.6%;
 }
 
 .player_name {
 	position: absolute;
-	bottom: 8px;
+	bottom: 4px;
 	z-index: 100;
 	width: 100%;
 	left: 0px;
@@ -359,7 +359,7 @@ _:future,
 	/* background-color: cyan; */
 	width: var(--cellWidth);
 	height: var(--cellWidth);
-	/*border: 1px solid hsl(0deg 0% 100% / 70%);*/ /* for debug*/
+	/*border: 1px solid hsl(0deg 0% 100% / 70%); for debug*/
 	overflow: visible;
 	z-index: 99;
 }
@@ -676,18 +676,18 @@ _:future,
 #generalactions .control-image{
     background-size: 16em auto;
 }
+
 #generalactions .rotate-image{
     background-position: 0% 100%;
-}
-
-.rotate-image {
-	background-position: -2% 101%;
 }
 
 #generalactions .mirror-image{
     background-position: 19% 100%;
 }
 
+.rotate-image {
+	background-position: -2% 101%;
+}
 .mirror-image {
 	background-position: 18% 101%;
 }
@@ -701,6 +701,8 @@ _:future,
 	background-color: #436aab;
 	border: solid white 3px;
 	border-radius: 25px;
+	width: 32px;
+	height: 32px;
 	overflow: hidden;
 	text-align: center;
 }
@@ -754,11 +756,11 @@ _:future,
 }
 
 .tableau .rotate_control {
-	top: calc((50% - 2.5em / 2) + 42px);
+	top: calc((50% - 2.5em / 2) + 32px);
 	left: -1px;
 }
 .tableau .flip_control {
-	top: calc((50% - 2.5em / 2) + 42px);
+	top: calc((50% - 2.5em / 2) + 32px);
 	right: 1px;
 }
 .tableau .done_control {
@@ -790,7 +792,7 @@ _:future,
 	/*padding-top: calc(414 / 2163 * 100%);*/
 	/*height: calc(var(--cellWidth) * 5);*/
 	/*width: 2163px;*/
-	height: 414px;
+	height: 358px;
 	overflow: hidden;
 	user-select: none;
 }
@@ -802,8 +804,8 @@ _:future,
 
 .map_layer {
 	position: absolute;
-	width: 2163px;
-	height: 414px;
+	width: 1730px;
+	height: 358px;
 }
 
 #map_surface {
@@ -1170,53 +1172,53 @@ _:future,
 	height: 100%;
 }
 .house {
-	/*border: orange solid 1px;*/
-	width: var(--cellWidth);
-	height: var(--cellWidth);
+	/*border: orange solid 1px; for debug*/
+	width: 40px;
+	height: 40px;
 	position: relative;
 	z-index: 110;
 }
 
 .player_count_1.player_order_1.board_houses_3 .house_1 {
-	top: 7%;
-	left: 16.9%;
+	top: 7.2%;
+	left: 16.5%;
 }
 .player_count_1.player_order_1.board_houses_3 .house_2 {
-	top: -0.2%;
-	left: 1.6%;
+	top: -1.4%;
+	left: 1.3%;
 }
 .player_count_1.player_order_1.board_houses_3 .house_3 {
-	top: 7.5%;
-	left: 5.4%;
+	top: 4.6%;
+	left: 5.1%;
 }
 
 .player_count_1.player_order_1.board_houses_4 .house_1 {
-	top: 5.5%;
+	top: 5.7%;
 	left: 13.6%;
 }
 .player_count_1.player_order_1.board_houses_4 .house_2 {
-	top: -4%;
-	left: 1.6%;
+	top: -5.3%;
+	left: 1.7%;
 }
 .player_count_1.player_order_1.board_houses_4 .house_3 {
-	top: 2.1%;
+	top: -0.7%;
 	left: 12.8%;
 }
 .player_count_1.player_order_1.board_houses_4 .house_4 {
-	top: -6%;
-	left: 0%;
+	top: -11.4%;
+	left: 0.2%;
 }
 
 .player_count_2.player_order_1 .house_1 {
 	top: 7.2%;
-	left: 13.3%;
+	left: 13.4%;
 }
 .player_count_2.player_order_1 .house_2 {
-	top: 0%;
-	left: 1.2%;
+	top: -1.4%;
+	left: 1.5%;
 }
 .player_count_2.player_order_1 .house_3 {
-	top: 7.7%;
+	top: 4.5%;
 	left: 4.4%;
 }
 .player_count_2.player_order_2 .house_1 {
@@ -1224,11 +1226,11 @@ _:future,
 	left: 14%;
 }
 .player_count_2.player_order_2 .house_2 {
-	top: 1%;
+	top: -0.3%;
 	left: 1.1%;
 }
 .player_count_2.player_order_2 .house_3 {
-	top: 5.6%;
+	top: 2.5%;
 	left: 10.7%;
 }
 
@@ -1237,52 +1239,52 @@ _:future,
 	left: 8%;
 }
 .player_count_3.player_order_1 .house_2 {
-	top: 13.1%;
-	left: 3.9%;
+	top: 11.6%;
+	left: 4%;
 }
 .player_count_3.player_order_2 .house_1 {
 	top: 7.2%;
 	left: 16.2%;
 }
 .player_count_3.player_order_2 .house_2 {
-	top: 0.1%;
-	left: 0.8%;
+	top: -1.6%;
+	left: 1%;
 }
 .player_count_3.player_order_2 .house_3 {
-	top: 7.8%;
-	left: 4.6%;
+	top: 4.5%;
+	left: 4.8%;
 }
 .player_count_3.player_order_3 .house_1 {
 	top: 7%;
 	left: 17.6%;
 }
 .player_count_3.player_order_3 .house_2 {
-	top: 1.1%;
-	left: 1%;
+	top: -0.4%;
+	left: 1.2%;
 }
 .player_count_3.player_order_3 .house_3 {
-	top: 5.8%;
+	top: 2.5%;
 	left: 13.3%;
 }
 
 .player_count_4.player_order_1 .house_1 {
-	top: 7.7%;
-	left: 12.9%;
+	top: 7.3%;
+	left: 12.3%;
 }
 .player_count_4.player_order_1 .house_2 {
-	top: 13.7%;
-	left: 8%;
+	top: 11.7%;
+	left: 7.6%;
 }
 .player_count_4.player_order_2 .house_1 {
 	top: 6%;
 	left: 21.4%;
 }
 .player_count_4.player_order_2 .house_2 {
-	top: -1.2%;
+	top: -2.7%;
 	left: 2.6%;
 }
 .player_count_4.player_order_2 .house_3 {
-	top: 6.6%;
+	top: 3.3%;
 	left: 7.3%;
 }
 .player_count_4.player_order_3 .house_1 {
@@ -1290,93 +1292,93 @@ _:future,
 	left: 22.8%;
 }
 .player_count_4.player_order_3 .house_2 {
-	top: 1.2%;
+	top: -0.3%;
 	left: 3%;
 }
 .player_count_4.player_order_3 .house_3 {
-	top: 5.4%;
-	left: 17.6%;
+	top: 2.6%;
+	left: 17.8%;
 }
 .player_count_4.player_order_4 .house_1 {
-	top: 5.5%;
-	left: 22.4%;
+	top: 5.7%;
+	left: 22.1%;
 }
 .player_count_4.player_order_4 .house_2 {
-	top: -4%;
+	top: -5.3%;
 	left: 3.6%;
 }
 .player_count_4.player_order_4 .house_3 {
-	top: 2.2%;
-	left: 21.1%;
+	top: -0.8%;
+	left: 20.8%;
 }
 .player_count_4.player_order_4 .house_4 {
-	top: -6.1%;
+	top: -10.6%;
 	left: 1.2%;
 }
 
 .player_count_5.player_order_1 .house_1 {
-	top: 7.8%;
-	left: 14.5%;
+	top: 7.3%;
+	left: 13.6%;
 }
 .player_count_5.player_order_1 .house_2 {
-	top: 13.7%;
-	left: 9.1%;
+	top: 11.4%;
+	left: 8.1%;
 }
 .player_count_5.player_order_2 .house_1 {
-	top: 7.2%;
-	left: 24.7%;
+	top: 7%;
+	left: 23.7%;
 }
 .player_count_5.player_order_2 .house_2 {
-	top: -0.1%;
-	left: 3.5%;
+	top: -1.8%;
+	left: 2.9%;
 }
 .player_count_5.player_order_2 .house_3 {
-	top: 7.8%;
-	left: 8.9%;
+	top: 3.9%;
+	left: 8%;
 }
 .player_count_5.player_order_3 .house_1 {
-	top: 6.3%;
-	left: 23.9%;
+	top: 6.6%;
+	left: 23.4%;
 }
 .player_count_5.player_order_3 .house_2 {
-	top: 0.7%;
-	left: 1.6%;
+	top: -0.6%;
+	left: 1.1%;
 }
 .player_count_5.player_order_3 .house_3 {
-	top: 5.1%;
-	left: 18.2%;
+	top: 2.1%;
+	left: 17.6%;
 }
 .player_count_5.player_order_4 .house_1 {
 	top: 5.5%;
-	left: 26%;
+	left: 25.2%;
 }
 .player_count_5.player_order_4 .house_2 {
-	top: -4%;
-	left: 4.5%;
+	top: -5.6%;
+	left: 4.3%;
 }
 .player_count_5.player_order_4 .house_3 {
-	top: 2.1%;
-	left: 24.1%;
+	top: -1.2%;
+	left: 23.6%;
 }
 .player_count_5.player_order_4 .house_4 {
-	top: -6%;
+	top: -11.2%;
 	left: 1.6%;
 }
 .player_count_5.player_order_5 .house_1 {
-	top: 4.8%;
-	left: 30.7%;
+	top: 4.9%;
+	left: 29.6%;
 }
 .player_count_5.player_order_5 .house_2 {
-	top: -4.04%;
-	left: 6.5%;
+	top: -5.74%;
+	left: 5.9%;
 }
 .player_count_5.player_order_5 .house_3 {
-	top: 2.2%;
-	left: 26.3%;
+	top: -1.4%;
+	left: 25.3%;
 }
 .player_count_5.player_order_5 .house_4 {
-	top: -6.1%;
-	left: 3.7%;
+	top: -11.3%;
+	left: 2.9%;
 }
 .filler .target-image {
 	display: none;
@@ -1514,6 +1516,11 @@ _:future,
 	grid-column: 1/1;
 	grid-row: 1/1;
 	/*margin: 47px 0px 0px 47px*/
+}
+
+.nyz_action_zone_lower .token_neutral {
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
 }
 
 .log .flamingo,
