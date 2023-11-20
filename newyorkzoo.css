@@ -1006,7 +1006,7 @@ _:future,
 	display: grid;
 	grid-template-columns: 1fr;
 	justify-items: center;
-	/*align-content: center;*/
+	align-content: center;
 }
 
 .nyz_action_zone:nth-child(13) {
