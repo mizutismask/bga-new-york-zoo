@@ -47,7 +47,7 @@
 			<div class="actionStrip">
 
 				<!-- BEGIN actionStripZone -->
-				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;">
+				<div id="{ID}" class="nyz_action_zone {ANIMAL_ZONE} {LOWER_HALF}" style="left: {X}%; top: {Y}%; width: {WIDTH}%; height: {HEIGHT}%;">
 					<div id="pile_{ID}_counter" class="pile-counter">0</div>
 				</div>
 				<!-- END actionStripZone -->

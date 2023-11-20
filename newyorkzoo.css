@@ -1160,33 +1160,33 @@ _:future,
 }
 
 .player_count_1.player_order_1.board_houses_3 .house_1 {
-    top: 7.2%;
-    left: 16.5%;
+	top: 7.2%;
+	left: 16.5%;
 }
 .player_count_1.player_order_1.board_houses_3 .house_2 {
-    top: -1.4%;
-    left: 1.3%;
+	top: -1.4%;
+	left: 1.3%;
 }
 .player_count_1.player_order_1.board_houses_3 .house_3 {
-    top: 4.6%;
-    left: 5.1%;
+	top: 4.6%;
+	left: 5.1%;
 }
 
 .player_count_1.player_order_1.board_houses_4 .house_1 {
-    top: 5.7%;
-    left: 13.6%;
+	top: 5.7%;
+	left: 13.6%;
 }
 .player_count_1.player_order_1.board_houses_4 .house_2 {
-    top: -5.3%;
-    left: 1.7%;
+	top: -5.3%;
+	left: 1.7%;
 }
 .player_count_1.player_order_1.board_houses_4 .house_3 {
 	top: -0.7%;
 	left: 12.8%;
 }
 .player_count_1.player_order_1.board_houses_4 .house_4 {
-    top: -11.4%;
-    left: 0.2%;
+	top: -11.4%;
+	left: 0.2%;
 }
 
 .player_count_2.player_order_1 .house_1 {
@@ -1496,6 +1496,11 @@ _:future,
 	grid-column: 1/1;
 	grid-row: 1/1;
 	/*margin: 47px 0px 0px 47px*/
+}
+
+.nyz_action_zone_lower .token_neutral {
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
 }
 
 .log .flamingo,
