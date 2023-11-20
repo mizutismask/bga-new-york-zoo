@@ -736,11 +736,11 @@ _:future,
 }
 
 .tableau .rotate_control {
-	top: calc((50% - 2.5em / 2) + 42px);
+	top: calc((50% - 2.5em / 2) + 32px);
 	left: -1px;
 }
 .tableau .flip_control {
-	top: calc((50% - 2.5em / 2) + 42px);
+	top: calc((50% - 2.5em / 2) + 32px);
 	right: 1px;
 }
 .tableau .done_control {
