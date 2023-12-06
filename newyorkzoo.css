@@ -1545,7 +1545,7 @@ _:future,
 	background-image: url(img/elephant.png);
 	background-size: cover;
 	z-index: 20;
-	filter: drop-shadow(0px 2px 4px black);
+	filter: drop-shadow(0px 2px 16px white);
 	grid-column: 1/1;
 	grid-row: 1/1;
 	/*margin: 47px 0px 0px 47px*/
