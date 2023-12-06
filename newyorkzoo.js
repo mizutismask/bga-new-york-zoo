@@ -680,6 +680,9 @@ define([
                 this.addFencePileToTooltip(node.id);
             });
             this.hideUnderPile();
+            dojo.query('.nyz-help').forEach((node) => {
+                this.updateTooltip(node.id);
+            });
             debug('Ending game setup');
         },
 

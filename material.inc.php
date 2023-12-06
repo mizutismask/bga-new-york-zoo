@@ -56,6 +56,21 @@ if (!defined("LIGHTEST_GREEN")) {
 $this->animals = [MEERKAT, FLAMINGO, KANGAROO, PENGUIN, FOX];
 $this->animalTypes = [MEERKAT_TYPE, FLAMINGO_TYPE, KANGAROO_TYPE, PENGUIN_TYPE, FOX_TYPE];
 
+$firstStep = clienttranslate("First step: move the elephant");
+$secondStep = clienttranslate("Second step: main action");
+$thirdStep = clienttranslate("Third step: breed animals");
+$help1Players1 = clienttranslate("help1Players1");
+$help1Players35 = clienttranslate("help1Players35");
+$help1Players24 = clienttranslate("help1Players24");
+
+$help2Players1 = clienttranslate("help2Players1");
+$help2Players35 = clienttranslate("help2Players35");
+$help2Players24 = clienttranslate("help2Players24");
+
+$help3Players1 = clienttranslate("help3Players1");
+$help3Players35 = clienttranslate("help3Players35");
+$help3Players24 = clienttranslate("help3Players24");
+
 //by player count, then player order (if solo, by player count then houses count)
 $this->boards = [
   '1' => [
@@ -337,10 +352,10 @@ $this->actionStripZones['action_zone_anml_25'] = [
 ];
 
 /* In percent */
-$birthTopYLine1 = 29.2 ;
+$birthTopYLine1 = 29.2;
 $birthTopYLine2 = 44.4;
-$birthWidth=5.6;
-$birthHeight=25;
+$birthWidth = 5.6;
+$birthHeight = 25;
 $this->birthZones = [
   'birth_zone_1' => [
     'triggerZone' =>  4,
@@ -437,23 +452,23 @@ $this->token_types = [
     'tooltip' => clienttranslate("Counter for entire board convolution. You must win before it gets to 2."),
   ],
   'flamingo' => [
-    'type' => FLAMINGO. " animal",
+    'type' => FLAMINGO . " animal",
     'name' => clienttranslate("Flamingo"),
   ],
   'meerkat' => [
-    'type' => MEERKAT. " animal",
+    'type' => MEERKAT . " animal",
     'name' => clienttranslate("Meerkat"),
   ],
   'fox' => [
-    'type' => FOX. " animal",
+    'type' => FOX . " animal",
     'name' => clienttranslate("Fox"),
   ],
   'penguin' => [
-    'type' => PENGUIN. " animal",
+    'type' => PENGUIN . " animal",
     'name' => clienttranslate("Penguin"),
   ],
   'kangaroo' => [
-    'type' => KANGAROO. " animal",
+    'type' => KANGAROO . " animal",
     'name' => clienttranslate("Kangaroo"),
   ],
 
@@ -481,6 +496,84 @@ $this->token_types = [
     'type' => 'solo-token solo-token_4',
     'name' => clienttranslate("Range marker"),
     'tooltip' => clienttranslate("Use this token to move 4 spaces forward or more"),
+  ],
+
+  'help1players1' => [
+    'type' => '',
+    'name' => $firstStep,
+    'tooltip' => $help1Players1,
+  ],
+  'help1players2' => [
+    'type' => '',
+    'name' => $firstStep,
+    'tooltip' => $help1Players24,
+  ],
+  'help1players3' => [
+    'type' => '',
+    'name' => $firstStep,
+    'tooltip' => $help1Players35,
+  ],
+  'help1players4' => [
+    'type' => '',
+    'name' => $firstStep,
+    'tooltip' => $help1Players24,
+  ],
+  'help1players5' => [
+    'type' => '',
+    'name' => $firstStep,
+    'tooltip' => $help1Players35,
+  ],
+
+  'help2players1' => [
+    'type' => '',
+    'name' => $secondStep,
+    'tooltip' => $help2Players1,
+  ],
+  'help2players2' => [
+    'type' => '',
+    'name' => $secondStep,
+    'tooltip' => $help2Players24,
+  ],
+  'help2players3' => [
+    'type' => '',
+    'name' => $secondStep,
+    'tooltip' => $help2Players35,
+  ],
+  'help2players4' => [
+    'type' => '',
+    'name' => $secondStep,
+    'tooltip' => $help2Players24,
+  ],
+  'help2players5' => [
+    'type' => '',
+    'name' => $secondStep,
+    'tooltip' => $help2Players35,
+  ],
+
+  'help3players1' => [
+    'type' => '',
+    'name' => $thirdStep,
+    'tooltip' => $help3Players1,
+  ],
+  'help3players2' => [
+    'type' => '',
+    'name' => $thirdStep,
+    'tooltip' => $help3Players24,
+  ],
+  'help3players3' => [
+    'type' => '',
+    'name' => $thirdStep,
+    'tooltip' => $help3Players35,
+  ],
+  'help3players4' => [
+    'type' => '',
+    'name' => $thirdStep,
+    'tooltip' => $help3Players24,
+  ],
+  'help3players5' => [
+    'type' => '',
+    'name' => $thirdStep,
+    'tooltip' => $help3Players35,
   ],
 
   //1 to indicate filler, then playerCount_playerOrder

@@ -86,6 +86,39 @@
 	transform-origin: top left;
 }
 
+/*Board help*/
+
+.nyz-help {
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	top:23px;
+	cursor: pointer;
+}
+.nyz-help-1 {
+	left: 200px;
+}
+
+.nyz-help-2 {
+	left: 370px;
+}
+
+.nyz-help-3 {
+	top: 63px;
+	left: 487px;
+}
+
+.css-icon {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	background-color: #5d3f11;
+	font-size: smaller;
+	font-weight: bold;
+	border-radius: 50%;
+}
+
 /* MAIN LAYOUT */
 
 .thething {
@@ -668,21 +701,21 @@ _:future,
 	filter: opacity(80%);
 }
 
-#generalactions .control-image{
-    width: 2.5em;
-    height: 2.5em;
+#generalactions .control-image {
+	width: 2.5em;
+	height: 2.5em;
 }
 
-#generalactions .control-image{
-    background-size: 16em auto;
+#generalactions .control-image {
+	background-size: 16em auto;
 }
 
-#generalactions .rotate-image{
-    background-position: 0% 100%;
+#generalactions .rotate-image {
+	background-position: 0% 100%;
 }
 
-#generalactions .mirror-image{
-    background-position: 19% 100%;
+#generalactions .mirror-image {
+	background-position: 19% 100%;
 }
 
 .rotate-image {

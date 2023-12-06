@@ -49,6 +49,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $this->page->reset_subblocks('anml_square');
     $this->page->reset_subblocks('highlight_square');
     $this->page->reset_subblocks('house');
+    $this->page->reset_subblocks('board_help');
     $hor_scale = CELL_WIDTH;
     $ver_scale = CELL_WIDTH;
 
@@ -93,6 +94,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
           ));
         }
       }
+      $this->page->insert_block("board_help", ["PLAYER_COUNT" => $player_count]);
     }
 
     $this->page->insert_block("player_board", array(
@@ -220,7 +222,9 @@ class view_newyorkzoo_newyorkzoo extends game_view {
     $this->page->begin_block($template, "anml_square");
     $this->page->begin_block($template, "highlight_square");
     $this->page->begin_block($template, "house");
+    $this->page->begin_block($template, "board_help");
     $this->page->begin_block($template, "player_board");
+    
     // inner blocks in player blocks
     // ...
     // player blocks

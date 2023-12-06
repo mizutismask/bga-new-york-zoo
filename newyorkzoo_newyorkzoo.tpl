@@ -107,6 +107,13 @@
 
 		<div id="tableau_{ORDER}" data-title="{PLAYER_NAME}" class="tableau tableau_{ORDER} {OWN} player_count_{PLAYER_COUNT} player_order_{ORDER} {SOLO_BOARD}">
 			<div id="pboard_{ORDER}" class="pboard pboard_{ORDER}">
+			
+				<!-- BEGIN board_help -->
+				<div id="help1players{PLAYER_COUNT}" class="css-icon nyz-help-1 nyz-help">?</div>
+				<div id="help2players{PLAYER_COUNT}" class="css-icon nyz-help-2 nyz-help">?</div>
+				<div id="help3players{PLAYER_COUNT}" class="css-icon nyz-help-3 nyz-help">?</div>
+				<!-- END board_help -->
+			
 				<div id="squares_{ORDER}" class="squares squares_{ORDER}">
     <!-- BEGIN square -->
     				<div id="square_{ORDER}_{Y}_{X}" class="square {CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
