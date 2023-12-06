@@ -420,8 +420,8 @@ class PatchManager {
         debug('cancelPickPatch', this.selectedNode);
         if (this.selectedNode) {
             this.restoreOriginalPatch(this.selectedNode.id);
+            $('overall-content').classList.remove('placingFence');
         }
-        $('overall-content').classList.remove('placingFence');
         this.destroy('dragShadow');
         gameui.removeClass('selected');
         gameui.removeClass('pickTarget');
