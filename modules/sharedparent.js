@@ -1604,7 +1604,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
          *  - time : time before auto click
          *  - pref : 0 is disabled (auto-click), 1 if normal timer, 2 if no timer and show normal button
          */
-
+ 
         startActionTimer(buttonId, time, pref, autoclick = false) {
             var button = $(buttonId);
             var isReadOnly = this.isReadOnly();
@@ -1625,11 +1625,15 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
                 var button = $(buttonId);
                 if (button == null) {
                     this.stopActionTimer();
+                } else if (button.classList.contains('disabled')) {
+                    this.stopActionTimer();
+                    button.innerHTML =this._actionTimerLabel;
                 } else if (this._actionTimerSeconds-- > 1) {
                     button.innerHTML = this._actionTimerLabel + ' (' + this._actionTimerSeconds + ')';
                 } else {
                     debug('Timer ' + buttonId + ' execute');
                     button.click();
+                    this.stopActionTimer();
                 }
             };
             this._actionTimerFunction();
