@@ -526,7 +526,7 @@ class NewYorkZoo extends EuroGame {
         $occupied = $this->filterOccupiedSquares($squares);
         $tokens = $this->tokens->getTokensInLocations($occupied);
         $tokens = $this->filterAnimals($tokens);
-        $this->dbSetTokensLocation($tokens, "limbo", null, '✅ ${player_name} has a full fence', []);
+        $this->dbSetTokensLocation($tokens, "limbo", null, '✅ ${player_name} has a full enclosure', []);
         $this->dbUpdateFenceType($fenceId, "none");
         return $type;
     }
@@ -856,7 +856,7 @@ class NewYorkZoo extends EuroGame {
         $order = $this->getMostlyActivePlayerOrder();
 
         $canBuy  = $this->arg_placeStartFences()[$player_id];
-        $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
+        $this->userAssertTrue(self::_("Cannot choose this enclosure yet"), array_search($token_id, $canBuy) !== false);
         $this->saction_PlacePatch($order, $token_id, $dropTarget, $rotateZ, $rotateY);
 
         //stays in the same state to place other fences or desactivate players until they are all finished
@@ -908,10 +908,10 @@ class NewYorkZoo extends EuroGame {
             $this->resolveLastFullFenceContext();
         } else {
             //$order = $this->getPlayerPosition($player_id);
-            $this->userAssertTrue(self::_("No animal available to populate a fence"), $this->canPopulateNewFence());
+            $this->userAssertTrue(self::_("No animal available to populate an enclosure"), $this->canPopulateNewFence());
 
             $canBuy  = $this->arg_canBuyPatches($order);
-            $this->userAssertTrue(self::_("Cannot choose this fence yet"), array_search($token_id, $canBuy) !== false);
+            $this->userAssertTrue(self::_("Cannot choose this enclosure yet"), array_search($token_id, $canBuy) !== false);
 
             $this->validateAndUseSoloToken($pos, $soloTokenId);
 
@@ -933,9 +933,9 @@ class NewYorkZoo extends EuroGame {
         $occupancy = $this->getOccupancyMatrix($order);
         $moves = $this->arg_possibleMoves($token_id, $order, $rotor, $occupancy)[$rotor];
         $valid = array_search($dropTarget, $moves) !== false;
-        $this->userAssertTrue(self::_("Not possible to place fence: illegal move"), $valid);
+        $this->userAssertTrue(self::_("Not possible to place enclosure: illegal move"), $valid);
         $state = $rotateZ / 90 + $rotateY / 180 * 4;
-        $message = clienttranslate('${player_name} places fence ${token_div}');
+        $message = clienttranslate('${player_name} places enclosure ${token_div}');
         $actionZone=$this->tokens->getTokenLocation($token_id);
         $this->dbSetTokenLocation(
             $token_id,
@@ -1146,7 +1146,7 @@ class NewYorkZoo extends EuroGame {
                 $this->userAssertTrue(self::_("Have to select an animal and a location for this animal"), $from !== false && $to !== false);
                 $args = $this->arg_populateNewFence();
                 $canGo  = $args["possibleTargets"];
-                $this->userAssertTrue(self::_("Animal must go in the new fence"), array_search($to, $canGo) !== false);
+                $this->userAssertTrue(self::_("Animal must go in the new enclosure"), array_search($to, $canGo) !== false);
                 //todo check good from
                 $animalId = $from;
                 $animalType = getPart($animalId, 0);
@@ -1208,7 +1208,7 @@ class NewYorkZoo extends EuroGame {
         if (startsWith($to, "house")) {
             $newLocation = clienttranslate('into a house');
         } else if (startsWith($to, "anml_square")) {
-            $newLocation = clienttranslate('into a fence');
+            $newLocation = clienttranslate('into an enclosure');
         }
         $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name} ${newLocation}', ["newLocation" => $newLocation]); //todo i18
         $patch = $this->getPatchFromSquare($to);
@@ -1598,11 +1598,11 @@ class NewYorkZoo extends EuroGame {
                 }
             }
             if ($keyFound === false) {
-                $this->userAssertTrue(self::_("An animal can only be bred in a fence where there is two parents of the required specie."), $keyFound);
+                $this->userAssertTrue(self::_("An animal can only be bred in an enclosure where there is two parents of the required specie."), $keyFound);
             }
         }
         if (count($foundFences) == 2) {
-            $this->userAssertTrue(self::_("The two possible breedings must happen in different fences."), $foundFences[0] !== $foundFences[1]);
+            $this->userAssertTrue(self::_("The two possible breedings must happen in different enclosures."), $foundFences[0] !== $foundFences[1]);
         }
     }
 
@@ -1663,7 +1663,7 @@ class NewYorkZoo extends EuroGame {
         $squaresCount = count($squaresIds);
         if ($squaresCount) {
 
-            $this->userAssertTrue(self::_("Have to select exactly 1 fence"), $squaresCount == 1);
+            $this->userAssertTrue(self::_("Have to select exactly 1 enclosure"), $squaresCount == 1);
             $this->checkSquaresInSquaresByFence($squaresIds, $args["squares"], _("Bonus breeding must happen in fences where there was no normal breeding"));
 
             $squareKey = array_pop($squaresIds);

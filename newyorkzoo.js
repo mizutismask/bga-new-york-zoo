@@ -1743,7 +1743,7 @@ define([
             var token = gameui.clientStateArgs.token;
             var id = gameui.clientStateArgs.dropTarget;
             if (!gameui.isActiveSlot(id)) {
-                if (!this.practiceMode) gameui.showError(_('Illegal fence location'));
+                if (!this.practiceMode) gameui.showError(_('Illegal enclosure location'));
                 return;
             }
             dojo.destroy(token + '_temp');
