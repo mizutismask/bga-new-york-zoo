@@ -1413,14 +1413,14 @@ class NewYorkZoo extends EuroGame {
 
         if ($needed) {
             foreach ($notBreeding as $player) {
-                $this->notifyAllPlayers("msg", clienttranslate('${player_name} has no fence where to breed ${animals}'), array(
+                $this->notifyAllPlayers("msg", clienttranslate('${player_name} has no enclosure where to breed a ${animals}'), array(
                     'animals' => $animalType,
                     "player_name" => $player["player_name"],
                 ));
             }
             $this->prepareBreeding(self::getGameStateValue(GS_BREEDING),  $this->getMostlyActivePlayerId());
         } else {
-            $this->notifyAllPlayers("msg", clienttranslate('No one has any fence where to breed ${animals}'), array('animals' => $animalType));
+            $this->notifyAllPlayers("msg", clienttranslate('No one has any enclosure where to breed a ${animals}'), array('animals' => $animalType));
         }
         return $needed;
     }
