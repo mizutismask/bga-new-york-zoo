@@ -445,7 +445,7 @@ $this->token_types = [
   ],
   'empties' => [
     'name' => clienttranslate("Empties Counter"),
-    'tooltip' => clienttranslate("Counter for remaining empty spaces. The first player who fill his board wins the game."),
+    'tooltip' => clienttranslate("Counter for remaining empty spaces. The first player who fills his board wins the game."),
   ],
   'rounds_completed' => [
     'name' => clienttranslate("Rounds completed"),
