@@ -59,17 +59,17 @@ $this->animalTypes = [MEERKAT_TYPE, FLAMINGO_TYPE, KANGAROO_TYPE, PENGUIN_TYPE, 
 $firstStep = clienttranslate("First step: move the elephant");
 $secondStep = clienttranslate("Second step: main action");
 $thirdStep = clienttranslate("Third step: breed animals");
-$help1Players1 = clienttranslate("help1Players1");
-$help1Players35 = clienttranslate("help1Players35");
-$help1Players24 = clienttranslate("help1Players24");
+$help1Players1 = clienttranslate("Move the elephant with 1 of the movement tiles");
+$help1Players35 = clienttranslate("You can move the elephant 1-3 spaces");
+$help1Players24 = clienttranslate("You can move the elephant 1-4 spaces");
 
-$help2Players1 = clienttranslate("help2Players1");
-$help2Players35 = clienttranslate("help2Players35");
-$help2Players24 = clienttranslate("help2Players24");
+$help2Players123 = clienttranslate("Whenever the elephant crosses a breeding border, you may breed that type of animal in up to 2 enclosures. If you breed at least once, you may breed 1 animal of any kind in 1 other enclosure");
+$help2Players45 = clienttranslate("Whenever the elephant crosses a breeding border, you may breed that type of animal in up to 2 enclosures");
 
-$help3Players1 = clienttranslate("help3Players1");
-$help3Players35 = clienttranslate("help3Players35");
-$help3Players24 = clienttranslate("help3Players24");
+$help3=clienttranslate("Whenever you put an animal (from any source) into an enclosure, you may add 1 animal of the same type from 1 of your houses into that enclosure");
+$help3Players1 = $help3;
+$help3Players35 = $help3;
+$help3Players24 = $help3;
 
 //by player count, then player order (if solo, by player count then houses count)
 $this->boards = [
@@ -527,27 +527,27 @@ $this->token_types = [
   'help2players1' => [
     'type' => '',
     'name' => $secondStep,
-    'tooltip' => $help2Players1,
+    'tooltip' => $help2Players123,
   ],
   'help2players2' => [
     'type' => '',
     'name' => $secondStep,
-    'tooltip' => $help2Players24,
+    'tooltip' => $help2Players123,
   ],
   'help2players3' => [
     'type' => '',
     'name' => $secondStep,
-    'tooltip' => $help2Players35,
+    'tooltip' => $help2Players123,
   ],
   'help2players4' => [
     'type' => '',
     'name' => $secondStep,
-    'tooltip' => $help2Players24,
+    'tooltip' => $help2Players45,
   ],
   'help2players5' => [
     'type' => '',
     'name' => $secondStep,
-    'tooltip' => $help2Players35,
+    'tooltip' => $help2Players45,
   ],
 
   'help3players1' => [
