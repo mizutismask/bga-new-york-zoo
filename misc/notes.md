@@ -15,3 +15,10 @@ montage `ls -v .` -resize 50% -tile 5 -geometry +0+0 -gravity north tiles.jpg
 #renomme les images en les comptant
 n=1; for f in *.png; do mv "$f" "patch-face-$((n++)).png"; done
 ```
+
+# State diagram
+## How to generate it 
+
+```
+php.exe generateStateDiagram.php > stateDiagram.dot
+```
