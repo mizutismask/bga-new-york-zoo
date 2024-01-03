@@ -22,3 +22,7 @@ n=1; for f in *.png; do mv "$f" "patch-face-$((n++)).png"; done
 ```
 php.exe generateStateDiagram.php > stateDiagram.dot
 ```
+
+## How to print it 
+- copy/paste the code in stateDiagram.dot to http://www.webgraphviz.com/
+- remove unwanted elements with developers tools and print with the browser
