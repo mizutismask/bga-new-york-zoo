@@ -411,7 +411,7 @@ class NewYorkZoo extends EuroGame {
         $this->setCounter($result['counters'], "rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT));
         $fences = array_filter($this->actionStripZones, fn ($z) => $z["type"] == PATCH);
         foreach ($fences as $id => $zone) {
-            $this->setCounter($result['counters'], "pile_".$id."_counter", count(array_filter($result["tokens"], fn ($t) => $t["location"] == $id && $t["key"]!=="token_neutral")));
+            $this->setCounter($result['counters'], "pile_" . $id . "_counter", count(array_filter($result["tokens"], fn ($t) => $t["location"] == $id && $t["key"] !== "token_neutral")));
         }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
@@ -936,7 +936,7 @@ class NewYorkZoo extends EuroGame {
         $this->userAssertTrue(self::_("Not possible to place enclosure: illegal move"), $valid);
         $state = $rotateZ / 90 + $rotateY / 180 * 4;
         $message = clienttranslate('${player_name} places enclosure ${token_div}');
-        $actionZone=$this->tokens->getTokenLocation($token_id);
+        $actionZone = $this->tokens->getTokenLocation($token_id);
         $this->dbSetTokenLocation(
             $token_id,
             $dropTarget,
@@ -957,8 +957,8 @@ class NewYorkZoo extends EuroGame {
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
         //self::dump('*********occupiedByPiece**********', $occupiedByPiece);
         $fenceId = $this->dbInsertFence($order, $token_id, $occupiedByPiece, $isBonusAttraction);
-        if(!$isBonusAttraction){
-            $this->notifyCounterDirect("pile_".$actionZone."_counter",count($this->tokens->getTokensOfTypeInLocation("patch%", $actionZone)), '');
+        if (!$isBonusAttraction) {
+            $this->notifyCounterDirect("pile_" . $actionZone . "_counter", count($this->tokens->getTokensOfTypeInLocation("patch%", $actionZone)), '');
         }
         self::setGameStateValue(GS_LAST_FENCE_PLACED, $fenceId);
     }
@@ -1223,6 +1223,7 @@ class NewYorkZoo extends EuroGame {
                 break;
             case 'chooseFence':
                 //only bonus breeding passes here
+                $this->resolveLastContextIfAction(BONUS_BREEDING);
                 self::incStat(1, "game_animals_bonus_breed", $this->getMostlyActivePlayerId());
                 break;
             case 'placeAnimalFromHouse':
@@ -1330,11 +1331,7 @@ class NewYorkZoo extends EuroGame {
                     break;
                 case BREEDING:
                 case BONUS_BREEDING:
-                    if ($this->isBonusBreeding()) {
-                        $nextState = TRANSITION_NEXT_BONUS_BREEDER;
-                    } else {
-                        $nextState = TRANSITION_NEXT_BREEDER;
-                    }
+                    $nextState = TRANSITION_NEXT_BREEDER;
                     break;
                 default:
                     # code...
@@ -1347,7 +1344,7 @@ class NewYorkZoo extends EuroGame {
                 $nextState = TRANSITION_NEXT_BREEDER;
             }
         }
-        //self::dump('******************nextState*', $nextState);
+        self::dump('******************nextState*', $nextState);
         $this->gamestate->nextState($nextState);
     }
 
@@ -1686,7 +1683,7 @@ class NewYorkZoo extends EuroGame {
         } else {
             self::notifyWithName("msg", clienttranslate('${player_name} does not use the bonus breeding'), []);
             $this->dbUpdatePlayer($this->getMostlyActivePlayerId(), "player_has_bonus_bred", 1);
-            $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
+            $this->gamestate->nextState(TRANSITION_NEXT_BREEDER);
         }
     }
     function checkSquaresInSquaresByFence($squaresIds, $squaresByFence, $errorMsg) {
@@ -2354,10 +2351,13 @@ class NewYorkZoo extends EuroGame {
         $playerCount = count($players);
         $i = 0;
         while ($i < $playerCount) {
+            self::setGameStateValue(GS_BONUS_BREEDING, 0);
             $p = $players[$i];
             $playerId = $p["player_id"];
+            $playerOrder = $p["player_no"];
             $breedingRemaining = $this->dbGetPlayerFieldValue(intval($playerId), "player_breeding_remaining");
-            //self::dump('*******************playerId', $playerId);
+            $hasBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bred");
+            self::dump('*******************playerId', $playerId);
             //self::dump('*******************breedingRemaining', $breedingRemaining);
             //self::dump('*******************triggerPlayer', $triggerPlayer);
             if (intval($breedingRemaining) > 0) {
@@ -2368,49 +2368,15 @@ class NewYorkZoo extends EuroGame {
                 $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
                 return;
             }
-            $i++;
-        }
-        self::setGameStateValue(GS_BREEDING, 0);
-        $this->resolveLastContextIfAction(BREEDING);
-        self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
 
-        //check if there is another breeding waiting
-        if ($this->isBreedingNeeded()) {
-            self::setGameStateValue(GS_RESOLVING_BREEDING, 2);
-            $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
-        } else {
-            //everyone has bred, see if bonus breeding needed
-            if ($playerCount === 1 || $playerCount === 2 || $playerCount === 3) {
-                self::setGameStateValue(GS_BONUS_BREEDING, 1);
-                $this->dbInsertContextLog(BONUS_BREEDING);
-                self::notifyAllPlayers("breedingTime", clienttranslate('Bonus breeding time'), ["bonus" => true]);
-                $this->gamestate->nextState(TRANSITION_NEXT_BONUS_BREEDER);
-            } else {
-                $this->dbUpdatePlayers("player_has_bred", 0);
-                $this->gamestate->changeActivePlayer($triggerPlayer);
-                $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
-            }
-        }
-    }
-
-    function st_gameNextBonusBreeder() {
-        $triggerPlayer = self::getGameStateValue(GS_BREED_TRIGGER);
-        $this->gamestate->changeActivePlayer($triggerPlayer);
-        $players = array_values($this->getPlayingPlayersInOrder($triggerPlayer));
-        $i = 0;
-        //self::dump('*****************getPlayersInOrder**', $players);
-        while ($i < count($players)) {
-            $p = $players[$i];
-            $playerId = $p["player_id"];
-            $playerOrder = $p["player_no"];
-            $hasBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bred");
             $hasBonusBred = $this->dbGetPlayerFieldValue(intval($playerId), "player_has_bonus_bred");
-            //self::dump('*****************hasBred**', $hasBred);
-            //self::dump('****************hasBonusBred**', $hasBonusBred);
-            if (!$hasBonusBred) {
-                //self::dump('*****************NOT hasBonusBred**', $p);
+            //self::dump('*****************hasBonusBred**', $hasBonusBred);
+            if (!$hasBonusBred && ($playerCount === 1 || $playerCount === 2 || $playerCount === 3)) { //see if bonus breeding needed
                 if ($hasBred && !empty($this->getFreeSquaresAvailableForBonusBreeding($playerOrder))) {
-                    //self::dump('*****************CAN BonusBred**', $playerId);
+
+                    self::setGameStateValue(GS_BONUS_BREEDING, 1);
+                    $this->dbInsertContextLog(BONUS_BREEDING);
+                    self::notifyPlayer($playerId, "breedingTime", clienttranslate('Bonus breeding time'), ["bonus" => true]);
                     if (intval($playerId) != $triggerPlayer) {
                         $this->gamestate->changeActivePlayer($playerId);
                         //self::dump('*****************changeActivePlayer**', $playerId);
@@ -2426,17 +2392,25 @@ class NewYorkZoo extends EuroGame {
             }
             $i++;
         }
-        //everyone has bonus bred
-        //self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BONUS_BREEDING, 0);
+        self::setGameStateValue(GS_BREEDING, 0);
         $this->resolveLastContextIfAction(BONUS_BREEDING);
-        //self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
-        $this->dbUpdatePlayers("player_has_bred", 0);
+        $this->resolveLastContextIfAction(BREEDING);
+        self::setGameStateValue(GS_RESOLVING_BREEDING, 0);
         $this->dbUpdatePlayers("player_has_bonus_bred", 0);
         $this->gamestate->changeActivePlayer($triggerPlayer);
-        $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
-    }
 
+        //check if there is another breeding waiting
+        if ($this->isBreedingNeeded()) {
+            self::setGameStateValue(GS_RESOLVING_BREEDING, 2);
+            $this->dbUpdatePlayers("player_has_bred", 0);
+            $this->dbUpdatePlayers("player_has_bonus_bred", 0);
+            $this->gamestate->nextState(TRANSITION_CHOOSE_FENCE);
+        } else {
+            $this->dbUpdatePlayers("player_has_bred", 0);
+            $this->gamestate->nextState(TRANSITION_NEXT_PLAYER);
+        }
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Zombie
