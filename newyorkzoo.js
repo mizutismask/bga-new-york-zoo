@@ -888,7 +888,7 @@ define([
             debug('enging token setup');
         },
         adjustScrollMap: function (duration) {
-            debug('************adjustScrollMap');
+            //debug('************adjustScrollMap');
             // we need to move market cursor to center on 3 pieces to select
             if (!$('thething')) return;
             var container = $('market').parentNode;
@@ -1776,7 +1776,7 @@ define([
 
             if (location.startsWith('hand')) {
                 var state = parseInt(tokenInfo.state);
-                debug('state', state);
+                //debug('state', state);
                 //result.position = 'absolute';
                 var tokenNode = $(token);
                 if (!tokenNode) return result; // ???

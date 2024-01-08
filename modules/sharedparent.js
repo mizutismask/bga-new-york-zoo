@@ -1125,7 +1125,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
                 if (args.noa) {
                     noAnnimation = true;
                 }
-                debug(token + ': ' + ' -place-> ' + place + ' ' + tokenInfo.state);
+                //debug(token + ': ' + ' -place-> ' + place + ' ' + tokenInfo.state);
                 var tokenNode = $(token);
                 if (place == 'destroy') {
                     if (tokenNode) {
