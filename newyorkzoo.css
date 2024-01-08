@@ -1545,11 +1545,21 @@ _:future,
 	background-image: url(img/elephant.png);
 	background-size: cover;
 	z-index: 20;
-	filter: drop-shadow(0px 2px 16px white);
+	filter: drop-shadow(0px 2px 16px black) brightness(1.15);
 	grid-column: 1/1;
 	grid-row: 1/1;
 	/*margin: 47px 0px 0px 47px*/
+	/*animation: grow 1s infinite alternate ;*/
 }
+
+/*@keyframes grow {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.2);
+    }
+}*/
 
 .nyz_action_zone_lower .token_neutral {
 	-webkit-transform: scaleX(-1);
