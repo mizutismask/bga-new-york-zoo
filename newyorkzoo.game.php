@@ -957,7 +957,7 @@ class NewYorkZoo extends EuroGame {
         $occupiedByPiece = $this->matrix->remap($occupancy, $prefix, 1);
         //self::dump('*********occupiedByPiece**********', $occupiedByPiece);
         $fenceId = $this->dbInsertFence($order, $token_id, $occupiedByPiece, $isBonusAttraction);
-        if (!$isBonusAttraction) {
+        if (!$isBonusAttraction && !strpos($actionZone, 'hand') === 0) {
             $this->notifyCounterDirect("pile_" . $actionZone . "_counter", count($this->tokens->getTokensOfTypeInLocation("patch%", $actionZone)), '');
         }
         self::setGameStateValue(GS_LAST_FENCE_PLACED, $fenceId);
