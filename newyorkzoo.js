@@ -1725,7 +1725,7 @@ define([
         },
         ajaxActionResultCallback: function (action, args, result) {
             this.inherited(arguments);
-            debug('ajax callback');
+            //debug('ajax callback');
             if (action == 'place' || action == 'placeStartFence') this.pm.cancelPickPatch();
             if (action == 'placeStartFence') {
                 this.pm.endPickPatch();

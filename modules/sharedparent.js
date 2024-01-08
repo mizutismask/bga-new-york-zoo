@@ -249,7 +249,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
         disconnectAllTemp: function (query) {
             if (typeof query == 'undefined') query = '.temp_click_handler';
             dojo.query(query).forEach((node) => {
-                debug('disconnecting => ' + node.id);
+                //debug('disconnecting => ' + node.id);
                 this.disconnectClickTemp(node);
             });
         },
@@ -501,6 +501,9 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
             if (typeof action == 'undefined') {
                 action = args.action;
             }
+            /*if (action == undefined) {
+                return
+            }*/
             if (args.handler) {
                 var handler = args.handler;
                 delete args.handler;
@@ -1607,6 +1610,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
  
         startActionTimer(buttonId, time, pref, autoclick = false) {
             var button = $(buttonId);
+            this.stopActionTimer(button);//stops any other timer already running 
             var isReadOnly = this.isReadOnly();
             if (button == null || isReadOnly || pref == 2) {
                 debug('Ignoring startActionTimer(' + buttonId + ')', 'readOnly=' + isReadOnly, 'prefValue=' + pref);
@@ -1618,7 +1622,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
                 if (autoclick) button.click();
                 return;
             }
-
+            //debug("startActionTimer", this)
             this._actionTimerLabel = button.innerHTML;
             this._actionTimerSeconds = time;
             this._actionTimerFunction = () => {
@@ -1626,26 +1630,29 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
                 if (button == null) {
                     this.stopActionTimer();
                 } else if (button.classList.contains('disabled')) {
-                    this.stopActionTimer();
+                    this.stopActionTimer(button);
                     button.innerHTML =this._actionTimerLabel;
                 } else if (this._actionTimerSeconds-- > 1) {
                     button.innerHTML = this._actionTimerLabel + ' (' + this._actionTimerSeconds + ')';
                 } else {
                     debug('Timer ' + buttonId + ' execute');
                     button.click();
-                    this.stopActionTimer();
+                    this.stopActionTimer(button);
                 }
             };
             this._actionTimerFunction();
             this._actionTimerId = window.setInterval(this._actionTimerFunction, 1000);
-            debug('Timer #' + this._actionTimerId + ' ' + buttonId + ' start');
+            //debug('Timer #' + this._actionTimerId + ' ' + buttonId + ' start');
         },
 
-        stopActionTimer() {
+        stopActionTimer(button) {
             if (this._actionTimerId != null) {
-                debug('Timer #' + this._actionTimerId + ' stop');
+                //debug('Timer #' + this._actionTimerId + ' stop');
                 window.clearInterval(this._actionTimerId);
                 delete this._actionTimerId;
+                if (button) {
+                    button.innerHTML = this._actionTimerLabel;
+                }
             }
         },
     });
