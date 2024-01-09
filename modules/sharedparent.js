@@ -43,6 +43,69 @@ function reloadCss() {
     }
 }
 
+/**
+ * Sorts a map of objects by one of its attribute value and a second attribute if equality
+ * @param {Map} objects 
+ * @param {string} sort1 
+ * @param {string} sort2 optional if equality on sort1
+ * @param {string} key key of the returned map
+ * @returns 
+ */
+function sortAndMapByAttributes(objects, sort1, sort2, key) {
+    return objects
+      .slice()
+      .sort((a, b) => {
+        const valueA1 = String(a[sort1]);
+        const valueB1 = String(b[sort1]);
+  
+        const comparison1 = valueA1.localeCompare(valueB1);
+  
+        if (sort2) {
+          const valueA2 = String(a[sort2]);
+          const valueB2 = String(b[sort2]);
+  
+          // If the first attributes are equal, compare based on the second attribute
+          return comparison1 === 0 ? comparison1 : valueA2.localeCompare(valueB2);
+        }
+  
+        return comparison1;
+      })
+      .reduce((result, obj) => {
+        result[obj[key]] = obj;
+        return result;
+      }, {});
+}
+  
+/**
+ * Return an array of the key attribute within every object, after having sorted the objects according to sort1 and then sort2Opt
+ * @param {array} objects 
+ * @param {*} key 
+ * @param {*} sort1 
+ * @param {*} sort2Opt 
+ * @returns 
+ */
+function sortByAttributesAndGetKey(objects, key, sort1, sort2Opt) {
+    return objects
+        .slice()
+        .sort((a, b) => {
+            const valueA1 = String(a[sort1]);
+            const valueB1 = String(b[sort1]);
+  
+            const comparison1 = valueA1.localeCompare(valueB1);
+  
+            if (comparison1 === 0 && sort2Opt) {
+                const valueA2 = String(a[sort2Opt]);
+                const valueB2 = String(b[sort2Opt]);
+  
+                // If the first attributes are equal, compare based on the second attribute
+                return valueA2.localeCompare(valueB2);
+            }
+  
+            return comparison1;
+        })//.forEach(o => console.log(o));
+      .map(obj => obj[key]);
+  }  
+
 define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, declare) {
     return declare('bgagame.sharedparent', ebg.core.gamegui, {
         constructor: function () {

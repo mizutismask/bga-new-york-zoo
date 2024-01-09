@@ -735,7 +735,7 @@ define([
                 console.log("Notif: load bug", n.args);
                 fetchNextUrl();
             });
-            
+
             debug('Ending game setup');
         },
 
@@ -887,53 +887,56 @@ define([
         },
 
         setupGameTokens: function () {
-            this.setupScrollableMap();
+			this.setupScrollableMap()
 
-            //this.setupPreference();
-            //this.updateCountersSafe(this.gamedatas.counters);
+			//this.setupPreference();
+			//this.updateCountersSafe(this.gamedatas.counters);
             //this.updateMyCountersAll();
-            const sortedTokens = this.naturalSort(Object.keys(this.gamedatas.tokens));
+            
+            //patches in piles need to be sorted by order (=state) to be displayed correctly every time
+			const sortedTokens = sortByAttributesAndGetKey(Object.values(this.gamedatas.tokens), 'key', 'state', 'key')
+			//debug("sortedTokens",sortedTokens);
 
-            for (const token of sortedTokens) {
-                var tokenInfo = this.gamedatas.tokens[token];
-                var location = tokenInfo.location;
-                if (!$(location) && this.gamedatas.tokens[location]) {
-                    this.placeTokenWithTips(location);
-                }
-                this.placeTokenWithTips(token);
-            }
+			for (const token of sortedTokens) {
+				var tokenInfo = this.gamedatas.tokens[token]
+				var location = tokenInfo.location
+				if (!$(location) && this.gamedatas.tokens[location]) {
+					this.placeTokenWithTips(location)
+				}
+				this.placeTokenWithTips(token)
+			}
 
-            for (var token of sortedTokens) {
-                var tokenInfo = this.gamedatas.tokens[token];
-                this.setupToken(token, tokenInfo);
-            }
+			for (var token of sortedTokens) {
+				var tokenInfo = this.gamedatas.tokens[token]
+				this.setupToken(token, tokenInfo)
+			}
 
-            this.updateCountersSafe(this.gamedatas.counters);
-            dojo.query('.mini_counter').forEach((node) => {
-                this.updateTooltip(node.id, node.parentNode);
-            });
+			this.updateCountersSafe(this.gamedatas.counters)
+			dojo.query('.mini_counter').forEach((node) => {
+				this.updateTooltip(node.id, node.parentNode)
+			})
 
-            /*const animalZonesQuery = document.querySelectorAll('.nyz_animal_action_zone');
+			/*const animalZonesQuery = document.querySelectorAll('.nyz_animal_action_zone');
             for (const item of animalZonesQuery) {
                 item.addEventListener("click", event => this.onClickAnimalZone(event), false)
             }*/
-            if (!this.isSpectator) {
-                this.pm.setupDragAndDropSupport();
-                this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone');
-                dojo.query(`.pboard_${this.player_no} .house`).connect('onclick', this, 'onHouse');
-            }
-            //this.connectClass('token_neutral', 'onclick', 'onZoomPlus');
-            this.notif_eofnet();
+			if (!this.isSpectator) {
+				this.pm.setupDragAndDropSupport()
+				this.connectClass('nyz_animal_action_zone', 'onclick', 'onAnimalZone')
+				dojo.query(`.pboard_${this.player_no} .house`).connect('onclick', this, 'onHouse')
+			}
+			//this.connectClass('token_neutral', 'onclick', 'onZoomPlus');
+			this.notif_eofnet()
 
-            // DEBUG BUTTON
-            var parent = this.queryFirst('.debug_section');
-            if (parent) {
-                var butt = dojo.create('a', { class: 'bgabutton bgabutton_gray', innerHTML: 'Reload CSS' }, parent);
-                dojo.connect(butt, 'onclick', () => reloadCss());
-            }
+			// DEBUG BUTTON
+			var parent = this.queryFirst('.debug_section')
+			if (parent) {
+				var butt = dojo.create('a', { class: 'bgabutton bgabutton_gray', innerHTML: 'Reload CSS' }, parent)
+				dojo.connect(butt, 'onclick', () => reloadCss())
+			}
 
-            debug('enging token setup');
-        },
+			debug('enging token setup')
+		},
         adjustScrollMap: function (duration) {
             //debug('************adjustScrollMap');
             // we need to move market cursor to center on 3 pieces to select
