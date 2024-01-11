@@ -52,44 +52,46 @@ class PatchManager {
         if (dropNode == null) return;
 
         if (gameui.curstate === 'client_PlaceAnimal') {
-            const wasSelected = dropNode.classList.contains("animal-target-image");
-            dojo.toggleClass(dropNode.id, 'animal-target-image', !wasSelected);
-            dojo.toggleClass("button_done", "disabled", wasSelected);
-            if (wasSelected) {
-                gameui.stopActionTimer($("button_done"));
-            } else {
-                gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(dropNode.id);
-                gameui.startActionTimer("button_done", TIMER, 1);
-            }
-            //gameui.ajaxClientStateAction();
-        } else if (gameui.curstate === 'populateNewFence') {
-            $(id).classList.toggle('selected');
-            gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(id);
-            if (gameui.clientStateArgs.from && gameui.clientStateArgs.to) {
-                //gameui.ajaxClientStateAction();
-                dojo.toggleClass(dropNode.id, 'animal-target-image');
-                dojo.removeClass("button_done", "disabled");
-                gameui.startActionTimer("button_done", TIMER, 1);
-            }
-        } else if (gameui.curstate === 'chooseFence') {
-            dojo.toggleClass(dropNode.id, 'animal-target-image');
-            gameui.clientStateArgs.squares = gameui
-                .queryIds('.animal-target-image')
-                .map((sqre) => gameui.replaceGridSquareByAnimalSquare(sqre));
-            debug('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares);
-        } else {
-            if (dropNode == gameui.clientStateArgs.dropTarget) {
-                // pick up the piece to move again
-                this.beginPickPatch(this.selectedNode);
-                this.selectPickPatchSquare(dropNode);
-                return;
-            }
-            const fence = gameui.queryFirst('.selected');
-            //if (gameui.isPracticeMode() || (fence && fence.hasOwnProperty('draggable') && fence.draggable)) {
-            this.selectPickPatchSquare(dropNode);
-            this.endPickPatch();
-            //}
-        }
+			const wasSelected = dropNode.classList.contains('animal-target-image')
+			dojo.toggleClass(dropNode.id, 'animal-target-image', !wasSelected)
+			dojo.toggleClass('button_done', 'disabled', wasSelected)
+			if (wasSelected) {
+				gameui.stopActionTimer($('button_done'))
+			} else {
+				gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(dropNode.id)
+				gameui.startActionTimer('button_done', TIMER, 1)
+			}
+			//gameui.ajaxClientStateAction();
+		} else if (gameui.curstate === 'populateNewFence') {
+            const isSelected = $(id).classList.toggle('selected')
+            dojo.toggleClass(dropNode.id, 'animal-target-image', isSelected)
+			dojo.toggleClass('button_done', 'disabled', !isSelected)
+			if (isSelected) {
+				gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(id)
+				if (gameui.clientStateArgs.from && gameui.clientStateArgs.to) {
+					//gameui.ajaxClientStateAction();
+					gameui.startActionTimer('button_done', TIMER, 1)
+				}
+			} else {
+				gameui.stopActionTimer($('button_done'))
+			}
+		} else if (gameui.curstate === 'chooseFence') {
+			dojo.toggleClass(dropNode.id, 'animal-target-image')
+			gameui.clientStateArgs.squares = gameui.queryIds('.animal-target-image').map((sqre) => gameui.replaceGridSquareByAnimalSquare(sqre))
+			debug('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares)
+		} else {
+			if (dropNode == gameui.clientStateArgs.dropTarget) {
+				// pick up the piece to move again
+				this.beginPickPatch(this.selectedNode)
+				this.selectPickPatchSquare(dropNode)
+				return
+			}
+			//const fence = gameui.queryFirst('.selected')
+			//if (gameui.isPracticeMode() || (fence && fence.hasOwnProperty('draggable') && fence.draggable)) {
+			this.selectPickPatchSquare(dropNode)
+			this.endPickPatch()
+			//}
+		}
     }
 
     applyRotate(targetNode, dir) {
