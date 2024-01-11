@@ -877,7 +877,8 @@ _:future,
 	height: 64px;
 	background-size: calc(64px * 2) auto;
 	z-index: 100;
-	opacity: 0.5;
+	opacity: 0.9;
+	filter: sepia(1);
 }
 
 .movetop {
