@@ -52,10 +52,15 @@ class PatchManager {
         if (dropNode == null) return;
 
         if (gameui.curstate === 'client_PlaceAnimal') {
-            gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(dropNode.id);
-            dojo.removeClass("button_done", "disabled");
-            dojo.toggleClass(dropNode.id, 'animal-target-image');
-            gameui.startActionTimer("button_done", TIMER, 1);
+            const wasSelected = dropNode.classList.contains("animal-target-image");
+            dojo.toggleClass(dropNode.id, 'animal-target-image', !wasSelected);
+            dojo.toggleClass("button_done", "disabled", wasSelected);
+            if (wasSelected) {
+                gameui.stopActionTimer($("button_done"));
+            } else {
+                gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(dropNode.id);
+                gameui.startActionTimer("button_done", TIMER, 1);
+            }
             //gameui.ajaxClientStateAction();
         } else if (gameui.curstate === 'populateNewFence') {
             $(id).classList.toggle('selected');
@@ -1975,20 +1980,27 @@ define([
         onHouse: function (event) {
             dojo.stopEvent(event);
             var id = event.currentTarget.id;
+            const dropNode = event.currentTarget;
             debug('onHouse', id);
 
             if (gameui.curstate === 'client_PlaceAnimal') {
                 if (!gameui.isActiveSlot(id)) {
                     return;
                 }
-                gameui.clientStateArgs.action = 'placeAnimal';
-                gameui.clientStateArgs.to = id;
-                gameui.removeClass('original');
-                gameui.removeClass('active_slot');
+                
+                const wasSelected = dropNode.classList.contains('animal-target-image')
+				dojo.toggleClass(dropNode.id, 'animal-target-image', !wasSelected)
+				dojo.toggleClass('button_done', 'disabled', wasSelected)
+				if (wasSelected) {
+                    gameui.stopActionTimer($('button_done'))
+				} else {
+                    gameui.clientStateArgs.action = 'placeAnimal';
+                    gameui.clientStateArgs.to = id;
+                    //gameui.removeClass('original');
+                    //gameui.removeClass('active_slot');
+					gameui.startActionTimer('button_done', TIMER, 1)
+				}
 
-                dojo.toggleClass(id, 'animal-target-image');
-                dojo.removeClass("button_done", "disabled");
-                gameui.startActionTimer("button_done", TIMER, 1);
                 //gameui.ajaxClientStateAction();
             } else if (gameui.curstate === 'populateNewFence') {
                 if (!gameui.childIsActiveSlot(id)) {

@@ -1694,7 +1694,6 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
                     this.stopActionTimer();
                 } else if (button.classList.contains('disabled')) {
                     this.stopActionTimer(button);
-                    button.innerHTML =this._actionTimerLabel;
                 } else if (this._actionTimerSeconds-- > 1) {
                     button.innerHTML = this._actionTimerLabel + ' (' + this._actionTimerSeconds + ')';
                 } else {
