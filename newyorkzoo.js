@@ -1280,7 +1280,7 @@ define([
                     () => {
                         gameui.ajaxClientStateAction('dismiss');
                     },
-                    'blue'
+                    'red'
                 );
             }
         },
@@ -1308,7 +1308,7 @@ define([
                 },
                 null,
                 null,
-                'blue'
+                'red'
             );
         },
 
@@ -1444,7 +1444,7 @@ define([
                 },
                 null,
                 null,
-                'blue'
+                'red'
             );
         },
 
@@ -1566,7 +1566,7 @@ define([
                 },
                 null,
                 null,
-                'blue'
+                'red'
             );
         },
 
@@ -1647,7 +1647,7 @@ define([
                     () => {
                         gameui.ajaxClientStateAction('dismiss');
                     },
-                    'blue'
+                    'red'
                 );
             }
             if (args.canUndoElephantMoveToAnimals) {
