@@ -15,7 +15,7 @@
  *
  */
 const CELL_WIDTH = 35;
-const TIMER = 5;
+const TIMER = 15;
 
 class PatchManager {
     constructor(game) {
