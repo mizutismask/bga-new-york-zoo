@@ -75,7 +75,10 @@ class PatchManager {
 			} else {
 				gameui.stopActionTimer($('button_done'))
 			}
-		} else if (gameui.curstate === 'chooseFence') {
+        } else if (gameui.curstate === 'chooseFence') {
+            const correspondingAnmlSquare = gameui.replaceGridSquareByAnimalSquare(id);
+            if (!gameui.isActiveSlot(correspondingAnmlSquare))
+                return
 			dojo.toggleClass(dropNode.id, 'animal-target-image')
 			gameui.clientStateArgs.squares = gameui.queryIds('.animal-target-image').map((sqre) => gameui.replaceGridSquareByAnimalSquare(sqre))
 			debug('gameui.clientStateArgs.squares', gameui.clientStateArgs.squares)
