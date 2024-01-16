@@ -326,6 +326,7 @@ abstract class APP_Extended extends Table {
         $this->giveExtraTime($player_id);
         $this->incStat(1, 'turns_number', $player_id);
         $this->incStat(1, 'turns_number');
+        $this->notifyWithName('message', clienttranslate('&#10148; Start of ${player_name}\'s turn'));
     }
 
     // ------ DB ----------
