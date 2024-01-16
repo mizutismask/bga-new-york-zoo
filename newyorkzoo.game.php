@@ -162,7 +162,7 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_BONUS_BREEDING, 0);
             self::setGameStateInitialValue(GS_CAN_UNDO_ACQUISITION_MOVE, 0);
             self::setGameStateInitialValue(GS_PREVIOUS_NEUTRAL_LOCATION, 0);
-            self::setGameStateInitialValue(GS_LAST_SOLO_TOKEN_USED, 0);
+            self::setGameStateInitialValue(GS_LAST_SOLO_TOKEN_USED, -1);
             self::setGameStateInitialValue(GS_BOARD_COMPLETED_COUNT, 0);
             self::setGameStateInitialValue(GS_LAST_MOVE_CROSSED_START, intval(false));
 
@@ -989,9 +989,9 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_BREEDING_2_LONG_MOVE, 0);
         if ($this->isSoloMode()) {
             $tokenNumber = self::getGameStateValue(GS_LAST_SOLO_TOKEN_USED);
-            if ($tokenNumber) {
+            if ($tokenNumber >= 0) {
                 $this->dbSetTokenLocation("solo_token_" . $tokenNumber, "solo_tokens_hand", null, '${player_name} gets back the range token', []);
-                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
+                self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, -1);
             }
             if (self::getGameStateValue(GS_LAST_MOVE_CROSSED_START)) {
                 $this->incGameStateValue(GS_BOARD_COMPLETED_COUNT, -1);
