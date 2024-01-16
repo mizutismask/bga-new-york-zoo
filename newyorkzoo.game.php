@@ -1023,9 +1023,12 @@ class NewYorkZoo extends EuroGame {
      * Returns crossed action_zones during a move, excluding start position, including end position.
      */
     function getCrossedActionZones($oldPosition, $spaces) {
-        $moves = [$this->getNextActionZoneNumber($oldPosition)];
-        for ($i = 0; $i < $spaces - 1; $i++) {
-            $moves[] = $this->getNextActionZoneNumber($moves[$i]);
+        $moves=[];
+        if ($spaces > 0) {
+            $moves = [$this->getNextActionZoneNumber($oldPosition)];
+            for ($i = 0; $i < $spaces - 1; $i++) {
+                $moves[] = $this->getNextActionZoneNumber($moves[$i]);
+            }
         }
         //self::dump('*******************moves', $moves);
         return $moves;
