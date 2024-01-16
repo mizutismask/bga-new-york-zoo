@@ -1585,7 +1585,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function checkChooseFencesPossible($squaresIds, $argChooseFences) {
-        $this->userAssertTrue(self::_("You have to select at most 2 fences"), count($squaresIds) <= 2);
+        $this->userAssertTrue(self::_("You have to select at most 2 enclosures"), count($squaresIds) <= 2);
 
         $foundFences = [];
         foreach ($squaresIds as $i => $square) {
