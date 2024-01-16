@@ -171,6 +171,7 @@ class NewYorkZoo extends EuroGame {
 
             // Activate first player (which is in general a good idea :) )
             $this->activeNextPlayer();
+            $this->logPlayerTurn();
         } catch (Exception $e) {
             // logging does not actually work in game init :(
             $this->error("Fatal error while creating game");
@@ -2336,8 +2337,12 @@ class NewYorkZoo extends EuroGame {
         }
 
         $this->activateNextPlayerCustom();
-        $this->notifyWithName('message', clienttranslate('&#10148; Start of ${player_name}\'s turn'));
+        $this->logPlayerTurn();
         $this->gamestate->nextState('next');
+    }
+
+    function logPlayerTurn(){
+        $this->notifyWithName('message', clienttranslate('&#10148; Start of ${player_name}\'s turn'));
     }
 
     function st_playerTurn() {
