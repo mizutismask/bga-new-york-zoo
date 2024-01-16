@@ -232,7 +232,7 @@ $machinestates = array(
     ],
 
     STATE_GAME_TURN_NEXT_PLAYER => [ // next player state
-        "name" => "gameTurnNextPlayer", "description" => clienttranslate('Upkeep...'),
+        "name" => "gameTurnNextPlayer", "description" => '',
         "type" => "game", //
         "action" => "st_gameTurnNextPlayer", //
         "updateGameProgression" => true,
@@ -243,7 +243,7 @@ $machinestates = array(
     ],
 
     STATE_GAME_NEXT_BREEDER => [
-        "name" => "gameTurnNextBreeder", "description" => clienttranslate('Upkeep breeding...'),
+        "name" => "gameTurnNextBreeder", "description" => clienttranslate('Next breeder...'),
         "type" => "game", //
         "action" => "st_gameTurnNextBreeder", //
         "updateGameProgression" => false,
