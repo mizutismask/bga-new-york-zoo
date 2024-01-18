@@ -356,7 +356,7 @@ abstract class EuroGame extends APP_Extended {
         if (array_key_exists('player_id', $args)) {
             $player_id = $args['player_id'];
         } else {
-            $player_id = $this->getActivePlayerId();
+            $player_id = $this->getMostlyActivePlayerId();
         }
 
         if (strstr($notif, '${you}')) {
