@@ -48,7 +48,6 @@ ALTER TABLE `player` ADD `player_has_bonus_bred` INT(1) UNSIGNED NOT NULL DEFAUL
  `token_key` varchar(32) NOT NULL,
  `animal_type` enum('none','meerkat','flamingo','kangaroo','penguin','fox') NOT NULL DEFAULT 'none',
  `animals_added` int(1) NOT NULL DEFAULT 0,
- `animals_added_by_breeding` int(1) NOT NULL DEFAULT 0,
  PRIMARY KEY (`id`),
  UNIQUE(`token_key`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

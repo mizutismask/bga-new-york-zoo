@@ -464,7 +464,13 @@ class NewYorkZoo extends EuroGame {
     }
 
     function hasReachLimit($patch) {
-        return intval($this->dbGetFence($patch)["animals_added"]) >= 2;
+        //return intval($this->dbGetFence($patch)["animals_added"]) >= 2;
+        /*
+            The golden rule that limits the number of animals added to one enclosure to 2 on one turn exists only in the french rule and nowhere else. 
+            It might probably be a translation issue.
+            So we always return false, since the limit should not exist.
+        */
+        return false;
     }
 
     function filterAnimals($tokens) {
@@ -1516,16 +1522,6 @@ class NewYorkZoo extends EuroGame {
     }
     function dbResetAllFenceAnimalsAddedNumber(Int $newValue) {
         $this->dbUpdateTable("fence", "animals_added", $newValue, "", "");
-    }
-
-    function dbIncFenceAnimalsAddedByBreedingNumber(String $key) {
-        $this->dbIncField("fence", "animals_added_by_breeding", "token_key", $key);
-    }
-    function dbUpdateFenceAnimalsAddedByBreedingNumber(String $key, Int $newValue) {
-        $this->dbUpdateTable("fence", "animals_added_by_breeding", $newValue, "token_key", $key);
-    }
-    function dbResetAllFenceAnimalsAddedByBreedingNumber(Int $newValue) {
-        $this->dbUpdateTable("fence", "animals_added_by_breeding", $newValue, "", "");
     }
 
     function dbGetFence(String $token_key) {
