@@ -65,7 +65,7 @@ class PatchManager {
 		} else if (gameui.curstate === 'populateNewFence') {
             const isSelected = $(id).classList.toggle('selected')
             dojo.toggleClass(dropNode.id, 'animal-target-image', isSelected)
-			dojo.toggleClass('button_done', 'disabled', !isSelected)
+			dojo.toggleClass('button_done', 'disabled', !isSelected || ! gameui.clientStateArgs.from)
 			if (isSelected) {
 				gameui.clientStateArgs.to = gameui.replaceGridSquareByAnimalSquare(id)
 				if (gameui.clientStateArgs.from && gameui.clientStateArgs.to) {
@@ -2022,9 +2022,13 @@ define([
             switch (gameui.curstate) {
                 case 'populateNewFence':
                     dojo.stopEvent(event);
-                    $(id).classList.toggle('selected');
-                    gameui.clientStateArgs.from = id;
-                    dojo.removeClass("button_done", "disabled");
+                    const isSelected = $(id).classList.toggle('selected');
+                    if (isSelected) {
+                        gameui.clientStateArgs.from = id;
+                    } else {
+                        gameui.clientStateArgs.from = undefined;
+                    }
+                    dojo.toggleClass('button_done', 'disabled', !isSelected || !gameui.clientStateArgs.to)
                     break;
 
                 default:
