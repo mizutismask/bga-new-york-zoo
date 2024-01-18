@@ -2591,6 +2591,7 @@ class NewYorkZoo extends EuroGame {
                 //self::dump('*******************patchOneMoves', $patchOneMoves);
                 if (!empty($patchOneMoves)) {
                     $p1Move = array_shift($patchOneMoves);
+                    $p1Move = "square_" . substr($p1Move, 0, 1) . "_" . substr($p1Move, 1, 1) . "_" . substr($p1Move, 2);
                     //self::dump('*******************patch1 placed', $patch1);
                     //self::dump('*******************to', $p1Move);
                     $this->saction_PlacePatch($playerOrder, $patch1, $p1Move, 0, 0);
