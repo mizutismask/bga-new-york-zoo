@@ -1594,7 +1594,7 @@ class NewYorkZoo extends EuroGame {
                 }
             }
             if ($keyFound === false) {
-                $this->userAssertTrue(self::_("An animal can only be bred in an enclosure where there is two parents of the required specie."), $keyFound);
+                $this->userAssertTrue(self::_("An animal can only be bred in an enclosure where there is two parents of the required species."), $keyFound);
             }
         }
         if (count($foundFences) == 2) {

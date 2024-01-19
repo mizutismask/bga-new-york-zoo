@@ -409,7 +409,7 @@ $this->token_types = [
   'action_zone_anml' => [
     'type' => 'nyz_animal_action_zone',
     'name' => clienttranslate("Take animals"),
-    'tooltip' => clienttranslate("You must be able to place at least one of those two animals on your board, either in a free house or a enclosure (free or with animals of the same specie)"),
+    'tooltip' => clienttranslate("You must be able to place at least one of those two animals on your board, either in a free house or a enclosure (free or with animals of the same species)"),
   ],
   'birth_zone' => [
     'name' => clienttranslate("Breeding"),
