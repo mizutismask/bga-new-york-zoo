@@ -684,6 +684,7 @@ define([
             this.setBonusZIndex();
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
+            this.initPreferencesObserver();
 
             if (!this.isSpectator) {
                 this.playerOrder = gamedatas.players[this.player_id].no;
@@ -1678,7 +1679,25 @@ define([
         },
 
         // UTILS
-
+        initPreferencesObserver: function () {      
+            // Call onPreferenceChange() when any value changes
+            dojo.query('.preference_control').on('change', (e) => {
+              const match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
+              if (!match) {
+                  return;
+              }
+              const pref = match[1];
+              const newValue = e.target.value;
+              this.prefs[pref].value = newValue;
+              this.onPreferenceChange(pref, newValue);
+            });
+          },
+          
+          onPreferenceChange: function (prefId, prefValue) {
+            debug('Preference changed', prefId, prefValue)
+            this.ajaxAction('saveUserPreference', { pref_id: prefId, pref_value: prefValue, checkaction:false})
+        },
+          
         updateDisplayInfo: function (tokenInfo) {
             //addFencePileToTooltip
             if (tokenInfo.key.startsWith('action_zone')) {
