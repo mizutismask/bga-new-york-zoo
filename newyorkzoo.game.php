@@ -499,6 +499,10 @@ class NewYorkZoo extends EuroGame {
         return false;
     }
 
+    function hasAddedAnimalFromHouse($patch) {
+        return intval($this->dbGetFence($patch)["animals_added_from_house"]) > 0;
+    }
+
     function filterAnimals($tokens) {
         return array_filter($tokens, function ($tok) {
             return startsWith($tok, FOX) || startsWith($tok, PENGUIN) || startsWith($tok, MEERKAT) || startsWith($tok, FLAMINGO) || startsWith($tok, KANGAROO);
@@ -1263,6 +1267,7 @@ class NewYorkZoo extends EuroGame {
                 break;
             case 'placeAnimalFromHouse':
                 $this->resolveLastContextIfAction(ADD_FROM_HOUSE);
+                $this->dbIncFenceAnimalsAddedFromHouseNumber($patch);
                 self::incStat(1, "game_animals_added_from_house", $this->getMostlyActivePlayerId());
                 break;
             default:
@@ -1300,7 +1305,7 @@ class NewYorkZoo extends EuroGame {
                 $this->dbInsertContextLog(CHECK_FENCE_FULL, $patch, $animalType);
                 $this->giveExtraTime($this->getMostlyActivePlayerId());
             } else {
-                if ($state['name'] !== 'populateNewFence' && $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch)) {
+                if ($state['name'] !== 'populateNewFence' && $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType) && !$this->hasReachLimit($patch) && !$this->hasAddedAnimalFromHouse($patch)) {
                     self::setGameStateValue(GS_FROM, $this->getAnimalType($animalType));
                     self::setGameStateValue(GS_TO, getPart($this->dbGetFence($patch)["token_key"], 1));
                     $this->dbInsertContextLog(ADD_FROM_HOUSE, $patch);
@@ -1495,6 +1500,7 @@ class NewYorkZoo extends EuroGame {
         self::setGameStateValue(GS_RESOLVING_BREEDING, 1); //todo check 1 or 2
         $this->dbInsertContextLog(BREEDING, $animalType);
         $this->dbResetAllFenceAnimalsAddedNumber(0);
+        $this->dbResetAllFenceAnimalsAddedFromHouseNumber(0);
     }
 
     function action_placeAnimalFromHouse() {
@@ -1548,6 +1554,16 @@ class NewYorkZoo extends EuroGame {
     }
     function dbResetAllFenceAnimalsAddedNumber(Int $newValue) {
         $this->dbUpdateTable("fence", "animals_added", $newValue, "", "");
+    }
+
+    function dbIncFenceAnimalsAddedFromHouseNumber(String $key) {
+        $this->dbIncField("fence", "animals_added_from_house", "token_key", $key);
+    }
+    function dbUpdateFenceAnimalsAddedFromHouseNumber(String $key, Int $newValue) {
+        $this->dbUpdateTable("fence", "animals_added_from_house", $newValue, "token_key", $key);
+    }
+    function dbResetAllFenceAnimalsAddedFromHouseNumber(Int $newValue) {
+        $this->dbUpdateTable("fence", "animals_added_from_house", $newValue, "", "");
     }
 
     function dbGetFence(String $token_key) {
@@ -1649,7 +1665,7 @@ class NewYorkZoo extends EuroGame {
 
                     //we need to offer to place from house for each fence before checking if anyone is full
                     //so we can't just call saction_placeAnimal
-                    if (!$this->isFenceFull($patch) && !$this->hasReachLimit($patch)) {
+                    if (!$this->isFenceFull($patch) && !$this->hasReachLimit($patch) && !$this->hasAddedAnimalFromHouse($patch)) {
                         $housesWithAskedAnml = $this->getHousesWithAnimalType($this->getMostlyActivePlayerOrder(), $animalType);
                         if ($housesWithAskedAnml && $i == 0) {
                             self::setGameStateValue(GS_FROM, $this->getAnimalType($animalType));
@@ -2363,6 +2379,7 @@ class NewYorkZoo extends EuroGame {
 
     function st_playerTurn() {
         $this->dbResetAllFenceAnimalsAddedNumber(0);
+        $this->dbResetAllFenceAnimalsAddedFromHouseNumber(0);
         self::setGameStateValue(GS_BREEDING, 0);
         self::setGameStateValue(GS_BONUS_BREEDING, 0);
         //$this->dbEmptyTable("context_log");
@@ -2495,26 +2512,26 @@ class NewYorkZoo extends EuroGame {
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
+        $changes = [
+            [2401181742, "ALTER TABLE `fence` ADD `animals_added_from_house` int(1) NOT NULL DEFAULT 0;"], 
+        ];
 
-        // Example:
-        //        if( $from_version <= 1404301345 )
-        //        {
-        //            // ! important ! Use DBPREFIX_<table_name> for all tables
-        //
-        //            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-        //            self::applyDbUpgradeToAllDB( $sql );
-        //        }
-        //        if( $from_version <= 1405061421 )
-        //        {
-        //            // ! important ! Use DBPREFIX_<table_name> for all tables
-        //
-        //            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-        //            self::applyDbUpgradeToAllDB( $sql );
-        //        }
-        //        // Please add your future database scheme changes here
-        //
-        //
-
+        foreach ($changes as [$version, $sql]) {
+            if ($from_version <= $version) {
+                try {
+                    self::warn("upgradeTableDb apply 1: from_version=$from_version, change=[ $version, $sql ]");
+                    self::applyDbUpgradeToAllDB($sql);
+                } catch (Exception $e) {
+                    // See https://studio.boardgamearena.com/bug?id=64
+                    // BGA framework can produce invalid SQL with non-existant tables when using DBPREFIX_.
+                    // The workaround is to retry the query on the base table only.
+                    self::error("upgradeTableDb apply 1 failed: from_version=$from_version, change=[ $version, $sql ]");
+                    $sql = str_replace("DBPREFIX_", "", $sql);
+                    self::warn("upgradeTableDb apply 2: from_version=$from_version, change=[ $version, $sql ]");
+                    self::applyDbUpgradeToAllDB($sql);
+                }
+            }
+        }
 
     }
 
