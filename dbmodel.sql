@@ -72,10 +72,3 @@ CREATE TABLE IF NOT EXISTS `context_log` (
  `resolved` INT(1) UNSIGNED NOT NULL DEFAULT '0',
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS `user_preferences` (
-  `player_id` int(10) NOT NULL,
-  `pref_id` int(10) NOT NULL,
-  `pref_value` int(10) NOT NULL,
-  PRIMARY KEY (`player_id`, `pref_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -167,7 +167,6 @@ class NewYorkZoo extends EuroGame {
             self::setGameStateInitialValue(GS_LAST_MOVE_CROSSED_START, intval(false));
 
             $this->initStats();
-            $this->savePlayerPreferences($this->player_preferences);
 
 
             // Activate first player (which is in general a good idea :) )
@@ -452,31 +451,6 @@ class NewYorkZoo extends EuroGame {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
-    function isAutoKeepAnimalFromFullFence($playerId){
-        $pref = USER_PREF_ALWAYS_KEEP_ANIMAL_FROM_FULL_FENCE;
-        return self::getUniqueValueFromDB("select pref_value from user_preferences WHERE player_id = '$playerId' and pref_id = '$pref'") == ACTIVATED;
-    }
-
-    function savePlayerPreferences($playerPrefs) {
-       if ($playerPrefs) {
-            $sql = "INSERT INTO user_preferences (player_id, pref_id, pref_value)";
-            foreach ($playerPrefs as $playerId => $prefs) {
-                foreach ($prefs as $prefId => $prefValue) {
-                    $values[] = "( '$playerId', '$prefId', '$prefValue')";
-                }
-            }
-            $sql .= " VALUES " . implode(",", $values);
-            $this->DbQuery($sql);
-        }
-    }
-
-    function saveUserPreference($prefId, $prefValue) {
-        $playerId = $this->getCurrentPlayerId();
-        $sql = "update user_preferences set pref_value = '$prefValue' where player_id = '$playerId' and pref_id='$prefId'";
-        $this->DbQuery($sql);
-        self::notifyPlayer($playerId, "msg", clienttranslate('Your preference will be applied until the end of this game'), []);
-    }
-
     function getFillerId($players_nbr, $order) {
         if ($this->isSoloMode()) {
             return "patch_1" . $players_nbr . $this->getSoloHousesCount();
@@ -1059,7 +1033,7 @@ class NewYorkZoo extends EuroGame {
      * Returns crossed action_zones during a move, excluding start position, including end position.
      */
     function getCrossedActionZones($oldPosition, $spaces) {
-        $moves = [];
+        $moves=[];
         if ($spaces > 0) {
             $moves = [$this->getNextActionZoneNumber($oldPosition)];
             for ($i = 0; $i < $spaces - 1; $i++) {

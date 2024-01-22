@@ -89,14 +89,3 @@ $game_options = array(
     ),
 
 );
-
-$game_preferences = array(
-    USER_PREF_ALWAYS_KEEP_ANIMAL_FROM_FULL_FENCE => array(
-        'name' => totranslate('Always keep animal from full enclosure when possible'),
-        'values' => array(
-            ACTIVATED => array('name' => totranslate('True')),
-            DEACTIVATED => array('name' => totranslate('False'),)
-        )
-    ),
-
-);

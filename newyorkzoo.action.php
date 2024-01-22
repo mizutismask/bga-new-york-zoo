@@ -134,14 +134,6 @@ class action_newyorkzoo extends APP_GameAction {
     self::ajaxResponse();
   }
 
-  public function saveUserPreference(){
-    self::setAjaxMode();
-    $prefId = (int) self::getArg('pref_id', AT_int, true);
-    $valueId = (int) self::getArg('pref_value', AT_int, true);
-    $this->game->saveUserPreference($prefId, $valueId);
-    self::ajaxResponse();
-  }
-
   /*
     
     Example:
