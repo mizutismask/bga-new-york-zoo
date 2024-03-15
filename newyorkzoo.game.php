@@ -536,7 +536,7 @@ class NewYorkZoo extends EuroGame {
         $occupied = $this->filterOccupiedSquares($squares);
         $tokens = $this->tokens->getTokensInLocations($occupied);
         $tokens = $this->filterAnimals($tokens);
-        $this->dbSetTokensLocation($tokens, "limbo", null, '✅ ${player_name} has a full enclosure', []);
+        $this->dbSetTokensLocation($tokens, "limbo", null, clienttranslate('✅ ${player_name} has a full enclosure'), []);
         $this->dbUpdateFenceType($fenceId, "none");
         return $type;
     }
@@ -887,7 +887,7 @@ class NewYorkZoo extends EuroGame {
         self::DbQuery("DELETE FROM fence where player_order = '$playerOrder'");
         $fences = array_keys($this->tokens->getTokensOfTypeInLocation("patch%", "square_" . $playerOrder . "%"));
         $fillers = $this->mtCollectWithFieldValue("color", "filler");
-        $this->dbSetTokensLocation(array_diff($fences, $fillers), "hand_" . $this->getMostlyActivePlayerId(), null, '${player_name} resets the start fences', []);
+        $this->dbSetTokensLocation(array_diff($fences, $fillers), "hand_" . $this->getMostlyActivePlayerId(), null, clienttranslate('${player_name} resets the start fences'), []);
     }
 
     function resolveLastFullFenceContext() {
@@ -990,7 +990,7 @@ class NewYorkZoo extends EuroGame {
     }
 
     function action_undoElephantMoveToAnimals() {
-        $this->dbSetTokenLocation('token_neutral', $this->getActionZoneName(self::getGameStateValue(GS_PREVIOUS_NEUTRAL_LOCATION)), null, '${player_name} cancels the elephant move', []);
+        $this->dbSetTokenLocation('token_neutral', $this->getActionZoneName(self::getGameStateValue(GS_PREVIOUS_NEUTRAL_LOCATION)), null, clienttranslate('${player_name} cancels the elephant move'), []);
         self::setGameStateValue(GS_ANIMAL_TO_PLACE, 0);
         self::setGameStateValue(GS_OTHER_ANIMAL_TO_PLACE, 0);
         $this->resolveLastContextIfAction(ACTION_GET_ANIMAL);
@@ -1000,7 +1000,7 @@ class NewYorkZoo extends EuroGame {
         if ($this->isSoloMode()) {
             $tokenNumber = self::getGameStateValue(GS_LAST_SOLO_TOKEN_USED);
             if ($tokenNumber >= 0) {
-                $this->dbSetTokenLocation("solo_token_" . $tokenNumber, "solo_tokens_hand", null, '${player_name} gets back the range token', []);
+                $this->dbSetTokenLocation("solo_token_" . $tokenNumber, "solo_tokens_hand", null, clienttranslate('${player_name} gets back the range token'), []);
                 self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, -1);
             }
             if (self::getGameStateValue(GS_LAST_MOVE_CROSSED_START)) {
@@ -1020,7 +1020,7 @@ class NewYorkZoo extends EuroGame {
 
         $spaces = array_search($pos, array_keys($this->getNextActionZones())) + 1;
 
-        $this->dbSetTokenLocation('token_neutral', $pos, null, $this->isSoloMode() ? "" : '${player_name} moves ${token_name} ${spaces_count} spaces away', ['spaces_count' => $spaces]);
+        $this->dbSetTokenLocation('token_neutral', $pos, null, $this->isSoloMode() ? "" : clienttranslate('${player_name} moves ${token_name} ${spaces_count} spaces away'), ['spaces_count' => $spaces]);
         $this->checkIfBreedingLineCrossed($old, $new, $spaces);
         if ($this->isSoloMode()) {
             $this->checkIfStartingZoneCrossed($old, $new);
@@ -1140,7 +1140,7 @@ class NewYorkZoo extends EuroGame {
 
             if ($verifiedSoloTokenId != "soloTokenFree") {
                 self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, getPart($verifiedSoloTokenId, -1));
-                $this->dbSetTokenLocation($verifiedSoloTokenId, "limbo", null, '${player_name} uses range token ${token_range}', ['token_range' => getPart($verifiedSoloTokenId, -1)]);
+                $this->dbSetTokenLocation($verifiedSoloTokenId, "limbo", null, clienttranslate('${player_name} uses range token ${token_range}'), ['token_range' => getPart($verifiedSoloTokenId, -1)]);
             } else {
                 self::setGameStateValue(GS_LAST_SOLO_TOKEN_USED, 0);
                 $this->notifyWithName('message', clienttranslate('${player_name} goes the next animal zone without token'));
@@ -1223,7 +1223,16 @@ class NewYorkZoo extends EuroGame {
         } else if (startsWith($to, "anml_square")) {
             $newLocation = clienttranslate('into an enclosure');
         }
-        $this->dbSetTokenLocation($animalId, $to, null, '${player_name} places a ${token_name} ${newLocation}', ["newLocation" => $newLocation]); //todo i18
+        $this->dbSetTokenLocation(
+            $animalId,
+            $to,
+            null,
+            clienttranslate('${player_name} places a ${token_name} ${newLocation}'),
+            [
+                "newLocation" => $newLocation,
+                'i18n' => ['token_name'],
+            ]
+        ); //todo i18
         $patch = $this->getPatchFromSquare($to);
         //self::dump('*******************state name', $state['name']);
 
@@ -1427,11 +1436,12 @@ class NewYorkZoo extends EuroGame {
                 $this->notifyAllPlayers("msg", clienttranslate('${player_name} has no enclosure where to breed a ${animals}'), array(
                     'animals' => $animalType,
                     "player_name" => $player["player_name"],
+                    'i18n' => ['animals'],
                 ));
             }
             $this->prepareBreeding(self::getGameStateValue(GS_BREEDING),  $this->getMostlyActivePlayerId());
         } else {
-            $this->notifyAllPlayers("msg", clienttranslate('No one has any enclosure where to breed a ${animals}'), array('animals' => $animalType));
+            $this->notifyAllPlayers("msg", clienttranslate('No one has any enclosure where to breed a ${animals}'), array('animals' => $animalType,'i18n' => ['animals'],));
         }
         return $needed;
     }
@@ -1661,7 +1671,8 @@ class NewYorkZoo extends EuroGame {
             self::notifyAllPlayers("msg", clienttranslate('🍼 ${player_name} breeds ${number} ${animals}(s)'), array(
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
-                'animals' => $animalType
+                'animals' => $animalType,
+                'i18n' => array( 'animals' ), 
             ));
 
             $playerId = $this->getMostlyActivePlayerId();
@@ -2565,7 +2576,7 @@ class NewYorkZoo extends EuroGame {
         $this->fullFence($patch2, $animalType, 1);
 
         $animalId = $this->tokens->getTokenOfTypeInLocation($animalType, "limbo")["key"];
-        $this->dbSetTokenLocation($animalId, "house_" . $playerOrder . "_" . 3, null, '${player_name} places a ${token_name}', []);
+        $this->dbSetTokenLocation($animalId, "house_" . $playerOrder . "_" . 3, null, clienttranslate('${player_name} places a ${token_name}'), []);
         $this->saction_MoveNeutralToken("action_zone_anml_17");
     }
 
