@@ -574,7 +574,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
                 if (!doit) return;
             }
             this.clientStateArgs = {};
-            debug('sending ' + action);
+            debug('sending ', action, "clientStateArgs reset", this.clientStateArgs);
             if (typeof args.args == 'undefined') {
                 this.ajaxAction(action, args);
             } else {
@@ -1078,6 +1078,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
             return result;
         },
         placeTokenLocal: function (token, place, state, args) {
+            debug("placeTokenLocal", token, place, state, args)
             var tokenInfo = this.gamedatas.tokens[token];
             if (tokenInfo === undefined) {
                 tokenInfo = { key: token };
