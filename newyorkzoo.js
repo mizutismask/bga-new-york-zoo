@@ -28,6 +28,7 @@ class PatchManager {
         var id = event.currentTarget.id;
         if (id == null) return;
         if (gameui.curstate === 'placeAnimal' || gameui.curstate === 'client_PlaceAnimal') return;
+        gameui.cancelLocalStateEffects()//when user changes his mind and clicks on several market enclosures in a row
         if (!this.beginPickPatch(id)) return;
         gameui.onUpdateActionButtons_client_PickPatch(gameui.gamedatas.gamestate.args);
     }
