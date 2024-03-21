@@ -1230,7 +1230,7 @@ class NewYorkZoo extends EuroGame {
             clienttranslate('${player_name} places a ${token_name} ${newLocation}'),
             [
                 "newLocation" => $newLocation,
-                'i18n' => ['token_name'],
+                //'i18n' => ['token_name'], do not decomment since it displays the technical id instead of the animal type
             ]
         ); //todo i18
         $patch = $this->getPatchFromSquare($to);
@@ -1699,7 +1699,8 @@ class NewYorkZoo extends EuroGame {
             self::notifyAllPlayers("msg", clienttranslate('🍼 ${player_name} breeds ${number} ${animals}(s) with the bonus breeding'), array(
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
-                'animals' => $animalType
+                'animals' => $animalType,
+                'i18n' => ['animals'], 
             ));
 
             $playerId = $this->getMostlyActivePlayerId();
