@@ -1567,6 +1567,7 @@ class NewYorkZoo extends EuroGame {
 
     function action_dismissAnimal() {
         $this->checkAction('dismiss');
+        $this->notifyWithName('message', clienttranslate('${player_name} does not place an animal'));
         $state = $this->gamestate->state();
 
         switch ($state['name']) {
