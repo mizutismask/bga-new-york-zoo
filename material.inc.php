@@ -55,6 +55,7 @@ if (!defined("LIGHTEST_GREEN")) {
 
 $this->animals = [MEERKAT, FLAMINGO, KANGAROO, PENGUIN, FOX];
 $this->animalTypes = [MEERKAT_TYPE, FLAMINGO_TYPE, KANGAROO_TYPE, PENGUIN_TYPE, FOX_TYPE];
+$this->animalTrNames = [MEERKAT => clienttranslate("Meerkat"), FLAMINGO => clienttranslate("Flamingo"), KANGAROO => clienttranslate("Kangaroo"), PENGUIN => clienttranslate("Penguin"), FOX => clienttranslate("Fox")];
 
 $firstStep = clienttranslate("First step: move the elephant");
 $secondStep = clienttranslate("Second step: main action");
@@ -66,7 +67,7 @@ $help1Players24 = clienttranslate("You can move the elephant 1-4 spaces");
 $help2Players123 = clienttranslate("Whenever the elephant crosses a breeding border, you may breed that type of animal in up to 2 enclosures. If you breed at least once, you may breed 1 animal of any kind in 1 other enclosure");
 $help2Players45 = clienttranslate("Whenever the elephant crosses a breeding border, you may breed that type of animal in up to 2 enclosures");
 
-$help3=clienttranslate("Whenever you put an animal (from any source) into an enclosure, you may add 1 animal of the same type from 1 of your houses into that enclosure");
+$help3 = clienttranslate("Whenever you put an animal (from any source) into an enclosure, you may add 1 animal of the same type from 1 of your houses into that enclosure");
 $help3Players1 = $help3;
 $help3Players35 = $help3;
 $help3Players24 = $help3;
@@ -413,9 +414,7 @@ $this->token_types = [
   ],
   'birth_zone' => [
     'name' => clienttranslate("Breeding"),
-    'tooltip' => clienttranslate("When the elephant crosses this line, everyone may breed this type of animal in up to 2 eligible enclosures. To
-    be eligible, an enclosure must have at least 2 animals in it. For each of the [up to 2] eligible enclosures,
-    add 1 animal of the same type to an empty space of the enclosure."),
+    'tooltip' => clienttranslate("When the elephant crosses this line, everyone may breed this type of animal in up to 2 eligible enclosures. To be eligible, an enclosure must have at least 2 animals in it. For each of the (up to 2) eligible enclosures, add 1 animal of the same type to an empty space of the enclosure."),
   ],
   'house' => [
     'name' => clienttranslate("You can stock one animal per house"),

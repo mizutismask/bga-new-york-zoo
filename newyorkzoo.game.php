@@ -1020,7 +1020,7 @@ class NewYorkZoo extends EuroGame {
 
         $spaces = array_search($pos, array_keys($this->getNextActionZones())) + 1;
 
-        $this->dbSetTokenLocation('token_neutral', $pos, null, $this->isSoloMode() ? "" : clienttranslate('${player_name} moves ${token_name} ${spaces_count} spaces away'), ['spaces_count' => $spaces]);
+        $this->dbSetTokenLocation('token_neutral', $pos, null, $this->isSoloMode() ? "" : clienttranslate('${player_name} moves the elephant ${spaces_count} spaces away'), ['spaces_count' => $spaces]);
         $this->checkIfBreedingLineCrossed($old, $new, $spaces);
         if ($this->isSoloMode()) {
             $this->checkIfStartingZoneCrossed($old, $new);
@@ -1217,19 +1217,20 @@ class NewYorkZoo extends EuroGame {
     function saction_placeAnimal($from, $to, $animalType, $animalId) {
 
         $state = $this->gamestate->state();
-        $newLocation = "";
+        $msg = "";
         if (startsWith($to, "house")) {
-            $newLocation = clienttranslate('into a house');
+            $msg = clienttranslate('${player_name} places a ${animalType} into a house');
         } else if (startsWith($to, "anml_square")) {
-            $newLocation = clienttranslate('into an enclosure');
+            $msg = clienttranslate('${player_name} places a ${animalType} into an enclosure');
         }
         $this->dbSetTokenLocation(
             $animalId,
             $to,
             null,
-            clienttranslate('${player_name} places a ${token_name} ${newLocation}'),
+            $msg,
             [
-                "newLocation" => $newLocation,
+                "animalType" => $this->animalTrNames[$animalType],
+                'i18n' => ['animalType']
                 //'i18n' => ['token_name'], do not decomment since it displays the technical id instead of the animal type
             ]
         ); //todo i18
@@ -1434,14 +1435,14 @@ class NewYorkZoo extends EuroGame {
         if ($needed) {
             foreach ($notBreeding as $player) {
                 $this->notifyAllPlayers("msg", clienttranslate('${player_name} has no enclosure where to breed a ${animals}'), array(
-                    'animals' => $animalType,
+                    'animals' => $this->animalTrNames[$animalType],
                     "player_name" => $player["player_name"],
                     'i18n' => ['animals'],
                 ));
             }
             $this->prepareBreeding(self::getGameStateValue(GS_BREEDING),  $this->getMostlyActivePlayerId());
         } else {
-            $this->notifyAllPlayers("msg", clienttranslate('No one has any enclosure where to breed a ${animals}'), array('animals' => $animalType,'i18n' => ['animals'],));
+            $this->notifyAllPlayers("msg", clienttranslate('No one has any enclosure where to breed a ${animals}'), array('animals' => $this->animalTrNames[$animalType],'i18n' => ['animals'],));
         }
         return $needed;
     }
@@ -1672,7 +1673,7 @@ class NewYorkZoo extends EuroGame {
             self::notifyAllPlayers("msg", clienttranslate('🍼 ${player_name} breeds ${number} ${animals}(s)'), array(
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
-                'animals' => $animalType,
+                'animals' => $this->animalTrNames[$animalType],
                 'i18n' => array( 'animals' ), 
             ));
 
@@ -1700,7 +1701,7 @@ class NewYorkZoo extends EuroGame {
             self::notifyAllPlayers("msg", clienttranslate('🍼 ${player_name} breeds ${number} ${animals}(s) with the bonus breeding'), array(
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
-                'animals' => $animalType,
+                'animals' => $this->animalTrNames[$animalType],
                 'i18n' => ['animals'], 
             ));
 
