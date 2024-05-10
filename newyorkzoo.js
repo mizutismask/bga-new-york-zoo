@@ -14,8 +14,8 @@
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *
  */
-const CELL_WIDTH = 35;
-const TIMER = 15;
+const CELL_WIDTH = 35
+const TIMER = 15
 
 class PatchManager {
 	constructor(game) {
@@ -1350,25 +1350,27 @@ define([
 
 		onUpdateActionButtons_placeAttraction: function (args) {
 			this.clientStateArgs.action = 'place'
-			var canBuy = Object.keys(args.patches)
-			/* canBuy.forEach((mask) => {
+			if (args.patches) {
+				var canBuy = Object.keys(args.patches)
+				/* canBuy.forEach((mask) => {
                 var canUse = args.patches[mask].cu;
                 var activeClass = canUse ? 'active_slot' : 'cannot_use';
                 dojo.query(`.bonus-mask-group[data-mask-group="${mask}"] .patch`).addClass(activeClass);
             });*/
-			canBuy.forEach((id) => {
-				var canUse = args.patches[id].cu
-				dojo.addClass(id, 'active_slot')
-				if (canUse == false) {
-					dojo.addClass(id, 'cannot_use')
-				} else {
+				canBuy.forEach((id) => {
+					var canUse = args.patches[id].cu
 					dojo.addClass(id, 'active_slot')
-					/*if (dojo.query(`.bonus-mask-group[data-mask-group=":1"] #${id}`).length == 1) {
+					if (canUse == false) {
+						dojo.addClass(id, 'cannot_use')
+					} else {
+						dojo.addClass(id, 'active_slot')
+						/*if (dojo.query(`.bonus-mask-group[data-mask-group=":1"] #${id}`).length == 1) {
                         //this is a 1x1 attraction, we activate them all
                         dojo.query(`.bonus-mask-group[data-mask-group=":1"] .patch`).addClass('active_slot');
                     }*/
-				}
-			})
+					}
+				})
+			}
 
 			var pickcolor = 'blue'
 			if (!args.canPatch) pickcolor = 'red'

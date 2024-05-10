@@ -296,7 +296,7 @@ class NewYorkZoo extends EuroGame {
 
             $stock = $this->tokens->getTokensOfTypeInLocation("patch_25%", "limbo");
             $stock = array_merge($stock, $this->tokens->getTokensOfTypeInLocation("patch_45%", "limbo"));
-            $stock = array_merge($this->tokens->getTokensOfTypeInLocation("patch_54%", "limbo"));
+            $stock = array_merge($stock, $this->tokens->getTokensOfTypeInLocation("patch_54%", "limbo"));
             $toMove = array_keys(array_slice($stock, 0, ATTRACTION_1x1_PACK_QUANTITY));
             //self::dump('*******************toMove', $toMove);
             if ($toMove) {
