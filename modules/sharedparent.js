@@ -1513,7 +1513,7 @@ define(['dojo', 'dojo/_base/declare', 'ebg/core/gamegui'], function (dojo, decla
          */
         playSound: function (sound, playNextMoveSound = true) {
             if (soundManager.bMuteSound == false) {
-                if (this.isSoundOn()) {
+                if (this.isSoundOn() && !this.instantaneousMode) {
                     playSound(sound);
                     playNextMoveSound && this.disableNextMoveSound();
                 }
