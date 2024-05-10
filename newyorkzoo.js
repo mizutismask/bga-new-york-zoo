@@ -1111,9 +1111,9 @@ define([
 		onEnteringState_populateNewFence(args) {
 			if (this.isCurrentPlayerActive()) {
 				if (args.canDismiss) {
-					this.setDescriptionOnMyTurn(_('${you} can place another animal on your new enclosure (from houses or other enclosures)'))
+					this.setDescriptionOnMyTurn(_('${you} can select another animal and place it in your new enclosure (from houses or other enclosures)'))
 				} else {
-					this.setDescriptionOnMyTurn(_('${you} must place one animal on your new enclosure (from houses or other enclosures)'))
+					this.setDescriptionOnMyTurn(_('${you} must select an animal and place it in your new enclosure (from houses or other enclosures)'))
 				}
 			} else {
 				if (args.canDismiss) {
