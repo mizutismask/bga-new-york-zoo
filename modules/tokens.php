@@ -385,7 +385,7 @@ class Tokens extends APP_GameClass {
     }
 
     function dbArrayParam($arrayp) {
-        return '"' . implode($arrayp, '","') . '"';
+        return '"' . implode('","', $arrayp) . '"';
     }
 
     /**
