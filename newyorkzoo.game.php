@@ -194,12 +194,14 @@ class NewYorkZoo extends EuroGame {
         return "";
     }
 
-    function getSoloHousesCount() {
+    function getSoloHousesCount(): int {
         switch (self::getGameStateValue(SOLO_BOARD)) {
             case HOUSE_COUNT_3:
                 return 3;
             case HOUSE_COUNT_4:
                 return 4;
+            default:
+                return 0;
         }
     }
 
@@ -343,7 +345,7 @@ class NewYorkZoo extends EuroGame {
                 $stateP2 = 1;
                 foreach ([DARKEST_GREEN, DARK_GREEN] as $color) {
                     $coloredPatches = $this->mtCollectWithFieldValue("color", $color);
-                    $removedColoredPatch = array_values(array_filter($removed, fn ($patch) => array_search($patch["key"], $coloredPatches) != false));
+                    $removedColoredPatch = array_values(array_filter($removed, fn($patch) => array_search($patch["key"], $coloredPatches) != false));
                     for ($i = 0; $i < 3; $i++) {
                         $this->tokens->moveToken($removedColoredPatch[$i]["key"], "hand_" . array_keys($players)[0], $stateP1);
                         $stateP1++;
@@ -409,9 +411,9 @@ class NewYorkZoo extends EuroGame {
             $this->setCounter($result['counters'], "empties_${order}_counter", $unoccup_count);
         }
         $this->setCounter($result['counters'], "rounds_completed_counter", self::getGameStateValue(GS_BOARD_COMPLETED_COUNT));
-        $fences = array_filter($this->actionStripZones, fn ($z) => $z["type"] == PATCH);
+        $fences = array_filter($this->actionStripZones, fn($z) => $z["type"] == PATCH);
         foreach ($fences as $id => $zone) {
-            $this->setCounter($result['counters'], "pile_" . $id . "_counter", count(array_filter($result["tokens"], fn ($t) => $t["location"] == $id && $t["key"] !== "token_neutral")));
+            $this->setCounter($result['counters'], "pile_" . $id . "_counter", count(array_filter($result["tokens"], fn($t) => $t["location"] == $id && $t["key"] !== "token_neutral")));
         }
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['gridSize'] = self::getGridSize();
@@ -561,9 +563,8 @@ class NewYorkZoo extends EuroGame {
     /*
         In this space, you can put any utility methods useful for your game logic
     */
-    function getGridSize() {
-        $players = $this->loadPlayersBasicInfos();
-        $players_nbr = count($players);
+    function getGridSize($player_count = 0) {
+        $players_nbr = $player_count || count($this->loadPlayersBasicInfos());
         if ($players_nbr == 1 && $this->getSoloHousesCount() == 3) {
             return array(11, 9); //x,y
         } else if ($players_nbr == 1 && $this->getSoloHousesCount() == 4) {
@@ -983,7 +984,7 @@ class NewYorkZoo extends EuroGame {
         foreach ($squares as $loc) {
             $values[] = "( '$token_id', '$loc' , '$bonus' )";
         }
-        $sql .= implode( ',', $values);
+        $sql .= implode(',', $values);
         self::DbQuery($sql);
 
         return self::getUniqueValueFromDB("SELECT max(id) FROM fence");
@@ -1033,7 +1034,7 @@ class NewYorkZoo extends EuroGame {
      * Returns crossed action_zones during a move, excluding start position, including end position.
      */
     function getCrossedActionZones($oldPosition, $spaces) {
-        $moves=[];
+        $moves = [];
         if ($spaces > 0) {
             $moves = [$this->getNextActionZoneNumber($oldPosition)];
             for ($i = 0; $i < $spaces - 1; $i++) {
@@ -1427,7 +1428,7 @@ class NewYorkZoo extends EuroGame {
         self::notifyAllPlayers("breedingTime", clienttranslate('Breeding time for ${animal}'), array(
             'animal' => $animalType, //replaced by format_recursive
             'animalType' => $animalType, //stays as is
-            'cantBreed' => array_map(fn ($p) => $p["player_id"], $notBreeding),
+            'cantBreed' => array_map(fn($p) => $p["player_id"], $notBreeding),
             'bonus' => false,
         ));
 
@@ -1442,7 +1443,7 @@ class NewYorkZoo extends EuroGame {
             }
             $this->prepareBreeding(self::getGameStateValue(GS_BREEDING),  $this->getMostlyActivePlayerId());
         } else {
-            $this->notifyAllPlayers("msg", clienttranslate('No one has any enclosure where to breed a ${animals}'), array('animals' => $this->animalTrNames[$animalType],'i18n' => ['animals'],));
+            $this->notifyAllPlayers("msg", clienttranslate('No one has any enclosure where to breed a ${animals}'), array('animals' => $this->animalTrNames[$animalType], 'i18n' => ['animals'],));
         }
         return $needed;
     }
@@ -1674,7 +1675,7 @@ class NewYorkZoo extends EuroGame {
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
                 'animals' => $this->animalTrNames[$animalType],
-                'i18n' => array( 'animals' ), 
+                'i18n' => array('animals'),
             ));
 
             $playerId = $this->getMostlyActivePlayerId();
@@ -1702,7 +1703,7 @@ class NewYorkZoo extends EuroGame {
                 'player_name' => self::getActivePlayerName(),
                 'number' => $squaresCount,
                 'animals' => $this->animalTrNames[$animalType],
-                'i18n' => ['animals'], 
+                'i18n' => ['animals'],
             ));
 
             $playerId = $this->getMostlyActivePlayerId();
@@ -1838,7 +1839,7 @@ class NewYorkZoo extends EuroGame {
     function arg_possibleMovesByPatch($patches, $player_id, $bonuses = false) {
         $res = [];
         $playerOrder = $this->getPlayerPosition($player_id);
-       // self::dump('*************arg_placeAttraction***patches before***', $patches);
+        // self::dump('*************arg_placeAttraction***patches before***', $patches);
         if ($bonuses)
             $patches = $this->getUniqueMasks($patches);
         //self::dump('*************arg_placeAttraction***patches***', $patches);
@@ -1874,7 +1875,7 @@ class NewYorkZoo extends EuroGame {
     function getEquivalentAttractions($patchId): array {
         $mask = $this->getRulesFor($patchId, "mask");
         $available = array_keys($this->tokens->getTokensOfTypeInLocation("patch_%", "bonus_market"));
-        $equivalent = array_filter($available, fn ($p) => $this->getRulesFor($p, "mask") == $mask);
+        $equivalent = array_filter($available, fn($p) => $this->getRulesFor($p, "mask") == $mask);
         $equivalent = array_diff($equivalent, [$patchId]);
         return $equivalent;
     }
@@ -2184,7 +2185,7 @@ class NewYorkZoo extends EuroGame {
         $sql = "SELECT square FROM fence_squares JOIN fence on fence.token_key = fence_squares.token_key WHERE player_order=$playerOrder AND bonus=false AND animal_type in('none', '$animal')";
         $allSquares = self::getObjectListFromDB($sql, true);
         $freeSquares = $this->filterFreeSquares($allSquares);
-        return array_map(fn ($sqre) => $this->replaceGridSquareByAnimalSquare($sqre), $freeSquares);
+        return array_map(fn($sqre) => $this->replaceGridSquareByAnimalSquare($sqre), $freeSquares);
     }
 
     function filterFreeSquares($squares) {
@@ -2502,7 +2503,7 @@ class NewYorkZoo extends EuroGame {
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
         $changes = [
-            [2401181742, "ALTER TABLE `fence` ADD `animals_added_from_house` int(1) NOT NULL DEFAULT 0;"], 
+            [2401181742, "ALTER TABLE `fence` ADD `animals_added_from_house` int(1) NOT NULL DEFAULT 0;"],
         ];
 
         foreach ($changes as [$version, $sql]) {
@@ -2521,7 +2522,6 @@ class NewYorkZoo extends EuroGame {
                 }
             }
         }
-
     }
 
     ///////////////////////////////////////////////////////////////////////////////////:
@@ -2636,13 +2636,13 @@ class NewYorkZoo extends EuroGame {
     */
     public function loadBugReportSQL(int $reportId, array $studioPlayersIds): void {
         $players = $this->getObjectListFromDb('SELECT player_id FROM player', true);
-  
+
         // Change for your game
         // We are setting the current state to match the start of a player's turn if it's already game over
         $sql = ['UPDATE global SET global_value=10 WHERE global_id=1 AND global_value=99'];
         foreach ($players as $index => $pId) {
-          $studioPlayer = $studioPlayersIds[$index];
-    
+            $studioPlayer = $studioPlayersIds[$index];
+
             // All games can keep this SQL
             $sql[] = "UPDATE player SET player_id=$studioPlayer WHERE player_id=$pId";
             $sql[] = "UPDATE global SET global_value=$studioPlayer WHERE global_value=$pId";

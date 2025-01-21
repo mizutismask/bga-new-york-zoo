@@ -62,7 +62,7 @@ class view_newyorkzoo_newyorkzoo extends game_view {
       ));
     }
 
-    $gridSize = $this->game->getGridSize();
+    $gridSize = $this->game->getGridSize($player_count);
     for ($x = 0; $x < $gridSize[0]; $x++) {
       for ($y = 0; $y < $gridSize[1]; $y++) {
         $classes = '';
