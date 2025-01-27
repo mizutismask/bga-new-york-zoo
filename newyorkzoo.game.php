@@ -577,6 +577,7 @@ class NewYorkZoo extends EuroGame {
         } else if ($players_nbr == 5) {
             return array(8, 9); //x,y
         }
+        throw new BgaVisibleSystemException("Impossible to figure out grid size: {$players_nbr} players and solo houses count = {$this->getSoloHousesCount()}");
     }
 
     function getGridWidth() {
